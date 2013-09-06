@@ -13,6 +13,9 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <socket>
+#include <base64>
+#include <smjansson>
 
 #define PLUGIN_VERSION "0.1"
 
