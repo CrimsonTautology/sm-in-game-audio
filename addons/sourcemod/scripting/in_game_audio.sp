@@ -203,6 +203,17 @@ public HTTPPost(String:base_url[128], String:route[128], String:query_params[512
     SocketConnect(socket, OnSocketConnected, OnSocketReceive, OnSocketDisconnected, base_url, port);
 }
 
+public PlaySongAll(song[128])
+{
+     for (new client=1; client <= MaxClients; client++)
+     {
+        if (DoesClientHavePallEnabled(client))
+        {
+            PlaySong(client, song);
+        }
+     }
+}
+
 public PlaySong(client, song[128])
 {
         decl String:url[256], String:base_url[128];
@@ -216,4 +227,10 @@ public PlaySong(client, song[128])
         //TODO make popunder
         ShowMOTDPanel(client, "Song Player", url, MOTDPANEL_TYPE_URL);
 
+}
+
+public bool:DoesClientHavePallEnabled(client)
+{
+    //TODO do cookie check
+    return IsClientAuthorized(client);
 }
