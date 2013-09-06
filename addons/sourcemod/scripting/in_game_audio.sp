@@ -28,8 +28,17 @@ public Plugin:myinfo =
     url = ""
 };
 
-#define SONG_INFO_ROUTE "/v1/api/song_info"
+#define QUERY_SONG_ROUTE "/v1/api/query_song"
+#define RANDOM_SONG_ROUTE ""
 #define SONGS_ROUTE "/songs"
+
+#define BAD_API_KEY 0
+#define NO_SONG 1
+#define ACTION_P 2
+#define ACTION_PALL 3
+#define ACTION_FPALL 4
+
+#define MAX_STEAMID_LENGTH 21 
 
 new Handle:g_Cvar_IGAApiKey = INVALID_HANDLE;
 new Handle:g_Cvar_IGAUrl = INVALID_HANDLE;
@@ -119,7 +128,18 @@ public OnSocketError(Handle:socket, const error_type, const error_num, any:heade
 
 public Action:Command_P(client, args)
 {
-    //TODO
+    if (args < 1)
+    {
+        ReplyToCommand(client, "[IGA] Usage: !p <song>");
+        return Plugin_Handled;
+    }
+
+    if(client && IsClientAuthorized(client)){
+        decl String:song[256];
+        GetCmdArgString(song, sizeof(song));
+        QuerySong(client, song, ACTION_P);
+    }
+    
 }
 
 public Action:Command_Pall(client, args)
@@ -173,6 +193,17 @@ public Event_ClientConnect(Handle:event, const String:name[], bool:dontBroadcast
     //TODO
 }
 
+public QuerySong(client, String:song[128], action)
+{
+    decl String:steamid[MAX_STEAMID_LENGTH]
+    GetClientAuthString(client, steamid, sizeof(steamid));
+
+    decl String:query_params[512];
+    Format(query_params, sizeof(query_params),
+            "action=%d&steamid=%s&song=%s", action, steamid, song);
+
+    IGAApiCall(QUERY_SONG_ROUTE, query_params);
+}
 public IGAApiCall(String:route[128], String:query_params[512])
 {
     new port= GetConVarInt(g_Cvar_IGAPort);
