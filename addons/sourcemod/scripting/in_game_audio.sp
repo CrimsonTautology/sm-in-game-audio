@@ -47,6 +47,8 @@ new Handle:g_Cvar_IGAport = INVALID_HANDLE;
 new Handle:g_Cvar_IGADonatorsOnly = INVALID_HANDLE;
 new Handle:g_Cvar_IGAEnabled = INVALID_HANDLE;
 
+new g_PallNextFree = 0;
+
 public OnPluginStart()
 {
     
@@ -110,10 +112,18 @@ public OnSocketReceive(Handle:socket, String:receive_data[], const data_size, an
         }
         if(action == ACTION_PALL)
         {
-            PlaySongAll(song);
+            if(current_time < g_PallNextFree)
+            {
+                PrintToChat(client, "Sorry, pall is currently in use");
+            }else
+            {
+                g_PallNextFree = current_time + duration + 100;
+                PlaySongAll(song);
+            }
         }
         if(action == ACTION_FPALL)
         {
+            g_PallNextFree = current_time + duration + 100;
             PlaySongAll(song);
         }
 
