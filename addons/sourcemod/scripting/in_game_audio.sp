@@ -80,8 +80,31 @@ public OnSocketConnected(Handle:socket, any:headers_pack)
 }
 
 public OnSocketReceive(Handle:socket, String:receive_data[], const data_size, any:headers_pack) {
-    //TODO parse JSON response
-    //Used for data received back
+    new Handle:json = json_load(recieve_data);
+    new action = json_object_get_int(json, "action");
+    if(action == BAD_API_KEY)
+    {
+    //CASE BAD_API_KEY
+    }else if (action == NO_SONG)
+    {
+    //CASE NO_SONG
+    }else{
+    //CASE ACTION_P
+    //CASE ACTION_PALL
+    //CASE ACTION_FPALL
+        new String:title[64], String:song[64], String:steamid[MAX_STEAMID_LENGTH]
+        json_object_get_string(json, "title", title, sizeof(title));
+        json_object_get_string(json, "song", song, sizeof(song));
+        json_object_get_string(json, "steamid", steamid, sizeof(steamid));
+        new duration = json_object_get_int(json, "duration");
+        new client = GetClientAuthString(steamid);
+
+        if(action == ACTION_P)
+        {
+        }
+
+    }
+    CloseHandle(json);
     PrintToConsole(0,"%s", receive_data);//TODO
 }
 
