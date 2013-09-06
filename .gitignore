@@ -1,0 +1,10 @@
+#compiled files
+*.smx
+*.exe
+*.o
+
+#vim files
+*.sw*
+
+#Ignore the settings file
+Sourcemodproject.yml
