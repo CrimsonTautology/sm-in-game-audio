@@ -202,3 +202,18 @@ public HTTPPost(String:base_url[128], String:route[128], String:query_params[512
 
     SocketConnect(socket, OnSocketConnected, OnSocketReceive, OnSocketDisconnected, base_url, port);
 }
+
+public PlaySong(client, song[128])
+{
+        decl String:url[256], String:base_url[128];
+        GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
+        ReplaceString(base_url, sizeof(base_url), "http://", "", false);
+        ReplaceString(base_url, sizeof(base_url), "https://", "", false);
+
+        Format(url, sizeof(url),
+                "http://%s%s/%s", base_url, SONGS_ROUTE, song);
+
+        //TODO make popunder
+        ShowMOTDPanel(client, "Song Player", url, MOTDPANEL_TYPE_URL);
+
+}
