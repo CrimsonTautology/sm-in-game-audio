@@ -39,6 +39,7 @@ public Plugin:myinfo =
 #define ACTION_FPALL 4
 
 #define MAX_STEAMID_LENGTH 21 
+#define MAX_SONG_LENGTH 64
 
 new Handle:g_Cvar_IGAApiKey = INVALID_HANDLE;
 new Handle:g_Cvar_IGAUrl = INVALID_HANDLE;
@@ -84,23 +85,36 @@ public OnSocketReceive(Handle:socket, String:receive_data[], const data_size, an
     new action = json_object_get_int(json, "action");
     if(action == BAD_API_KEY)
     {
-    //CASE BAD_API_KEY
+        LogError("[IGA] Invalid API key");
     }else if (action == NO_SONG)
     {
-    //CASE NO_SONG
+        new String:song[MAX_SONG_LENGTH], String:steamid[MAX_STEAMID_LENGTH]
+        json_object_get_string(json, "song", song, MAX_SONG_LENGTH);
+        json_object_get_string(json, "steamid", steamid, MAX_STEAMID_LENGTH);
+        new client = GetClientAuthString(steamid);
+        PrintToChat(client, "[IGA] %s was not found");
     }else{
     //CASE ACTION_P
     //CASE ACTION_PALL
     //CASE ACTION_FPALL
-        new String:title[64], String:song[64], String:steamid[MAX_STEAMID_LENGTH]
+        new String:title[64], String:song[MAX_SONG_LENGTH], String:steamid[MAX_STEAMID_LENGTH]
         json_object_get_string(json, "title", title, sizeof(title));
-        json_object_get_string(json, "song", song, sizeof(song));
-        json_object_get_string(json, "steamid", steamid, sizeof(steamid));
+        json_object_get_string(json, "song", song, MAX_SONG_LENGTH);
+        json_object_get_string(json, "steamid", steamid, MAX_STEAMID_LENGTH);
         new duration = json_object_get_int(json, "duration");
         new client = GetClientAuthString(steamid);
 
         if(action == ACTION_P)
         {
+            PlaySong(client, song);
+        }
+        if(action == ACTION_PALL)
+        {
+            PlaySongAll(song);
+        }
+        if(action == ACTION_FPALL)
+        {
+            PlaySongAll(song);
         }
 
     }
@@ -158,7 +172,7 @@ public Action:Command_P(client, args)
     }
 
     if(client && IsClientAuthorized(client)){
-        decl String:song[256];
+        decl String:song[MAX_SONG_LENGTH];
         GetCmdArgString(song, sizeof(song));
         QuerySong(client, song, ACTION_P);
     }
@@ -216,7 +230,7 @@ public Event_ClientConnect(Handle:event, const String:name[], bool:dontBroadcast
     //TODO
 }
 
-public QuerySong(client, String:song[128], action)
+public QuerySong(client, String:song[MAX_SONG_LENGTH], action)
 {
     decl String:steamid[MAX_STEAMID_LENGTH]
     GetClientAuthString(client, steamid, sizeof(steamid));
@@ -257,8 +271,9 @@ public HTTPPost(String:base_url[128], String:route[128], String:query_params[512
     SocketConnect(socket, OnSocketConnected, OnSocketReceive, OnSocketDisconnected, base_url, port);
 }
 
-public PlaySongAll(song[128])
+public PlaySongAll(song[MAX_SONG_LENGTH])
 {
+    //TODO update PALL duration
      for (new client=1; client <= MaxClients; client++)
      {
         if (DoesClientHavePallEnabled(client))
@@ -268,7 +283,7 @@ public PlaySongAll(song[128])
      }
 }
 
-public PlaySong(client, song[128])
+public PlaySong(client, song[MAX_SONG_LENGTH])
 {
         decl String:url[256], String:base_url[128];
         GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
