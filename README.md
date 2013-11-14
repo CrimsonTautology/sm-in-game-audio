@@ -1,4 +1,6 @@
 # in_game_audio
+[![Build Status](https://travis-ci.org/CrimsonTautology/sm_map_votes.png?branch=master)](https://travis-ci.org/CrimsonTautology/sm_map_votes)
+
 
 TODO - Add your project's description
 

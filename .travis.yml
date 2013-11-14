@@ -1,0 +1,26 @@
+language: c
+
+env:
+    - SMVERSION=1.4
+    - SMVERSION=1.5
+before_install:
+    - sudo apt-get update
+    - sudo apt-get install gcc-multilib
+    - sudo apt-get install lynx
+
+before_script:
+    - SMPATTERN="http:.*sourcemod-.*-linux.*"
+    - SMURL="http://www.sourcemod.net/smdrop/$SMVERSION/"
+    - SMPACKAGE=`lynx -dump "$SMURL" | egrep -o "$SMPATTERN" | tail -1`
+    - wget $SMPACKAGE
+    - tar -xzf $(basename "$SMPACKAGE")
+    - cd addons/sourcemod/scripting/
+    - chmod +x spcomp
+    - chmod +x compile.sh
+
+script: 
+    - ./compile.sh
+
+after_script:
+    - ls *.smx
+
