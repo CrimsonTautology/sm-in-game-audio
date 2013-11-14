@@ -16,10 +16,9 @@ before_script:
     - tar -xzf $(basename "$SMPACKAGE")
     - cd addons/sourcemod/scripting/
     - chmod +x spcomp
-    - chmod +x compile.sh
 
 script: 
-    - ./compile.sh
+    - ./spcomp *.sp
 
 after_script:
     - ls *.smx
