@@ -303,15 +303,26 @@ public PlaySong(client, song[MAX_SONG_LENGTH])
 {
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
-    ReplaceString(base_url, sizeof(base_url), "http://", "", false);
-    ReplaceString(base_url, sizeof(base_url), "https://", "", false);
+
+    TrimString(base_url);
+    new trim_length = strlen(base_url) - 1;
+
+    if(base_url[trim_length] == '/')
+    {
+        strcopy(base_url, trim_length + 1, base_url);
+    }
 
     Format(url, sizeof(url),
-            "http://%s%s/%s", base_url, SONGS_ROUTE, song);
+            "%s%s/%s", base_url, SONGS_ROUTE, song);
 
-    //TODO make popunder
-    ShowMOTDPanel(client, "Song Player", url, MOTDPANEL_TYPE_URL);
-
+    new Handle:panel = CreateKeyValues("data");
+    KvSetString(panel, "title", "In Game Audio");
+    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
+    KvSetString(panel, "msg", url);
+ 
+    ShowVGUIPanel(client, "info", panel, false);
+    CloseHandle(panel);
+    return;
 }
 
 public bool:ClientHasPallEnabled(client)
