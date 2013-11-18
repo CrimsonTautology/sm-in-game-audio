@@ -236,13 +236,13 @@ public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, client
         //Find the user's theme
         decl String:uid_theme[MAX_COMMUNITYID_LENGTH];
         Steam_GetCSteamIDForClient(client, uid_theme, sizeof(uid_theme));
-        Steam_SetHTTPRequestGetOrPostParameterInt(request, "uid_theme", uid_theme);
+        Steam_SetHTTPRequestGetOrPostParameter(request, "uid_theme", uid_theme);
     }else if(strlen(map_theme) > 0){
         //Find the map's theme
         Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
     }
 
-    Steam_SendHTTPRequest(request, ReceiveSongQuery, GetClientUserId(client));
+    Steam_SendHTTPRequest(request, ReceiveQuerySong, GetClientUserId(client));
 
     StartCooldown(client);
 }
@@ -275,10 +275,10 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         if(pall)
         {
             PrintToChatAll("Now Playing: %s", description);
-                PlaySongAll(song);
+            PlaySongAll(song);
         }else if(client > 0){
             PrintToChat(client, "Now Playing: %s", description);
-                PlaySong(client, song);
+            PlaySong(client, song);
         }
     }
 
@@ -287,7 +287,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 }
 
 
-public PlaySongAll(song[MAX_SONG_LENGTH])
+public PlaySongAll(song[])
 {
     //TODO update PALL duration
     for (new client=1; client <= MaxClients; client++)
@@ -299,7 +299,7 @@ public PlaySongAll(song[MAX_SONG_LENGTH])
     }
 }
 
-public PlaySong(client, song[MAX_SONG_LENGTH])
+public PlaySong(client, song[])
 {
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
