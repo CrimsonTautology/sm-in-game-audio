@@ -58,8 +58,8 @@ public OnPluginStart()
     RegConsoleCmd("sm_pall", Command_Pall, "Play a song for everyone");
     RegConsoleCmd("sm_plist", Command_Plist, "Pop-up the song list");
     RegConsoleCmd("sm_stop", Command_Stop, "Stop the current song");
-    RegConsoleCmd("sm_fstop", Command_Fstop, "[ADMIN] Stop the current pall for everyone");
-    RegConsoleCmd("sm_fpall", Command_Fpall, "[ADMIN] Force everyone to listen to a song");
+    RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
+    RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
     RegConsoleCmd("sm_vol", Command_Vol, "Adjust your play volume");
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_plast", Command_Plast, "Play the last played song for yourself");
