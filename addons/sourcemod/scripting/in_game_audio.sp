@@ -213,7 +213,12 @@ public Action:RemoveCooldown(Handle:timer, any:client)
     g_IsInCooldown[client] = false;
 }
 
-public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall, client_theme = 0, String:map_theme[] ="")
+public bool:IsInPall()
+{
+    return GetTime() < g_PallNextFree
+}
+
+public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
 {
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
@@ -228,6 +233,7 @@ public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall, client_theme =
 
     Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "pall", pall);
+    Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "player", GetClientUserId(client));
     Steam_SetHTTPRequestGetOrPostParameter(request, "song", song);
 
@@ -268,12 +274,14 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     {
         new duration = json_object_get_int(json, "duration");
         new bool:pall = json_object_get_bool(json, "pall");
+        new bool:force = json_object_get_bool(json, "force");
         new String:song[MAX_SONG_LENGTH], String:description[64];
         json_object_get_string(json, "song", song, sizeof(song));
         json_object_get_string(json, "description", description, sizeof(description));
 
         if(pall)
         {
+            g_PallNextFree = duration + GetTime();
             PrintToChatAll("Now Playing: %s", description);
             PlaySongAll(song);
         }else if(client > 0){
