@@ -158,20 +158,20 @@ public Steam_SetHTTPRequestGetOrPostParameterInt(&HTTPRequestHandle:request, con
 public SetAccessCode(&HTTPRequestHandle:request)
 {
     decl String:api_key[128];
-    GetConVarString(g_Cvar_MapVotesApiKey, api_key, sizeof(api_key));
+    GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
     Steam_SetHTTPRequestGetOrPostParameter(request, "access_token", api_key);
 }
 
 public HTTPRequestHandle:CreateIGARequest(const String:route[])
 {
     decl String:base_url[256], String:url[512];
-    GetConVarString(g_Cvar_MapVotesUrl, base_url, sizeof(base_url));
+    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
     TrimString(base_url);
     new trim_length = strlen(base_url) - 1;
 
     if(trim_length < 0)
     {
-        //MapVotes Url not set
+        //IGA Url not set
         return INVALID_HTTP_HANDLE;
     }
 
@@ -197,7 +197,7 @@ public StartCooldown(client)
         return;
 
     g_IsInCooldown[client] = true;
-    CreateTimer(GetConVarFloat(g_Cvar_MapVotesRequestCooldownTime), RemoveCooldown, client);
+    CreateTimer(GetConVarFloat(g_Cvar_IGARequestCooldownTime), RemoveCooldown, client);
 }
 
 public bool:IsClientInCooldown(client)
@@ -213,12 +213,12 @@ public Action:RemoveCooldown(Handle:timer, any:client)
     g_IsInCooldown[client] = false;
 }
 
-public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:all)
+public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall=false, client_theme=0, map_theme="")
 {
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
 
-    new HTTPRequestHandle:request = CreateMapVotesRequest(GET_FAVORITES_ROUTE);
+    new HTTPRequestHandle:request = CreateIGARequest(QUERY_SONG_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)
     {
@@ -227,16 +227,22 @@ public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:all)
     }
 
     Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+    Steam_SetHTTPRequestGetOrPostParameterInt(request, "pall", pall);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "player", GetClientUserId(client));
     Steam_SetHTTPRequestGetOrPostParameter(request, "song", song);
 
-    if(all)
+    if(client_theme > 0)
     {
-        //A negative userid means a pall request
-        Steam_SendHTTPRequest(request, ReceiveSongQuery, -1 * GetClientUserId(client));
-    }else{
-        Steam_SendHTTPRequest(request, ReceiveSongQuery, GetClientUserId(client));
+        //Find the user's theme
+        decl String:uid_theme[MAX_COMMUNITYID_LENGTH];
+        Steam_GetCSteamIDForClient(client, uid_theme, sizeof(uid_theme));
+        Steam_SetHTTPRequestGetOrPostParameter(request, "uid_theme", uid_theme);
+    }else if(strlen(map_theme) > 0){
+        //Find the map's theme
+        Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
     }
+
+    Steam_SendHTTPRequest(request, ReceiveSongQuery, GetClientUserId(client));
 
     StartCooldown(client);
 }
@@ -244,26 +250,39 @@ public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:all)
 public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
-    if(client == 0)
-    {
-        //User logged off
-        Steam_ReleaseHTTPRequest(request);
-        return;
-    }
     if(!successful || code != HTTPStatusCode_OK)
     {
-        LogError("[MapVotes] Error at RecivedGetFavorites (HTTP Code %d; success %d)", code, successful);
+        LogError("[IGA] Error at RecivedQuerySong (HTTP Code %d; success %d)", code, successful);
         Steam_ReleaseHTTPRequest(request);
         return;
     }
 
-    if(userid < 0)
+    decl String:data[4096];
+    Steam_GetHTTPResponseBodyData(request, data, sizeof(data));
+    Steam_ReleaseHTTPRequest(request);
+
+    new Handle:json = json_load(data);
+    new bool:found = json_object_get_bool(json, "found");
+
+    if(found)
     {
-        //Pall
-    }else{
-        //P
+        new duration = json_object_get_int(json, "duration");
+        new bool:pall = json_object_get_bool(json, "pall");
+        new String:song[MAX_SONG_LENGTH], String:description[64];
+        json_object_get_string(json, "song", song, sizeof(song));
+        json_object_get_string(json, "description", description, sizeof(description));
+
+        if(pall)
+        {
+            PrintToChatAll("Now Playing: %s", description)
+                PlaySongAll(song);
+        }else if(client > 0){
+            PrintToChat(client, "Now Playing: %s", description)
+                PlaySong(client, song);
+        }
     }
 
+    CloseHandle(json);
     Steam_ReleaseHTTPRequest(request);
 }
 
@@ -271,31 +290,31 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 public PlaySongAll(song[MAX_SONG_LENGTH])
 {
     //TODO update PALL duration
-     for (new client=1; client <= MaxClients; client++)
-     {
-        if (DoesClientHavePallEnabled(client))
+    for (new client=1; client <= MaxClients; client++)
+    {
+        if (ClientHasPallEnabled(client))
         {
             PlaySong(client, song);
         }
-     }
+    }
 }
 
 public PlaySong(client, song[MAX_SONG_LENGTH])
 {
-        decl String:url[256], String:base_url[128];
-        GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
-        ReplaceString(base_url, sizeof(base_url), "http://", "", false);
-        ReplaceString(base_url, sizeof(base_url), "https://", "", false);
+    decl String:url[256], String:base_url[128];
+    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
+    ReplaceString(base_url, sizeof(base_url), "http://", "", false);
+    ReplaceString(base_url, sizeof(base_url), "https://", "", false);
 
-        Format(url, sizeof(url),
-                "http://%s%s/%s", base_url, SONGS_ROUTE, song);
+    Format(url, sizeof(url),
+            "http://%s%s/%s", base_url, SONGS_ROUTE, song);
 
-        //TODO make popunder
-        ShowMOTDPanel(client, "Song Player", url, MOTDPANEL_TYPE_URL);
+    //TODO make popunder
+    ShowMOTDPanel(client, "Song Player", url, MOTDPANEL_TYPE_URL);
 
 }
 
-public bool:DoesClientHavePallEnabled(client)
+public bool:ClientHasPallEnabled(client)
 {
     //TODO do cookie check
     return IsClientAuthorized(client);
