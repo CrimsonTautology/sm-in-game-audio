@@ -21,22 +21,16 @@
 
 public Plugin:myinfo =
 {
-    name = "",
-    author = "",
-    description = "",
+    name = "InGameAudio",
+    author = "CrimsonTautology",
+    description = "Interact with the In Game Audio web api",
     version = PLUGIN_VERSION,
-    url = ""
+    url = "https://github.com/CrimsonTautology/sm_in_game_audio"
 };
 
 #define QUERY_SONG_ROUTE "/v1/api/query_song"
 #define RANDOM_SONG_ROUTE ""
 #define SONGS_ROUTE "/songs"
-
-#define BAD_API_KEY 0
-#define NO_SONG 1
-#define ACTION_P 2
-#define ACTION_PALL 3
-#define ACTION_FPALL 4
 
 #define MAX_STEAMID_LENGTH 21 
 #define MAX_SONG_LENGTH 64
@@ -47,8 +41,8 @@ new Handle:g_Cvar_IGAport = INVALID_HANDLE;
 new Handle:g_Cvar_IGADonatorsOnly = INVALID_HANDLE;
 new Handle:g_Cvar_IGAEnabled = INVALID_HANDLE;
 new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
-new Handle:g_Cvar_IGANominationsName = INVALID_HANDLE;
 
+new bool:g_IsInCooldown[MAXPLAYERS+1];
 new g_PallNextFree = 0;
 
 public OnPluginStart()
@@ -58,7 +52,6 @@ public OnPluginStart()
     g_Cvar_IGAUrl = CreateConVar(sm_iga_url, "", "URL to your IGA webpage");
     g_Cvar_IGADonatorsOnly = CreateConVar(sm_iga_donators_only, "1", "Whether or not only donators have access to pall");
     g_Cvar_IGAEnabled = CreateConVar(sm_iga_enabled, "1", "Whether or not pall is enabled");
-    g_Cvar_IGANominationsName = CreateConVar("sm_iga_nominations_plugin", "nominations.smx", "The nominations plugin used by the server");
     g_Cvar_IGARequestCooldownTime = CreateConVar("sm_iga_request_cooldown_time", "2.0", "How long in seconds before a client can send another http request");
     
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");
@@ -183,13 +176,25 @@ public Action:Command_P(client, args)
         ReplyToCommand(client, "[IGA] Usage: !p <song>");
         return Plugin_Handled;
     }
+    if(IsClientInCooldown(client))
+    {
+        ReplyToCommand(client, "[IGA] User in cooldown");
+        return Plugin_Handled;
+    }
+
+    if(!GetConVarBool(g_Cvar_IGAEnabled))
+    {
+        ReplyToCommand(client, "[IGA] IGA not enabled");
+        return Plugin_Handled;
+    }
 
     if(client && IsClientAuthorized(client)){
         decl String:song[MAX_SONG_LENGTH];
         GetCmdArgString(song, sizeof(song));
         QuerySong(client, song, ACTION_P);
     }
-    
+
+    return Plugin_Handled;
 }
 
 public Action:Command_Pall(client, args)
