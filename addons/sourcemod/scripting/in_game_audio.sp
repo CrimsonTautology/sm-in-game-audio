@@ -46,6 +46,8 @@ new Handle:g_Cvar_IGAUrl = INVALID_HANDLE;
 new Handle:g_Cvar_IGAport = INVALID_HANDLE;
 new Handle:g_Cvar_IGADonatorsOnly = INVALID_HANDLE;
 new Handle:g_Cvar_IGAEnabled = INVALID_HANDLE;
+new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
+new Handle:g_Cvar_IGANominationsName = INVALID_HANDLE;
 
 new g_PallNextFree = 0;
 
@@ -54,9 +56,10 @@ public OnPluginStart()
     
     g_Cvar_IGAApiKey = CreateConVar(sm_iga_api_key, "", "API Key for your IGA webpage");
     g_Cvar_IGAUrl = CreateConVar(sm_iga_url, "", "URL to your IGA webpage");
-    g_Cvar_IGAPort = CreateConVar("sm_iga_port", "80", "HTTP Port used");
     g_Cvar_IGADonatorsOnly = CreateConVar(sm_iga_donators_only, "1", "Whether or not only donators have access to pall");
     g_Cvar_IGAEnabled = CreateConVar(sm_iga_enabled, "1", "Whether or not pall is enabled");
+    g_Cvar_IGANominationsName = CreateConVar("sm_iga_nominations_plugin", "nominations.smx", "The nominations plugin used by the server");
+    g_Cvar_IGARequestCooldownTime = CreateConVar("sm_iga_request_cooldown_time", "2.0", "How long in seconds before a client can send another http request");
     
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");
     RegConsoleCmd("sm_pall", Command_Pall, "Play a song for everyone");
