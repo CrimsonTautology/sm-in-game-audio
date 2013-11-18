@@ -91,7 +91,7 @@ public Action:Command_P(client, args)
     if(client && IsClientAuthorized(client)){
         decl String:song[MAX_SONG_LENGTH];
         GetCmdArgString(song, sizeof(song));
-        QuerySong(client, song);
+        QuerySong(client, song, false);
     }
 
     return Plugin_Handled;
@@ -213,7 +213,7 @@ public Action:RemoveCooldown(Handle:timer, any:client)
     g_IsInCooldown[client] = false;
 }
 
-public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, client_theme = 0, String:map_theme[] ="")
+public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall, client_theme = 0, String:map_theme[] ="")
 {
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
