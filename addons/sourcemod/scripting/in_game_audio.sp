@@ -99,7 +99,36 @@ public Action:Command_P(client, args)
 
 public Action:Command_Pall(client, args)
 {
-    //TODO
+    if (args < 1)
+    {
+        ReplyToCommand(client, "[IGA] Usage: !pall <song>");
+        return Plugin_Handled;
+    }
+    if(IsClientInCooldown(client))
+    {
+        ReplyToCommand(client, "[IGA] User in cooldown");
+        return Plugin_Handled;
+    }
+
+    if(!GetConVarBool(g_Cvar_IGAEnabled))
+    {
+        ReplyToCommand(client, "[IGA] IGA not enabled");
+        return Plugin_Handled;
+    }
+
+    if(IsInPall())
+    {
+        ReplyToCommand(client, "[IGA] pall currently in use");
+        return Plugin_Handled;
+    }
+
+    if(client && IsClientAuthorized(client)){
+        decl String:song[MAX_SONG_LENGTH];
+        GetCmdArgString(song, sizeof(song));
+        QuerySong(client, song, true);
+    }
+
+    return Plugin_Handled;
 }
 
 public Action:Command_Plist(client, args)
@@ -109,12 +138,14 @@ public Action:Command_Plist(client, args)
 
 public Action:Command_Stop(client, args)
 {
-    //TODO
+    StopSong(client);
+    return Plugin_Handled;
 }
 
 public Action:Command_Fstop(client, args)
 {
-    //TODO
+    StopSongAll();
+    return Plugin_Handled;
 }
 
 public Action:Command_Fpall(client, args)
@@ -331,6 +362,15 @@ public PlaySong(client, song[])
     ShowVGUIPanel(client, "info", panel, false);
     CloseHandle(panel);
     return;
+}
+
+public StopSong(client)
+{
+    PlaySong(client, "stop");//TODO
+}
+public StopSongAll()
+{
+    PlaySongAll("stop");//TODO
 }
 
 public bool:ClientHasPallEnabled(client)
