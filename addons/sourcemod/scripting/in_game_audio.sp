@@ -13,7 +13,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <socket>
+#include <steamtools>
 #include <base64>
 #include <smjansson>
 
@@ -67,106 +67,6 @@ public OnPluginStart()
     HookEvent("map_change", Event_MapChange);
     HookEvent("client_connect", Event_ClientConnect);
 }
-
-public OnSocketConnected(Handle:socket, any:headers_pack)
-{
-    decl String:request_string[1024];
-
-    ResetPack(headers_pack);
-    ReadPackString(headers_pack, request_string, sizeof(request_string));
-
-    SocketSend(socket, request_string);
-}
-
-public OnSocketReceive(Handle:socket, String:receive_data[], const data_size, any:headers_pack) {
-    new Handle:json = json_load(recieve_data);
-    new action = json_object_get_int(json, "action");
-    if(action == BAD_API_KEY)
-    {
-        LogError("[IGA] Invalid API key");
-    }else if (action == NO_SONG)
-    {
-        new String:song[MAX_SONG_LENGTH], String:steamid[MAX_STEAMID_LENGTH]
-        json_object_get_string(json, "song", song, MAX_SONG_LENGTH);
-        json_object_get_string(json, "steamid", steamid, MAX_STEAMID_LENGTH);
-        new client = GetClientAuthString(steamid);
-        PrintToChat(client, "[IGA] %s was not found");
-    }else{
-    //CASE ACTION_P
-    //CASE ACTION_PALL
-    //CASE ACTION_FPALL
-        new String:title[64], String:song[MAX_SONG_LENGTH], String:steamid[MAX_STEAMID_LENGTH]
-        json_object_get_string(json, "title", title, sizeof(title));
-        json_object_get_string(json, "song", song, MAX_SONG_LENGTH);
-        json_object_get_string(json, "steamid", steamid, MAX_STEAMID_LENGTH);
-        new duration = json_object_get_int(json, "duration");
-        new client = GetClientAuthString(steamid);
-
-        if(action == ACTION_P)
-        {
-            PlaySong(client, song);
-        }
-        if(action == ACTION_PALL)
-        {
-            if(current_time < g_PallNextFree)
-            {
-                PrintToChat(client, "Sorry, pall is currently in use");
-            }else
-            {
-                g_PallNextFree = current_time + duration + 100;
-                PlaySongAll(song);
-            }
-        }
-        if(action == ACTION_FPALL)
-        {
-            g_PallNextFree = current_time + duration + 100;
-            PlaySongAll(song);
-        }
-
-    }
-    CloseHandle(json);
-    PrintToConsole(0,"%s", receive_data);//TODO
-}
-
-public OnSocketDisconnected(Handle:socket, any:headers_pack) {
-    // Connection: close advises the webserver to close the connection when the transfer is finished
-    // we're done here
-    CloseHandle(headers_pack);
-    CloseHandle(socket);
-}
-
-public OnSocketError(Handle:socket, const error_type, const error_num, any:headers_pack) {
-    // a socket error occured
-    if(error_type == EMPTY_HOST )
-    {
-        LogError("[IGA] Empty Host (errno %d)", error_num);
-    } else if (error_type == NO_HOST )
-    {
-        LogError("[IGA] No Host (errno %d)", error_num);
-    } else if (error_type == CONNECT_ERROR )
-    {
-        LogError("[IGA] Connection Error (errno %d)", error_num);
-    } else if (error_type == SEND_ERROR )
-    {
-        LogError("[IGA] Send Error (errno %d)", error_num);
-    } else if (error_type == BIND_ERROR )
-    {
-        LogError("[IGA] Bind Error (errno %d)", error_num);
-    } else if (error_type == RECV_ERROR )
-    {
-        LogError("[IGA] Recieve Error (errno %d)", error_num);
-    } else if (error_type == LISTEN_ERROR )
-    {
-        LogError("[IGA] Listen Error (errno %d)", error_num);
-    } else
-    {
-        LogError("[IGA] socket error %d (errno %d)", errorType, error_num);
-    }
-
-    CloseHandle(headers_pack);
-    CloseHandle(socket);
-}
-
 
 
 public Action:Command_P(client, args)
@@ -248,46 +148,125 @@ public Event_ClientConnect(Handle:event, const String:name[], bool:dontBroadcast
     //TODO
 }
 
-public QuerySong(client, String:song[MAX_SONG_LENGTH], action)
+public Steam_SetHTTPRequestGetOrPostParameterInt(&HTTPRequestHandle:request, const String:param[], value)
 {
-    decl String:steamid[MAX_STEAMID_LENGTH]
-    GetClientAuthString(client, steamid, sizeof(steamid));
-
-    decl String:query_params[512];
-    Format(query_params, sizeof(query_params),
-            "action=%d&steamid=%s&song=%s", action, steamid, song);
-
-    IGAApiCall(QUERY_SONG_ROUTE, query_params);
-}
-public IGAApiCall(String:route[128], String:query_params[512])
-{
-    new port= GetConVarInt(g_Cvar_IGAPort);
-    decl String:base_url[128], String:api_key[128];
-    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
-    GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
-
-    ReplaceString(base_url, sizeof(base_url), "http://", "", false);
-    ReplaceString(base_url, sizeof(base_url), "https://", "", false);
-
-    Format(query_params, sizeof(query_params), "%s&access_token=%s", query_params, api_key);
-
-    HTTPPost(base_url, route, query_params, port);
+    new String:tmp[64];
+    IntToString(value, tmp, sizeof(tmp));
+    Steam_SetHTTPRequestGetOrPostParameter(request, param, tmp);
 }
 
-public HTTPPost(String:base_url[128], String:route[128], String:query_params[512], port)
+public SetAccessCode(&HTTPRequestHandle:request)
 {
-    new Handle:socket = SocketCreate(SOCKET_TCP, OnSocketError);
-
-    //This Formats the headers needed to make a HTTP/1.1 POST request.
-    new String:request_string[1024];
-    Format(request_string, sizeof(request_string), "POST %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\nContent-type: application/x-www-form-urlencoded\r\nContent-length: %d\r\n\r\n%s", route, base_url, strlen(headers), headers);
-
-    new Handle:headers_pack = CreateDataPack();
-    WritePackString(headers_pack, request_string);
-    SocketSetArg(socket, headers_pack);
-
-    SocketConnect(socket, OnSocketConnected, OnSocketReceive, OnSocketDisconnected, base_url, port);
+    decl String:api_key[128];
+    GetConVarString(g_Cvar_MapVotesApiKey, api_key, sizeof(api_key));
+    Steam_SetHTTPRequestGetOrPostParameter(request, "access_token", api_key);
 }
+
+public HTTPRequestHandle:CreateIGARequest(const String:route[])
+{
+    decl String:base_url[256], String:url[512];
+    GetConVarString(g_Cvar_MapVotesUrl, base_url, sizeof(base_url));
+    TrimString(base_url);
+    new trim_length = strlen(base_url) - 1;
+
+    if(trim_length < 0)
+    {
+        //MapVotes Url not set
+        return INVALID_HTTP_HANDLE;
+    }
+
+    //check for forward slash after base_url;
+    if(base_url[trim_length] == '/')
+    {
+        strcopy(base_url, trim_length + 1, base_url);
+    }
+
+    Format(url, sizeof(url),
+            "%s%s", base_url, route);
+
+    new HTTPRequestHandle:request = Steam_CreateHTTPRequest(HTTPMethod_POST, url);
+    SetAccessCode(request);
+
+    return request;
+}
+
+public StartCooldown(client)
+{
+    //Ignore the server console
+    if (client == 0)
+        return;
+
+    g_IsInCooldown[client] = true;
+    CreateTimer(GetConVarFloat(g_Cvar_MapVotesRequestCooldownTime), RemoveCooldown, client);
+}
+
+public bool:IsClientInCooldown(client)
+{
+    if(client == 0)
+        return false;
+    else
+        return g_IsInCooldown[client];
+}
+
+public Action:RemoveCooldown(Handle:timer, any:client)
+{
+    g_IsInCooldown[client] = false;
+}
+
+public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:all)
+{
+    decl String:uid[MAX_COMMUNITYID_LENGTH];
+    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+
+    new HTTPRequestHandle:request = CreateMapVotesRequest(GET_FAVORITES_ROUTE);
+
+    if(request == INVALID_HTTP_HANDLE)
+    {
+        ReplyToCommand(client, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        return;
+    }
+
+    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+    Steam_SetHTTPRequestGetOrPostParameterInt(request, "player", GetClientUserId(client));
+    Steam_SetHTTPRequestGetOrPostParameter(request, "song", song);
+
+    if(all)
+    {
+        //A negative userid means a pall request
+        Steam_SendHTTPRequest(request, ReceiveSongQuery, -1 * GetClientUserId(client));
+    }else{
+        Steam_SendHTTPRequest(request, ReceiveSongQuery, GetClientUserId(client));
+    }
+
+    StartCooldown(client);
+}
+
+public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+{
+    new client = GetClientOfUserId(userid);
+    if(client == 0)
+    {
+        //User logged off
+        Steam_ReleaseHTTPRequest(request);
+        return;
+    }
+    if(!successful || code != HTTPStatusCode_OK)
+    {
+        LogError("[MapVotes] Error at RecivedGetFavorites (HTTP Code %d; success %d)", code, successful);
+        Steam_ReleaseHTTPRequest(request);
+        return;
+    }
+
+    if(userid < 0)
+    {
+        //Pall
+    }else{
+        //P
+    }
+
+    Steam_ReleaseHTTPRequest(request);
+}
+
 
 public PlaySongAll(song[MAX_SONG_LENGTH])
 {
