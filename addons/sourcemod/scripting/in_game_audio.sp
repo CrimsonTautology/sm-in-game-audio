@@ -33,11 +33,11 @@ public Plugin:myinfo =
 #define SONGS_ROUTE "/songs"
 
 #define MAX_STEAMID_LENGTH 21 
+#define MAX_COMMUNITYID_LENGTH 18 
 #define MAX_SONG_LENGTH 64
 
 new Handle:g_Cvar_IGAApiKey = INVALID_HANDLE;
 new Handle:g_Cvar_IGAUrl = INVALID_HANDLE;
-new Handle:g_Cvar_IGAport = INVALID_HANDLE;
 new Handle:g_Cvar_IGADonatorsOnly = INVALID_HANDLE;
 new Handle:g_Cvar_IGAEnabled = INVALID_HANDLE;
 new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
@@ -48,10 +48,10 @@ new g_PallNextFree = 0;
 public OnPluginStart()
 {
     
-    g_Cvar_IGAApiKey = CreateConVar(sm_iga_api_key, "", "API Key for your IGA webpage");
-    g_Cvar_IGAUrl = CreateConVar(sm_iga_url, "", "URL to your IGA webpage");
-    g_Cvar_IGADonatorsOnly = CreateConVar(sm_iga_donators_only, "1", "Whether or not only donators have access to pall");
-    g_Cvar_IGAEnabled = CreateConVar(sm_iga_enabled, "1", "Whether or not pall is enabled");
+    g_Cvar_IGAApiKey = CreateConVar("sm_iga_api_key", "", "API Key for your IGA webpage");
+    g_Cvar_IGAUrl = CreateConVar("sm_iga_url", "", "URL to your IGA webpage");
+    g_Cvar_IGADonatorsOnly = CreateConVar("sm_iga_donators_only", "1", "Whether or not only donators have access to pall");
+    g_Cvar_IGAEnabled = CreateConVar("sm_iga_enabled", "1", "Whether or not pall is enabled");
     g_Cvar_IGARequestCooldownTime = CreateConVar("sm_iga_request_cooldown_time", "2.0", "How long in seconds before a client can send another http request");
     
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");
@@ -91,7 +91,7 @@ public Action:Command_P(client, args)
     if(client && IsClientAuthorized(client)){
         decl String:song[MAX_SONG_LENGTH];
         GetCmdArgString(song, sizeof(song));
-        QuerySong(client, song, ACTION_P);
+        QuerySong(client, song);
     }
 
     return Plugin_Handled;
@@ -213,7 +213,7 @@ public Action:RemoveCooldown(Handle:timer, any:client)
     g_IsInCooldown[client] = false;
 }
 
-public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall=false, client_theme=0, map_theme="")
+public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, client_theme = 0, String:map_theme[] ="")
 {
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
@@ -236,7 +236,7 @@ public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall=false, client_t
         //Find the user's theme
         decl String:uid_theme[MAX_COMMUNITYID_LENGTH];
         Steam_GetCSteamIDForClient(client, uid_theme, sizeof(uid_theme));
-        Steam_SetHTTPRequestGetOrPostParameter(request, "uid_theme", uid_theme);
+        Steam_SetHTTPRequestGetOrPostParameterInt(request, "uid_theme", uid_theme);
     }else if(strlen(map_theme) > 0){
         //Find the map's theme
         Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
@@ -274,10 +274,10 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
         if(pall)
         {
-            PrintToChatAll("Now Playing: %s", description)
+            PrintToChatAll("Now Playing: %s", description);
                 PlaySongAll(song);
         }else if(client > 0){
-            PrintToChat(client, "Now Playing: %s", description)
+            PrintToChat(client, "Now Playing: %s", description);
                 PlaySong(client, song);
         }
     }
@@ -319,7 +319,7 @@ public PlaySong(client, song[MAX_SONG_LENGTH])
     KvSetString(panel, "title", "In Game Audio");
     KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
     KvSetString(panel, "msg", url);
- 
+
     ShowVGUIPanel(client, "info", panel, false);
     CloseHandle(panel);
     return;
