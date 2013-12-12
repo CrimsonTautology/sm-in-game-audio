@@ -23,3 +23,5 @@ script:
 after_script:
     - ls *.smx
 
+notifications:
+    email: false
