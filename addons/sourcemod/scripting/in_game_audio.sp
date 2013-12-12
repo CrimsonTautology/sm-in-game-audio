@@ -21,7 +21,7 @@
 
 public Plugin:myinfo =
 {
-    name = "InGameAudio",
+    name = "In Game Audio",
     author = "CrimsonTautology",
     description = "Interact with the In Game Audio web api",
     version = PLUGIN_VERSION,
@@ -246,7 +246,7 @@ public Action:RemoveCooldown(Handle:timer, any:client)
 
 public bool:IsInPall()
 {
-    return GetTime() < g_PallNextFree
+    return GetTime() < g_PallNextFree;
 }
 
 public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
@@ -326,7 +326,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 }
 
 
-public PlaySongAll(song[])
+public PlaySongAll(String:song[])
 {
     //TODO update PALL duration
     for (new client=1; client <= MaxClients; client++)
@@ -338,7 +338,7 @@ public PlaySongAll(song[])
     }
 }
 
-public PlaySong(client, song[])
+public PlaySong(client, String:song[])
 {
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
