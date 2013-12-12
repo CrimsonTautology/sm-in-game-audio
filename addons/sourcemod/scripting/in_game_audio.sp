@@ -249,7 +249,7 @@ public bool:IsInPall()
     return GetTime() < g_PallNextFree;
 }
 
-public QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
+stock QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
 {
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
