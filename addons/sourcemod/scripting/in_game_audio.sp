@@ -31,6 +31,7 @@ public Plugin:myinfo =
 #define QUERY_SONG_ROUTE "/v1/api/query_song"
 #define RANDOM_SONG_ROUTE ""
 #define SONGS_ROUTE "/songs"
+#define DIRECTORIES_ROUTE "/directories"
 
 #define MAX_STEAMID_LENGTH 21 
 #define MAX_COMMUNITYID_LENGTH 18 
@@ -44,7 +45,6 @@ new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
 
 new bool:g_IsInCooldown[MAXPLAYERS+1];
 new g_PallNextFree = 0;
-
 public OnPluginStart()
 {
     
@@ -64,8 +64,8 @@ public OnPluginStart()
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_plast", Command_Plast, "Play the last played song for yourself");
     
-    HookEvent("map_change", Event_MapChange);
-    HookEvent("client_connect", Event_ClientConnect);
+    //HookEvent("map_change", Event_MapChange);
+    //HookEvent("client_connect", Event_ClientConnect);
 }
 
 
@@ -133,7 +133,11 @@ public Action:Command_Pall(client, args)
 
 public Action:Command_Plist(client, args)
 {
-    //TODO
+    if(client && IsClientAuthorized(client)){
+        SongList(client);
+    }
+
+    return Plugin_Handled;
 }
 
 public Action:Command_Stop(client, args)
@@ -308,7 +312,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         new bool:force = json_object_get_bool(json, "force");
         new String:song[MAX_SONG_LENGTH], String:description[64];
         json_object_get_string(json, "song", song, sizeof(song));
-        json_object_get_string(json, "description", description, sizeof(description));
+        json_object_get_string(json, "title", description, sizeof(description));
 
         if(pall)
         {
@@ -377,4 +381,24 @@ public bool:ClientHasPallEnabled(client)
 {
     //TODO do cookie check
     return IsClientAuthorized(client);
+}
+
+public SongList(client)
+{
+    decl String:map[PLATFORM_MAX_PATH], String:url[256], String:base_url[128];
+    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
+
+    TrimString(base_url);
+    new trim_length = strlen(base_url) - 1;
+
+    if(base_url[trim_length] == '/')
+    {
+        strcopy(base_url, trim_length + 1, base_url);
+    }
+
+    Format(url, sizeof(url),
+            "%s%s", base_url, DIRECTORIES_ROUTE);
+
+    ShowMOTDPanel(client, "Song List", url, MOTDPANEL_TYPE_URL);
+
 }
