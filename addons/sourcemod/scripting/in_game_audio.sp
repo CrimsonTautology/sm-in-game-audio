@@ -353,7 +353,7 @@ public PlaySong(client, String:song_id[])
     }
 
     Format(url, sizeof(url),
-            "%s%s/%s", base_url, SONGS_ROUTE, song_id);
+            "%s%s/%s/play", base_url, SONGS_ROUTE, song_id);
     //PrintToChatAll("%s", url); //TODO
 
     new Handle:panel = CreateKeyValues("data");
