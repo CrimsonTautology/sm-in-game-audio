@@ -106,12 +106,6 @@ public Action:Command_Pall(client, args)
         return Plugin_Handled;
     }
 
-    if(IsInPall())
-    {
-        ReplyToCommand(client, "[IGA] pall currently in use");
-        return Plugin_Handled;
-    }
-
     if(client && IsClientAuthorized(client)){
         decl String:path[MAX_SONG_LENGTH];
         GetCmdArgString(path, sizeof(path));
@@ -306,13 +300,18 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         json_object_get_string(json, "title", description, sizeof(description));
         json_object_get_string(json, "duration_formated", duration_formated, sizeof(duration_formated));
 
-        if(true)
+        if(pall)
         {
-            g_PallNextFree = duration + GetTime();
-            PrintToChatAll("[IGA] Started Playing \"%s\" to all", description);
-            PrintToChatAll("Duration %s", duration_formated);
-            PrintToChatAll("Type !stop to cancel or !nopall to mute");
-            PlaySongAll(song_id);
+            if(!IsInPall())
+            {
+                g_PallNextFree = duration + GetTime();
+                PrintToChatAll("[IGA] Started Playing \"%s\" to all", description);
+                PrintToChatAll("Duration %s", duration_formated);
+                PrintToChatAll("Type !stop to cancel or !nopall to mute");
+                PlaySongAll(song_id);
+            }else{
+                ReplyToCommand(client, "[IGA] pall currently in use");
+            }
         }else if(client > 0){
             PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
             PrintToChat(client, "Duration %s", duration_formated);
