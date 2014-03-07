@@ -334,7 +334,6 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     }
 
     CloseHandle(json);
-    Steam_ReleaseHTTPRequest(request);
 }
 
 
