@@ -89,9 +89,9 @@ public Action:Command_P(client, args)
     }
 
     if(client && IsClientAuthorized(client)){
-        decl String:song[MAX_SONG_LENGTH];
-        GetCmdArgString(song, sizeof(song));
-        QuerySong(client, song, false);
+        decl String:path[MAX_SONG_LENGTH];
+        GetCmdArgString(path, sizeof(path));
+        QuerySong(client, path, false);
     }
 
     return Plugin_Handled;
@@ -123,9 +123,9 @@ public Action:Command_Pall(client, args)
     }
 
     if(client && IsClientAuthorized(client)){
-        decl String:song[MAX_SONG_LENGTH];
-        GetCmdArgString(song, sizeof(song));
-        QuerySong(client, song, true);
+        decl String:path[MAX_SONG_LENGTH];
+        GetCmdArgString(path, sizeof(path));
+        QuerySong(client, path, true);
     }
 
     return Plugin_Handled;
@@ -219,6 +219,7 @@ public HTTPRequestHandle:CreateIGARequest(const String:route[])
     Format(url, sizeof(url),
             "%s%s", base_url, route);
 
+    PrintToChatAll("hit %s", url); //TODO
     new HTTPRequestHandle:request = Steam_CreateHTTPRequest(HTTPMethod_POST, url);
     SetAccessCode(request);
 
@@ -253,7 +254,7 @@ public bool:IsInPall()
     return GetTime() < g_PallNextFree;
 }
 
-stock QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
+stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
 {
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
@@ -270,7 +271,7 @@ stock QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, bool:fo
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "pall", pall);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "player", GetClientUserId(client));
-    Steam_SetHTTPRequestGetOrPostParameter(request, "song", song);
+    Steam_SetHTTPRequestGetOrPostParameter(request, "path", path);
 
     if(client_theme > 0)
     {
@@ -283,6 +284,7 @@ stock QuerySong(client, String:song[MAX_SONG_LENGTH], bool:pall = false, bool:fo
         Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
     }
 
+    PrintToChatAll("hit 1"); //TODO
     Steam_SendHTTPRequest(request, ReceiveQuerySong, GetClientUserId(client));
 
     StartCooldown(client);
@@ -309,20 +311,28 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     {
         new duration = json_object_get_int(json, "duration");
         new bool:pall = json_object_get_bool(json, "pall");
-        new bool:force = json_object_get_bool(json, "force");
-        new String:song[MAX_SONG_LENGTH], String:description[64];
-        json_object_get_string(json, "song", song, sizeof(song));
+        //new bool:force = json_object_get_bool(json, "force");
+        new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64];
+        json_object_get_string(json, "song_id", song_id, sizeof(song_id));
+        json_object_get_string(json, "full_path", full_path, sizeof(full_path));
         json_object_get_string(json, "title", description, sizeof(description));
+        json_object_get_string(json, "duration_formated", duration_formated, sizeof(duration_formated));
 
         if(pall)
         {
             g_PallNextFree = duration + GetTime();
-            PrintToChatAll("Now Playing: %s", description);
-            PlaySongAll(song);
+            PrintToChatAll("[IGA] Started Playing \"%s\" to all", description);
+            PrintToChatAll("Duration %s", duration_formated);
+            PrintToChatAll("Type !stop to cancel or !nopall to mute");
+            PlaySongAll(song_id);
         }else if(client > 0){
-            PrintToChat(client, "Now Playing: %s", description);
-            PlaySong(client, song);
+            PrintToChat(client, "[IGA] Started Playing \"%s\" to all", description);
+            PrintToChat(client, "Duration %s", duration_formated);
+            PrintToChat(client, "Type !stop to cancel");
+            PlaySong(client, song_id);
         }
+    }else{
+        PrintToChat(client, "[IGA] Could not find specified sound or directory");
     }
 
     CloseHandle(json);
