@@ -219,7 +219,6 @@ public HTTPRequestHandle:CreateIGARequest(const String:route[])
     Format(url, sizeof(url),
             "%s%s", base_url, route);
 
-    PrintToChatAll("hit %s", url); //TODO
     new HTTPRequestHandle:request = Steam_CreateHTTPRequest(HTTPMethod_POST, url);
     SetAccessCode(request);
 
@@ -284,7 +283,6 @@ stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:fo
         Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
     }
 
-    PrintToChatAll("hit 1"); //TODO
     Steam_SendHTTPRequest(request, ReceiveQuerySong, GetClientUserId(client));
 
     StartCooldown(client);
@@ -352,7 +350,7 @@ public PlaySongAll(String:song[])
     }
 }
 
-public PlaySong(client, String:song[])
+public PlaySong(client, String:song_id[])
 {
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
@@ -366,7 +364,8 @@ public PlaySong(client, String:song[])
     }
 
     Format(url, sizeof(url),
-            "%s%s/%s", base_url, SONGS_ROUTE, song);
+            "%s%s/%s", base_url, SONGS_ROUTE, song_id);
+    //PrintToChatAll("%s", url); //TODO
 
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
