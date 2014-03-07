@@ -44,6 +44,7 @@ new Handle:g_Cvar_IGAEnabled = INVALID_HANDLE;
 new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
 
 new bool:g_IsInCooldown[MAXPLAYERS+1];
+new g_PNextFree[MAXPLAYERS+1];
 new g_PallNextFree = 0;
 public OnPluginStart()
 {
@@ -66,6 +67,12 @@ public OnPluginStart()
     
     //HookEvent("map_change", Event_MapChange);
     //HookEvent("client_connect", Event_ClientConnect);
+}
+
+public OnClientConnected(client)
+{
+    g_IsInCooldown[client] = false;
+    g_PNextFree[client] = 0;
 }
 
 
@@ -236,6 +243,10 @@ public bool:IsInPall()
 {
     return GetTime() < g_PallNextFree;
 }
+public bool:IsInP(client)
+{
+    return GetTime() < g_PNextFree[client];
+}
 
 stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
 {
@@ -313,6 +324,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 ReplyToCommand(client, "[IGA] pall currently in use");
             }
         }else if(client > 0){
+            g_PNextFree[client] = duration + GetTime();
             PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
             PrintToChat(client, "Duration %s", duration_formated);
             PrintToChat(client, "Type !stop to cancel");
@@ -331,7 +343,7 @@ public PlaySongAll(String:song[])
     //TODO update PALL duration
     for (new client=1; client <= MaxClients; client++)
     {
-        if (ClientHasPallEnabled(client))
+        if (ClientHasPallEnabled(client) && !IsInP(client))
         {
             PlaySong(client, song);
         }
@@ -367,10 +379,12 @@ public PlaySong(client, String:song_id[])
 
 public StopSong(client)
 {
+    g_PNextFree[client] = 0;
     PlaySong(client, "stop");//TODO
 }
 public StopSongAll()
 {
+    g_PallNextFree = 0;
     PlaySongAll("stop");//TODO
 }
 
