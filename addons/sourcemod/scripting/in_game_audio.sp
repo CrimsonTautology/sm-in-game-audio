@@ -71,11 +71,6 @@ public OnPluginStart()
 
 public Action:Command_P(client, args)
 {
-    if (args < 1)
-    {
-        ReplyToCommand(client, "[IGA] Usage: !p <song>");
-        return Plugin_Handled;
-    }
     if(IsClientInCooldown(client))
     {
         ReplyToCommand(client, "[IGA] User in cooldown");
@@ -99,11 +94,6 @@ public Action:Command_P(client, args)
 
 public Action:Command_Pall(client, args)
 {
-    if (args < 1)
-    {
-        ReplyToCommand(client, "[IGA] Usage: !pall <song>");
-        return Plugin_Handled;
-    }
     if(IsClientInCooldown(client))
     {
         ReplyToCommand(client, "[IGA] User in cooldown");
@@ -316,7 +306,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         json_object_get_string(json, "title", description, sizeof(description));
         json_object_get_string(json, "duration_formated", duration_formated, sizeof(duration_formated));
 
-        if(pall)
+        if(true)
         {
             g_PallNextFree = duration + GetTime();
             PrintToChatAll("[IGA] Started Playing \"%s\" to all", description);
@@ -324,7 +314,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
             PrintToChatAll("Type !stop to cancel or !nopall to mute");
             PlaySongAll(song_id);
         }else if(client > 0){
-            PrintToChat(client, "[IGA] Started Playing \"%s\" to all", description);
+            PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
             PrintToChat(client, "Duration %s", duration_formated);
             PrintToChat(client, "Type !stop to cancel");
             PlaySong(client, song_id);
