@@ -1,0 +1,83 @@
+require 'rake'
+require 'fileutils'
+require 'socket'
+require 'steam-condenser'
+ 
+SOURCEMOD = ENV["SOURCEMOD_DIR"]                 or fail 'Enviornment variable "SOURCEMOD_DIR" not set'
+SERVER    = ENV["SOURCEMOD_DEV_SERVER"]          or fail 'Enviornment variable "SOURCEMOD_DEV_SERVER" not set'
+PASSWORD  = ENV["SOURCEMOD_DEV_SERVER_PASSWORD"] or fail 'Enviornment variable "SOURCEMOD_DEV_SERVER_PASSWORD" not set'
+ 
+SPCOMP    = ENV["SPCOMP"] || File.join(SOURCEMOD, "scripting/spcomp")
+ 
+PROJECT_ROOT = Dir.pwd
+SCRIPTING = 'addons/sourcemod/scripting/'
+PLUGINS   = 'addons/sourcemod/plugins/'
+ 
+task :default => [:compile, :install, :reload]
+ 
+desc "Compile project"
+task :compile do
+  Dir.chdir File.join(PROJECT_ROOT, SCRIPTING)
+  Dir.glob('*.sp') do |f|
+    smxfile = f.gsub(/\.sp$/, ".smx")
+    puts %x{#{SPCOMP} #{f}  -i"$PWD/include" -o"../plugins/#{smxfile}" -w203 -w204}
+    puts "compile #{f}"
+  end
+end
+ 
+ 
+desc "Copy compiled project to development server"
+task :install do
+  Dir.chdir File.join(PROJECT_ROOT, PLUGINS)
+  Dir.glob('*.smx') do |f|
+    FileUtils.cp(f, File.join(SERVER, PLUGINS, f))
+    puts "install #{f}"
+  end
+end
+ 
+desc "Clean up compiled files"
+task :clean do
+  Dir.chdir File.join(PROJECT_ROOT, PLUGINS)
+  Dir.glob('*.smx') do |f|
+    FileUtils.rm(f)
+    puts "clean #{f}"
+  end
+end
+
+desc "Remove project from development server"
+task :uninstall do
+  Dir.chdir File.join(PROJECT_ROOT, PLUGINS)
+  Dir.glob('*.smx') do |f|
+    FileUtils.rm(File.join(SERVER, PLUGINS, f))
+    puts "uninstall #{f}"
+  end
+end
+ 
+desc "Reload sourcemod on development server"
+task :reload do
+  local_ip = Socket::getaddrinfo(Socket.gethostname,"echo",Socket::AF_INET)[0][3]
+  server = SourceServer.new(local_ip)
+  begin
+    server.rcon_auth(PASSWORD)
+
+    puts server.rcon_exec('say [SRCDS] Reloading sourcemod')
+    puts server.rcon_exec('sm plugins unload_all')
+    puts server.rcon_exec('sm plugins refresh')
+    puts server.rcon_exec('say [SRCDS] Reload completed')
+  rescue RCONNoAuthError
+    warn 'Could not authenticate with the game server.'
+  rescue Errno::ECONNREFUSED
+    warn "Server not found"
+  end
+ 
+end
+ 
+desc "Send an RCON command to the development server"
+task :rcon do
+ 
+end
+ 
+desc "Update project's version number"
+task :version do
+ 
+end
