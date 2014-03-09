@@ -304,12 +304,11 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     {
         new duration = json_object_get_int(json, "duration");
         new bool:pall = json_object_get_bool(json, "pall");
-        pall = true;
         //new bool:force = json_object_get_bool(json, "force");
         new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
         json_object_get_string(json, "full_path", full_path, sizeof(full_path));
-        json_object_get_string(json, "title", description, sizeof(description));
+        json_object_get_string(json, "description", description, sizeof(description));
         json_object_get_string(json, "duration_formated", duration_formated, sizeof(duration_formated));
 
         if(pall)
@@ -322,7 +321,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 PrintToChatAll("Type !stop to cancel or !nopall to mute");
                 PlaySongAll(song_id);
             }else{
-                ReplyToCommand(client, "[IGA] pall currently in use");
+                PrintToChat(client, "[IGA] pall currently in use");
             }
         }else if(client > 0){
             g_PNextFree[client] = duration + GetTime();
@@ -341,7 +340,6 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
 public PlaySongAll(String:song[])
 {
-    //TODO update PALL duration
     for (new client=1; client <= MaxClients; client++)
     {
         if (ClientHasPallEnabled(client) && !IsInP(client))
@@ -369,7 +367,6 @@ public PlaySong(client, String:song_id[])
 
     Format(url, sizeof(url),
             "%s%s/%s/play?access_token=%s", base_url, SONGS_ROUTE, song_id, api_key);
-    PrintToConsole(client, "%s", url); //TODO
 
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
