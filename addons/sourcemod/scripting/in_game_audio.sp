@@ -304,6 +304,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     {
         new duration = json_object_get_int(json, "duration");
         new bool:pall = json_object_get_bool(json, "pall");
+        pall = true;
         //new bool:force = json_object_get_bool(json, "force");
         new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
@@ -363,9 +364,12 @@ public PlaySong(client, String:song_id[])
         strcopy(base_url, trim_length + 1, base_url);
     }
 
+    decl String:api_key[128];
+    GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
+
     Format(url, sizeof(url),
-            "%s%s/%s/play", base_url, SONGS_ROUTE, song_id);
-    //PrintToChatAll("%s", url); //TODO
+            "%s%s/%s/play?access_token=%s", base_url, SONGS_ROUTE, song_id, api_key);
+    PrintToConsole(client, "%s", url); //TODO
 
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
