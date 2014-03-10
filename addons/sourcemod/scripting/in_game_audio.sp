@@ -16,6 +16,8 @@
 #include <steamtools>
 #include <base64>
 #include <smjansson>
+#undef REQUIRE_PLUGIN
+#include <donator>
 
 #define PLUGIN_VERSION "0.1"
 
@@ -46,6 +48,8 @@ new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
 new bool:g_IsInCooldown[MAXPLAYERS+1];
 new g_PNextFree[MAXPLAYERS+1];
 new g_PallNextFree = 0;
+
+new bool:g_DonatorLibrary = false;
 public OnPluginStart()
 {
     
@@ -64,9 +68,27 @@ public OnPluginStart()
     RegConsoleCmd("sm_vol", Command_Vol, "Adjust your play volume");
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_plast", Command_Plast, "Play the last played song for yourself");
+
+    g_DonatorLibrary = LibraryExists("donators");
     
     //HookEvent("map_change", Event_MapChange);
     //HookEvent("client_connect", Event_ClientConnect);
+}
+
+public OnLibraryRemoved(const String:name[])
+{
+	if (StrEqual(name, "donators"))
+	{
+		g_DonatorLibrary = false;
+	}
+}
+ 
+public OnLibraryAdded(const String:name[])
+{
+	if (StrEqual(name, "donators"))
+	{
+		g_DonatorLibrary = true;
+	}
 }
 
 public OnClientConnected(client)
@@ -110,6 +132,12 @@ public Action:Command_Pall(client, args)
     if(!GetConVarBool(g_Cvar_IGAEnabled))
     {
         ReplyToCommand(client, "[IGA] IGA not enabled");
+        return Plugin_Handled;
+    }
+
+    if(!DonatorCheck(client))
+    {
+        ReplyToCommand(client, "[IGA] Only donators can use this command");
         return Plugin_Handled;
     }
 
@@ -165,11 +193,6 @@ public Action:Command_Plast(client, args)
 
 
 public Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
-{
-    //TODO
-}
-
-public Event_ClientConnect(Handle:event, const String:name[], bool:dontBroadcast)
 {
     //TODO
 }
@@ -246,6 +269,16 @@ public bool:IsInPall()
 public bool:IsInP(client)
 {
     return GetTime() < g_PNextFree[client];
+}
+
+//True if client can use a donator action. If donations are not enabled this
+//will always be true, otherwise check if client is a donator.
+public bool:DonatorCheck(client)
+{
+    if(!g_DonatorLibrary || !GetConVarBool(g_Cvar_IGAEnabled))
+        return true;
+    else
+        return IsPlayerDonator(client);
 }
 
 stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
