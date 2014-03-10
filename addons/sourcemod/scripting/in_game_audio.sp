@@ -45,9 +45,14 @@ new Handle:g_Cvar_IGADonatorsOnly = INVALID_HANDLE;
 new Handle:g_Cvar_IGAEnabled = INVALID_HANDLE;
 new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
 
+new Handle:g_Cookie_PallEnabled = INVALID_HANDLE;
+new Handle:g_Cookie_Volume = INVALID_HANDLE;
+
 new bool:g_IsInCooldown[MAXPLAYERS+1];
+new bool:g_IsPallEnabled[MAXPLAYERS+1];
 new g_PNextFree[MAXPLAYERS+1];
 new g_PallNextFree = 0;
+new g_Volume[MAXPLAYERS+1];
 
 new bool:g_DonatorLibrary = false;
 public OnPluginStart()
@@ -67,7 +72,11 @@ public OnPluginStart()
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
     RegConsoleCmd("sm_vol", Command_Vol, "Adjust your play volume");
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
+    RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
     RegConsoleCmd("sm_plast", Command_Plast, "Play the last played song for yourself");
+
+    g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private)
+    g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private)
 
     g_DonatorLibrary = LibraryExists("donators");
     
@@ -95,6 +104,21 @@ public OnClientConnected(client)
 {
     g_IsInCooldown[client] = false;
     g_PNextFree[client] = 0;
+    g_Volume[client] = 10;
+    g_IsPallEnabled[client] = true;
+
+    if (AreClientCookiesCached(client))
+    {		
+        new String:szBuffer[11];
+
+        GetClientCookie(client, g_Cookie_Volume, buffer, sizeof(buffer));
+        if (strlen(buffer) > 0)
+            g_Volume[client] = StringToInt(buffer);
+
+        GetClientCookie(client, g_Cookie_PallEnabled, buffer, sizeof(buffer));
+        if (strlen(buffer) > 0)
+            g_IsPallEnabled[client] = StringToInt(buffer);
+    }
 }
 
 
@@ -178,12 +202,54 @@ public Action:Command_Fpall(client, args)
 
 public Action:Command_Vol(client, args)
 {
-    //TODO
+    //FIXME cleanup
+    if (args != 1)
+    {
+        ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
+        return Plugin_Handled;
+    }
+
+    if (client && IsClientAuthorized(client))
+	{
+		decl String:buffer[11];
+        new volume;
+        GetCmdArgString(buffer, sizeof(buffer));
+        volume = StringToInt(buffer)
+        if (volume >=0 && volume <= 10)
+        {
+            SetClientCookie(client, g_Cookie_Volume, buffer);
+            g_Volume[client] = volume;
+            ReplyToCommand(client, "[IGA] set volume to %d", volume);
+        }else{
+            ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
+        }
+	}
+
+    return Plugin_Handled;
 }
 
 public Action:Command_Nopall(client, args)
 {
-    //TODO
+    //FIXME cleanup
+    if (client && IsClientAuthorized(client))
+	{
+        SetClientCookie(client, g_Cookie_PallEnabled, "0");
+        g_IsPallEnabled[client] = false;
+        ReplyToCommand(client, "[IGA] Disabled pall.  Type !yespall to renable it.");
+	}
+    return Plugin_Handled;
+}
+
+public Action:Command_Yespall(client, args)
+{
+    //FIXME cleanup
+    if (client && IsClientAuthorized(client))
+	{
+        SetClientCookie(client, g_Cookie_PallEnabled, "1");
+        g_IsPallEnabled[client] = true;
+        ReplyToCommand(client, "[IGA] Enabled pall.  Type !nopall to disable it.");
+	}
+    return Plugin_Handled;
 }
 
 public Action:Command_Plast(client, args)
@@ -424,8 +490,7 @@ public StopSongAll()
 
 public bool:ClientHasPallEnabled(client)
 {
-    //TODO do cookie check
-    return IsClientAuthorized(client);
+    return g_IsPallEnabled[client];
 }
 
 public SongList(client)
