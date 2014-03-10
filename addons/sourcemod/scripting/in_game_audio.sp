@@ -13,6 +13,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <clientprefs>
 #include <steamtools>
 #include <base64>
 #include <smjansson>
@@ -75,8 +76,8 @@ public OnPluginStart()
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
     RegConsoleCmd("sm_plast", Command_Plast, "Play the last played song for yourself");
 
-    g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private)
-    g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private)
+    g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
+    g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
 
     g_DonatorLibrary = LibraryExists("donators");
     
@@ -109,7 +110,7 @@ public OnClientConnected(client)
 
     if (AreClientCookiesCached(client))
     {		
-        new String:szBuffer[11];
+        new String:buffer[11];
 
         GetClientCookie(client, g_Cookie_Volume, buffer, sizeof(buffer));
         if (strlen(buffer) > 0)
