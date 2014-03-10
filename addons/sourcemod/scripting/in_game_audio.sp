@@ -210,21 +210,21 @@ public Action:Command_Vol(client, args)
         return Plugin_Handled;
     }
 
-    if (client && IsClientAuthorized(client))
-	{
-		decl String:buffer[11];
+    if(client && IsClientAuthorized(client))
+    {
+        decl String:buffer[11];
         new volume;
         GetCmdArgString(buffer, sizeof(buffer));
-        volume = StringToInt(buffer)
-        if (volume >=0 && volume <= 10)
-        {
-            SetClientCookie(client, g_Cookie_Volume, buffer);
-            g_Volume[client] = volume;
-            ReplyToCommand(client, "[IGA] set volume to %d", volume);
-        }else{
-            ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
-        }
-	}
+        volume = StringToInt(buffer);
+            if (volume >=0 && volume <= 10)
+            {
+                SetClientCookie(client, g_Cookie_Volume, buffer);
+                g_Volume[client] = volume;
+                ReplyToCommand(client, "[IGA] set volume to %d", volume);
+            }else{
+                ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
+            }
+    }
 
     return Plugin_Handled;
 }
@@ -233,11 +233,11 @@ public Action:Command_Nopall(client, args)
 {
     //FIXME cleanup
     if (client && IsClientAuthorized(client))
-	{
+    {
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
         g_IsPallEnabled[client] = false;
         ReplyToCommand(client, "[IGA] Disabled pall.  Type !yespall to renable it.");
-	}
+    }
     return Plugin_Handled;
 }
 
@@ -245,11 +245,11 @@ public Action:Command_Yespall(client, args)
 {
     //FIXME cleanup
     if (client && IsClientAuthorized(client))
-	{
+    {
         SetClientCookie(client, g_Cookie_PallEnabled, "1");
         g_IsPallEnabled[client] = true;
         ReplyToCommand(client, "[IGA] Enabled pall.  Type !nopall to disable it.");
-	}
+    }
     return Plugin_Handled;
 }
 
@@ -496,7 +496,7 @@ public bool:ClientHasPallEnabled(client)
 
 public SongList(client)
 {
-    decl String:map[PLATFORM_MAX_PATH], String:url[256], String:base_url[128];
+    decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
 
     TrimString(base_url);
