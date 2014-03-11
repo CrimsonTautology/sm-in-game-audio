@@ -51,6 +51,7 @@ new Handle:g_Cookie_Volume = INVALID_HANDLE;
 
 new bool:g_IsInCooldown[MAXPLAYERS+1];
 new bool:g_IsPallEnabled[MAXPLAYERS+1];
+new bool:g_IsDonator[MAXPLAYERS+1];
 new g_PNextFree[MAXPLAYERS+1];
 new g_PallNextFree = 0;
 new g_Volume[MAXPLAYERS+1];
@@ -108,18 +109,28 @@ public OnClientConnected(client)
     g_Volume[client] = 10;
     g_IsPallEnabled[client] = true;
 
-    if (AreClientCookiesCached(client))
-    {		
-        new String:buffer[11];
+}
+public OnClientCookiesCached(client)
+{
+    new String:buffer[11];
 
-        GetClientCookie(client, g_Cookie_Volume, buffer, sizeof(buffer));
-        if (strlen(buffer) > 0)
-            g_Volume[client] = StringToInt(buffer);
+    GetClientCookie(client, g_Cookie_Volume, buffer, sizeof(buffer));
+    if (strlen(buffer) > 0)
+        g_Volume[client] = StringToInt(buffer);
 
-        GetClientCookie(client, g_Cookie_PallEnabled, buffer, sizeof(buffer));
-        if (strlen(buffer) > 0)
-            g_IsPallEnabled[client] = bool:StringToInt(buffer);
-    }
+    GetClientCookie(client, g_Cookie_PallEnabled, buffer, sizeof(buffer));
+    if (strlen(buffer) > 0)
+        g_IsPallEnabled[client] = bool:StringToInt(buffer);
+}
+
+public OnPostDonatorCheck(client)
+{
+    g_IsDonator[client] = true;
+}
+
+public OnClientDisconnect(client)
+{
+    g_IsDonator[client] = false;
 }
 
 
@@ -345,7 +356,7 @@ public bool:DonatorCheck(client)
     if(!g_DonatorLibrary || !GetConVarBool(g_Cvar_IGADonatorsOnly))
         return true;
     else
-        return IsPlayerDonator(client);
+        return g_IsDonator[client];
 }
 
 stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
@@ -466,7 +477,7 @@ public PlaySong(client, String:song_id[])
     GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
 
     Format(url, sizeof(url),
-            "%s%s/%s/play?access_token=%s", base_url, SONGS_ROUTE, song_id, api_key);
+            "%s%s/%s/play?access_token=%s&volume=%f", base_url, SONGS_ROUTE, song_id, api_key, (g_Volume[client] / 10.0));
 
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
