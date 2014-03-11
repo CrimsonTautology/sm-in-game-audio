@@ -293,7 +293,7 @@ public Action:Command_AuthorizeIGA(client, args)
 public Action:Event_Test(Handle:event, const String:name[], bool:dontBroadcast)
 {
     //TODO
-    new String:reason[64], String:param1[64], team;
+    new String:reason[64];
     GetEventString(event, "reason", reason, sizeof(reason));
     PrintToChatAll("teamplay_game_over -> reason=%s", reason);
     MapTheme("current_map");
@@ -492,8 +492,6 @@ stock UserTheme(client)
     Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
-
-    StartCooldown(client);
 }
 
 stock MapTheme(String:map_theme[] ="")
@@ -508,8 +506,6 @@ stock MapTheme(String:map_theme[] ="")
 
     Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
-
-    StartCooldown(client);
 }
 
 public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
@@ -535,9 +531,9 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
         new String:song_id[64];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
 
-        if(!IsInPall())
+        if(force || !IsInPall())
         {
-            g_PallNextFree = duration + GetTime();
+            g_PallNextFree = 0;
             PlaySongAll(song_id, force);
         }
     }
@@ -558,7 +554,7 @@ stock AuthorizeUser(client)
 
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
-    Steam_SetHTTPRequestGetOrPostParameterInt(request, "uid", uid);
+    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
     Steam_SendHTTPRequest(request, ReceiveAuthorizeUser, player);
 
@@ -584,7 +580,7 @@ public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStat
 
 
 
-public PlaySongAll(String:song[], force=false)
+public PlaySongAll(String:song[], bool:force)
 {
     for (new client=1; client <= MaxClients; client++)
     {
