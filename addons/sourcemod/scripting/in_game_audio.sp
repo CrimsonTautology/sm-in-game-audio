@@ -85,6 +85,7 @@ public OnPluginStart()
 
     g_DonatorLibrary = LibraryExists("donators");
     
+    HookEvent("teamplay_game_over", Event_Test);
     //HookEvent("map_change", Event_MapChange);
     //HookEvent("client_connect", Event_ClientConnect);
 }
@@ -277,6 +278,15 @@ public Action:Command_Plast(client, args)
 }
 
 
+public Action:Event_Test(Handle:event, const String:name[], bool:dontBroadcast)
+{
+    //TODO
+    new String:reason[64], String:param1[64], team;
+    GetEventString(event, "reason", reason, sizeof(reason));
+    PrintToChatAll("teamplay_game_over -> reason=%s", reason);
+    QuerySong(0, "", true, true, 0, "cp_map_name_test");
+    return Plugin_Continue;
+}
 public Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
     //TODO
@@ -368,10 +378,8 @@ public bool:DonatorCheck(client)
 
 stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
 {
-    decl String:uid[MAX_COMMUNITYID_LENGTH];
-    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
-
     new HTTPRequestHandle:request = CreateIGARequest(QUERY_SONG_ROUTE);
+    new player = client > 0 ? GetClientUserId(client) : 0;
 
     if(request == INVALID_HTTP_HANDLE)
     {
@@ -379,10 +387,8 @@ stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:fo
         return;
     }
 
-    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "pall", pall);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
-    Steam_SetHTTPRequestGetOrPostParameterInt(request, "player", GetClientUserId(client));
     Steam_SetHTTPRequestGetOrPostParameter(request, "path", path);
 
     if(client_theme > 0)
@@ -396,7 +402,7 @@ stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:fo
         Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
     }
 
-    Steam_SendHTTPRequest(request, ReceiveQuerySong, GetClientUserId(client));
+    Steam_SendHTTPRequest(request, ReceiveQuerySong, player);
 
     StartCooldown(client);
 }
@@ -462,7 +468,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
             PlaySong(client, song_id);
         }
     }else{
-        PrintToChat(client, "[IGA] Could not find specified sound or directory");
+        PrintToChat(client, "[IGA] Could not find specified sound or directory.");
     }
 
     CloseHandle(json);
