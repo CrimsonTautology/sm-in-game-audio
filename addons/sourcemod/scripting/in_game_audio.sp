@@ -118,7 +118,7 @@ public OnClientConnected(client)
 
         GetClientCookie(client, g_Cookie_PallEnabled, buffer, sizeof(buffer));
         if (strlen(buffer) > 0)
-            g_IsPallEnabled[client] = StringToInt(buffer);
+            g_IsPallEnabled[client] = bool:StringToInt(buffer);
     }
 }
 
@@ -216,14 +216,14 @@ public Action:Command_Vol(client, args)
         new volume;
         GetCmdArgString(buffer, sizeof(buffer));
         volume = StringToInt(buffer);
-            if (volume >=0 && volume <= 10)
-            {
-                SetClientCookie(client, g_Cookie_Volume, buffer);
-                g_Volume[client] = volume;
-                ReplyToCommand(client, "[IGA] set volume to %d", volume);
-            }else{
-                ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
-            }
+        if (volume >=0 && volume <= 10)
+        {
+            SetClientCookie(client, g_Cookie_Volume, buffer);
+            g_Volume[client] = volume;
+            ReplyToCommand(client, "[IGA] set volume to %d", volume);
+        }else{
+            ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
+        }
     }
 
     return Plugin_Handled;
