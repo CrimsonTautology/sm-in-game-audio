@@ -52,6 +52,9 @@ new Handle:g_Cookie_Volume = INVALID_HANDLE;
 new bool:g_IsInCooldown[MAXPLAYERS+1];
 new bool:g_IsPallEnabled[MAXPLAYERS+1];
 new bool:g_IsDonator[MAXPLAYERS+1];
+new String:g_CurrentPallDescription[64];
+new String:g_CurrentPallPath[64];
+new String:g_CurrentPlastSongId[64];
 new g_PNextFree[MAXPLAYERS+1];
 new g_PallNextFree = 0;
 new g_Volume[MAXPLAYERS+1];
@@ -215,9 +218,9 @@ public Action:Command_Fpall(client, args)
 public Action:Command_Vol(client, args)
 {
     //FIXME cleanup
-    if (args != 1)
+    if (client && args != 1)
     {
-        ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
+        ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\".  Currently = %d", g_Volume[client]);
         return Plugin_Handled;
     }
 
@@ -266,7 +269,11 @@ public Action:Command_Yespall(client, args)
 
 public Action:Command_Plast(client, args)
 {
-    //TODO
+    if (client && IsClientAuthorized(client))
+    {
+        PlaySong(client, g_CurrentPlastSongId);
+    }
+    return Plugin_Handled;
 }
 
 
@@ -427,18 +434,31 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
             if(!IsInPall())
             {
                 g_PallNextFree = duration + GetTime();
+
                 PrintToChatAll("[IGA] Started Playing \"%s\" to all", description);
                 PrintToChatAll("Duration %s", duration_formated);
                 PrintToChatAll("Type !stop to cancel or !nopall to mute");
+
+                strcopy(g_CurrentPallPath, 64, full_path);
+                strcopy(g_CurrentPallDescription, 64, description);
+
                 PlaySongAll(song_id);
             }else{
-                PrintToChat(client, "[IGA] pall currently in use");
+                PrintToChat(client, "[IGA] pall currently playing %s \"%s\"", g_CurrentPallPath, g_CurrentPallDescription);
             }
         }else if(client > 0){
+            decl String:name[64];
+            GetClientName(client, name, sizeof(name));
+
             g_PNextFree[client] = duration + GetTime();
-            PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
+
+            //PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
+            PrintToChatAll("[IGA] %s is currently playing \"%s\", type !plast to play for yourself", name, description);
             PrintToChat(client, "Duration %s", duration_formated);
             PrintToChat(client, "Type !stop to cancel");
+
+            strcopy(g_CurrentPlastSongId, 64, song_id);
+
             PlaySong(client, song_id);
         }
     }else{
