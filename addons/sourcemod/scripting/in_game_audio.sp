@@ -219,7 +219,13 @@ public Action:Command_Fstop(client, args)
 
 public Action:Command_Fpall(client, args)
 {
-    //TODO
+    if(client && IsClientAuthorized(client)){
+        decl String:path[MAX_SONG_LENGTH];
+        GetCmdArgString(path, sizeof(path));
+        QuerySong(client, path, true, true);
+    }
+
+    return Plugin_Handled;
 }
 
 public Action:Command_Vol(client, args)
