@@ -342,7 +342,7 @@ public bool:IsInP(client)
 //will always be true, otherwise check if client is a donator.
 public bool:DonatorCheck(client)
 {
-    if(!g_DonatorLibrary || !GetConVarBool(g_Cvar_IGAEnabled))
+    if(!g_DonatorLibrary || !GetConVarBool(g_Cvar_IGADonatorsOnly))
         return true;
     else
         return IsPlayerDonator(client);
