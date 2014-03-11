@@ -128,6 +128,9 @@ public OnClientCookiesCached(client)
     GetClientCookie(client, g_Cookie_PallEnabled, buffer, sizeof(buffer));
     if (strlen(buffer) > 0)
         g_IsPallEnabled[client] = bool:StringToInt(buffer);
+
+    if DonatorCheck(client)
+        UserTheme(client)
 }
 
 public OnPostDonatorCheck(client)
@@ -526,7 +529,6 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
 
     if(found)
     {
-        new duration = json_object_get_int(json, "duration");
         new bool:force = json_object_get_bool(json, "force");
         new String:song_id[64];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
