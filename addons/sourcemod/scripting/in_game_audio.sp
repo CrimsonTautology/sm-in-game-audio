@@ -130,7 +130,7 @@ public OnClientCookiesCached(client)
         g_IsPallEnabled[client] = bool:StringToInt(buffer);
 
     if DonatorCheck(client)
-        UserTheme(client)
+        UserTheme(client);
 }
 
 public OnPostDonatorCheck(client)
