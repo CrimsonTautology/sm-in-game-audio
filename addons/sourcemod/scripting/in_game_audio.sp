@@ -296,7 +296,7 @@ public Action:Event_Test(Handle:event, const String:name[], bool:dontBroadcast)
     new String:reason[64], String:param1[64], team;
     GetEventString(event, "reason", reason, sizeof(reason));
     PrintToChatAll("teamplay_game_over -> reason=%s", reason);
-    QuerySong(0, "", true, true, 0, "cp_map_name_test");
+    MapTheme("current_map");
     return Plugin_Continue;
 }
 public Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
@@ -388,7 +388,7 @@ public bool:DonatorCheck(client)
         return g_IsDonator[client];
 }
 
-stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false, client_theme = 0, String:map_theme[] ="")
+stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false)
 {
     new HTTPRequestHandle:request = CreateIGARequest(QUERY_SONG_ROUTE);
     new player = client > 0 ? GetClientUserId(client) : 0;
@@ -403,21 +403,11 @@ stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:fo
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
     Steam_SetHTTPRequestGetOrPostParameter(request, "path", path);
 
-    if(client_theme > 0)
-    {
-        //Find the user's theme
-        decl String:uid_theme[MAX_COMMUNITYID_LENGTH];
-        Steam_GetCSteamIDForClient(client, uid_theme, sizeof(uid_theme));
-        Steam_SetHTTPRequestGetOrPostParameter(request, "uid_theme", uid_theme);
-    }else if(strlen(map_theme) > 0){
-        //Find the map's theme
-        Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
-    }
-
     Steam_SendHTTPRequest(request, ReceiveQuerySong, player);
 
     StartCooldown(client);
 }
+
 
 public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
@@ -440,7 +430,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     {
         new duration = json_object_get_int(json, "duration");
         new bool:pall = json_object_get_bool(json, "pall");
-        //new bool:force = json_object_get_bool(json, "force");
+        new bool:force = json_object_get_bool(json, "force");
         new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
         json_object_get_string(json, "full_path", full_path, sizeof(full_path));
@@ -460,7 +450,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
 
-                PlaySongAll(song_id);
+                PlaySongAll(song_id, force);
             }else{
                 PrintToChat(client, "[IGA] pall currently playing %s \"%s\".", g_CurrentPallPath, g_CurrentPallDescription);
             }
@@ -481,6 +471,75 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         }
     }else{
         PrintToChat(client, "[IGA] Could not find specified sound or directory.");
+    }
+
+    CloseHandle(json);
+}
+
+stock UserTheme(client)
+{
+    new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
+
+    if(request == INVALID_HTTP_HANDLE)
+    {
+        PrintToConsole(0, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        return;
+    }
+
+    //Find the user's theme
+    decl String:uid[MAX_COMMUNITYID_LENGTH];
+    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+
+    Steam_SendHTTPRequest(request, ReceiveTheme, 0);
+
+    StartCooldown(client);
+}
+
+stock MapTheme(String:map_theme[] ="")
+{
+    new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
+
+    if(request == INVALID_HTTP_HANDLE)
+    {
+        PrintToConsole(0, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        return;
+    }
+
+    Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
+    Steam_SendHTTPRequest(request, ReceiveTheme, 0);
+
+    StartCooldown(client);
+}
+
+public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+{
+    if(!successful || code != HTTPStatusCode_OK)
+    {
+        LogError("[IGA] Error at RecivedTheme (HTTP Code %d; success %d)", code, successful);
+        Steam_ReleaseHTTPRequest(request);
+        return;
+    }
+
+    decl String:data[4096];
+    Steam_GetHTTPResponseBodyData(request, data, sizeof(data));
+    Steam_ReleaseHTTPRequest(request);
+
+    new Handle:json = json_load(data);
+    new bool:found = json_object_get_bool(json, "found");
+
+    if(found)
+    {
+        new duration = json_object_get_int(json, "duration");
+        new bool:force = json_object_get_bool(json, "force");
+        new String:song_id[64];
+        json_object_get_string(json, "song_id", song_id, sizeof(song_id));
+
+        if(!IsInPall())
+        {
+            g_PallNextFree = duration + GetTime();
+            PlaySongAll(song_id, force);
+        }
     }
 
     CloseHandle(json);
@@ -525,11 +584,11 @@ public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStat
 
 
 
-public PlaySongAll(String:song[])
+public PlaySongAll(String:song[], force=false)
 {
     for (new client=1; client <= MaxClients; client++)
     {
-        if (ClientHasPallEnabled(client) && !IsInP(client))
+        if ( ClientHasPallEnabled(client) && (force || !IsInP(client)) )
         {
             PlaySong(client, song);
         }
@@ -573,7 +632,7 @@ public StopSong(client)
 public StopSongAll()
 {
     g_PallNextFree = 0;
-    PlaySongAll("stop");//TODO
+    PlaySongAll("stop", false);//TODO
 }
 
 public bool:ClientHasPallEnabled(client)
