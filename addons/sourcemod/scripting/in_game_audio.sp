@@ -129,7 +129,7 @@ public OnClientCookiesCached(client)
     if (strlen(buffer) > 0)
         g_IsPallEnabled[client] = bool:StringToInt(buffer);
 
-    if DonatorCheck(client)
+    if (DonatorCheck(client))
         UserTheme(client);
 }
 
