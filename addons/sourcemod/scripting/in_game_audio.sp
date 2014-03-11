@@ -88,9 +88,9 @@ public OnPluginStart()
 
     g_DonatorLibrary = LibraryExists("donators");
     
-    HookEvent("teamplay_game_over", Event_Test);
+    HookEvent("teamplay_game_over", Event_MapChange);
+    //TODO hook pre-rtv map change
     //HookEvent("map_change", Event_MapChange);
-    //HookEvent("client_connect", Event_ClientConnect);
 }
 
 public OnLibraryRemoved(const String:name[])
@@ -230,7 +230,6 @@ public Action:Command_Fpall(client, args)
 
 public Action:Command_Vol(client, args)
 {
-    //FIXME cleanup
     if (client && args != 1)
     {
         ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".  Currently %d.", g_Volume[client]);
@@ -258,7 +257,6 @@ public Action:Command_Vol(client, args)
 
 public Action:Command_Nopall(client, args)
 {
-    //FIXME cleanup
     if (client && IsClientAuthorized(client))
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
@@ -270,7 +268,6 @@ public Action:Command_Nopall(client, args)
 
 public Action:Command_Yespall(client, args)
 {
-    //FIXME cleanup
     if (client && IsClientAuthorized(client))
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "1");
@@ -299,18 +296,11 @@ public Action:Command_AuthorizeIGA(client, args)
 }
 
 
-public Action:Event_Test(Handle:event, const String:name[], bool:dontBroadcast)
-{
-    //TODO
-    new String:reason[64];
-    GetEventString(event, "reason", reason, sizeof(reason));
-    PrintToChatAll("teamplay_game_over -> reason=%s", reason);
-    MapTheme("current_map");
-    return Plugin_Continue;
-}
 public Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
-    //TODO
+    //TODO get current map
+    MapTheme("current_map");
+    return Plugin_Continue;
 }
 
 public Steam_SetHTTPRequestGetOrPostParameterInt(&HTTPRequestHandle:request, const String:param[], value)
@@ -636,7 +626,7 @@ public StopSong(client)
 public StopSongAll()
 {
     g_PallNextFree = 0;
-    PlaySongAll("stop", false);//TODO
+    PlaySongAll("stop", true);//TODO
 }
 
 public bool:ClientHasPallEnabled(client)
