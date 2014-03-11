@@ -32,7 +32,9 @@ public Plugin:myinfo =
 };
 
 #define QUERY_SONG_ROUTE "/v1/api/query_song"
-#define RANDOM_SONG_ROUTE ""
+#define MAP_THEME_ROUTE "/v1/api/map_theme"
+#define USER_THEME_ROUTE "/v1/api/user_theme"
+#define AUTHORIZE_USER_ROUTE "/v1/api/authorize_user"
 #define SONGS_ROUTE "/songs"
 #define DIRECTORIES_ROUTE "/directories"
 
@@ -79,6 +81,7 @@ public OnPluginStart()
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
     RegConsoleCmd("sm_plast", Command_Plast, "Play the last played song for yourself");
+    RegConsoleCmd("sm_authorize_iga", Command_AuthorizeIGA, "Declare that you want to upload songs to the website.  This will set you as an uploader.");
 
     g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
@@ -273,6 +276,15 @@ public Action:Command_Plast(client, args)
     if (client && IsClientAuthorized(client))
     {
         PlaySong(client, g_CurrentPlastSongId);
+    }
+    return Plugin_Handled;
+}
+
+public Action:Command_AuthorizeIGA(client, args)
+{
+    if (client && IsClientAuthorized(client))
+    {
+        AuthorizeUser(client);
     }
     return Plugin_Handled;
 }
@@ -473,6 +485,44 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
     CloseHandle(json);
 }
+
+stock AuthorizeUser(client)
+{
+    new HTTPRequestHandle:request = CreateIGARequest(AUTHORIZE_USER_ROUTE);
+    new player = client > 0 ? GetClientUserId(client) : 0;
+
+    if(request == INVALID_HTTP_HANDLE)
+    {
+        ReplyToCommand(client, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        return;
+    }
+
+    decl String:uid[MAX_COMMUNITYID_LENGTH];
+    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+    Steam_SetHTTPRequestGetOrPostParameterInt(request, "uid", uid);
+
+    Steam_SendHTTPRequest(request, ReceiveAuthorizeUser, player);
+
+    StartCooldown(client);
+}
+
+public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+{
+    new client = GetClientOfUserId(userid);
+    if(!successful || code != HTTPStatusCode_OK)
+    {
+        LogError("[IGA] Error at RecivedAuthorizeUser (HTTP Code %d; success %d)", code, successful);
+        Steam_ReleaseHTTPRequest(request);
+        return;
+    }
+
+    Steam_ReleaseHTTPRequest(request);
+    if(client)
+    {
+        PrintToChat(client, "[IGA] You are now authorized to upload songs.");
+    }
+}
+
 
 
 public PlaySongAll(String:song[])
