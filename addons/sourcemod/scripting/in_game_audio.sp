@@ -141,13 +141,13 @@ public Action:Command_P(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown");
+        ReplyToCommand(client, "[IGA] User in cooldown.");
         return Plugin_Handled;
     }
 
     if(!GetConVarBool(g_Cvar_IGAEnabled))
     {
-        ReplyToCommand(client, "[IGA] IGA not enabled");
+        ReplyToCommand(client, "[IGA] IGA not enabled.");
         return Plugin_Handled;
     }
 
@@ -164,19 +164,19 @@ public Action:Command_Pall(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown");
+        ReplyToCommand(client, "[IGA] User in cooldown.");
         return Plugin_Handled;
     }
 
     if(!GetConVarBool(g_Cvar_IGAEnabled))
     {
-        ReplyToCommand(client, "[IGA] IGA not enabled");
+        ReplyToCommand(client, "[IGA] IGA not enabled.");
         return Plugin_Handled;
     }
 
     if(!DonatorCheck(client))
     {
-        ReplyToCommand(client, "[IGA] Only donators can use this command");
+        ReplyToCommand(client, "[IGA] Only donators can use this command.");
         return Plugin_Handled;
     }
 
@@ -220,7 +220,7 @@ public Action:Command_Vol(client, args)
     //FIXME cleanup
     if (client && args != 1)
     {
-        ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\".  Currently = %d", g_Volume[client]);
+        ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".  Currently %d.", g_Volume[client]);
         return Plugin_Handled;
     }
 
@@ -234,9 +234,9 @@ public Action:Command_Vol(client, args)
         {
             SetClientCookie(client, g_Cookie_Volume, buffer);
             g_Volume[client] = volume;
-            ReplyToCommand(client, "[IGA] set volume to %d", volume);
+            ReplyToCommand(client, "[IGA] Set volume to %d.", volume);
         }else{
-            ReplyToCommand(client, "[IGA] usage \"!vol <0-10>\"");
+            ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".");
         }
     }
 
@@ -435,16 +435,16 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
             {
                 g_PallNextFree = duration + GetTime();
 
-                PrintToChatAll("[IGA] Started Playing \"%s\" to all", description);
-                PrintToChatAll("Duration %s", duration_formated);
-                PrintToChatAll("Type !stop to cancel or !nopall to mute");
+                PrintToChatAll("[IGA] Started Playing \"%s\" to all.", description);
+                PrintToChatAll("Duration %s.", duration_formated);
+                PrintToChatAll("Type !stop to cancel or !nopall to mute.");
 
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
 
                 PlaySongAll(song_id);
             }else{
-                PrintToChat(client, "[IGA] pall currently playing %s \"%s\"", g_CurrentPallPath, g_CurrentPallDescription);
+                PrintToChat(client, "[IGA] pall currently playing %s \"%s\".", g_CurrentPallPath, g_CurrentPallDescription);
             }
         }else if(client > 0){
             decl String:name[64];
@@ -453,9 +453,9 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
             g_PNextFree[client] = duration + GetTime();
 
             //PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
-            PrintToChatAll("[IGA] %s is currently playing \"%s\", type !plast to play for yourself", name, description);
-            PrintToChat(client, "Duration %s", duration_formated);
-            PrintToChat(client, "Type !stop to cancel");
+            PrintToChatAll("[IGA] %s is currently playing \"%s\", type !p %s to play for yourself.", name, description, full_path);
+            PrintToChat(client, "Duration %s.", duration_formated);
+            PrintToChat(client, "Type !stop to cancel.");
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
