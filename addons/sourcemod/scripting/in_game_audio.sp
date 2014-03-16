@@ -113,7 +113,7 @@ public OnClientConnected(client)
 {
     g_IsInCooldown[client] = false;
     g_PNextFree[client] = 0;
-    g_Volume[client] = 10;
+    g_Volume[client] = 7;
     g_IsPallEnabled[client] = true;
 
 }
@@ -146,6 +146,10 @@ public OnClientDisconnect(client)
     g_IsDonator[client] = false;
 }
 
+public OnMapStart()
+{
+    g_PallNextFree = 0;
+}
 
 public Action:Command_P(client, args)
 {
