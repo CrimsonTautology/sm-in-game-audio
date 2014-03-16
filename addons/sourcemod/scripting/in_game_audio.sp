@@ -89,8 +89,6 @@ public OnPluginStart()
     g_DonatorLibrary = LibraryExists("donators");
     
     HookEvent("teamplay_game_over", Event_MapChange);
-    //TODO hook pre-rtv map change
-    //HookEvent("map_change", Event_MapChange);
 }
 
 public OnLibraryRemoved(const String:name[])
@@ -149,6 +147,18 @@ public OnClientDisconnect(client)
 public OnMapStart()
 {
     g_PallNextFree = 0;
+}
+
+public OnMapVoteStarted()
+{
+    MapTheme("current_map");
+}
+
+public Action:OnBanClient(client, time, flags, const String:reason[], const String:kick_message[], const String:command[], any:source)
+{
+    //TODO test
+    PlaySongAll("187", false);
+    return Plugin_Continue;
 }
 
 public Action:Command_P(client, args)
@@ -305,7 +315,7 @@ public Action:Command_AuthorizeIGA(client, args)
 
 public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
-    //TODO get current map
+    //TODO get next map
     MapTheme("current_map");
     return Plugin_Continue;
 }
@@ -458,7 +468,13 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
                 PlaySongAll(song_id, force);
             }else{
-                PrintToChat(client, "[IGA] pall currently playing %s \"%s\".", g_CurrentPallPath, g_CurrentPallDescription);
+                new minutes = (g_PallNextFree - GetTime()) / 60;
+                new seconds = (g_PallNextFree - GetTime()) % 60;
+
+                if (minutes > 1)
+                    PrintToChat(client, "[IGA] pall currently playing %s \"%s\". Please wait %d more minutes.", g_CurrentPallPath, g_CurrentPallDescription, minutes);
+                else
+                    PrintToChat(client, "[IGA] pall currently playing %s \"%s\". Please wait %d more seconds.", g_CurrentPallPath, g_CurrentPallDescription, seconds);
             }
         }else if(client > 0){
             decl String:name[64];
