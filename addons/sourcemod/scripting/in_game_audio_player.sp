@@ -14,6 +14,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <in_game_audio>
 #undef REQUIRE_PLUGIN
 #include <donator>
 
@@ -79,7 +80,7 @@ public Action:Command_P(client, args)
         return Plugin_Handled;
     }
 
-    if(!GetConVarBool(g_Cvar_IGAEnabled))
+    if(!IsIGAEnabled())
     {
         ReplyToCommand(client, "[IGA] IGA not enabled.");
         return Plugin_Handled;
@@ -102,7 +103,7 @@ public Action:Command_Pall(client, args)
         return Plugin_Handled;
     }
 
-    if(!GetConVarBool(g_Cvar_IGAEnabled))
+    if(!IsIGAEnabled())
     {
         ReplyToCommand(client, "[IGA] IGA not enabled.");
         return Plugin_Handled;
@@ -155,15 +156,6 @@ public Action:Command_Fpall(client, args)
     return Plugin_Handled;
 }
 
-public Action:Command_Plast(client, args)
-{
-    if (client && IsClientAuthorized(client))
-    {
-        PlaySong(client, g_CurrentPlastSongId);
-    }
-    return Plugin_Handled;
-}
-
 //True if client can use a donator action. If donations are not enabled this
 //will always be true, otherwise check if client is a donator.
 public bool:DonatorCheck(client)
@@ -174,25 +166,3 @@ public bool:DonatorCheck(client)
         return g_IsDonator[client];
 }
 
-
-
-
-public SongList(client)
-{
-    decl String:url[256], String:base_url[128];
-    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
-
-    TrimString(base_url);
-    new trim_length = strlen(base_url) - 1;
-
-    if(base_url[trim_length] == '/')
-    {
-        strcopy(base_url, trim_length + 1, base_url);
-    }
-
-    Format(url, sizeof(url),
-            "%s%s", base_url, DIRECTORIES_ROUTE);
-
-    ShowMOTDPanel(client, "Song List", url, MOTDPANEL_TYPE_URL);
-
-}

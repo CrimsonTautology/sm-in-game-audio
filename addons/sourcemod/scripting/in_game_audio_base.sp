@@ -13,6 +13,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <in_game_audio>
 #include <clientprefs>
 #include <steamtools>
 #include <smjansson>
@@ -28,16 +29,6 @@ public Plugin:myinfo =
     url = "https://github.com/CrimsonTautology/sm_in_game_audio"
 };
 
-#define QUERY_SONG_ROUTE "/v1/api/query_song"
-#define MAP_THEME_ROUTE "/v1/api/map_theme"
-#define USER_THEME_ROUTE "/v1/api/user_theme"
-#define AUTHORIZE_USER_ROUTE "/v1/api/authorize_user"
-#define SONGS_ROUTE "/songs"
-#define DIRECTORIES_ROUTE "/directories"
-
-#define MAX_STEAMID_LENGTH 21 
-#define MAX_COMMUNITYID_LENGTH 18 
-#define MAX_SONG_LENGTH 64
 
 new Handle:g_Cvar_IGAApiKey = INVALID_HANDLE;
 new Handle:g_Cvar_IGAUrl = INVALID_HANDLE;
@@ -76,11 +67,13 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("PlaySongAll", Native_PlaySongAll);
     CreateNative("StopSong", Native_StopSong);
     CreateNative("StopSongAll", Native_StopSongAll);
+    CreateNative("SongList", Native_SongList);
     CreateNative("QuerySong", Native_QuerySong);
     CreateNative("MapTheme", Native_MapTheme);
     CreateNative("UserTheme", Native_UserTheme);
     CreateNative("StartCoolDown", Native_StartCoolDown);
     CreateNative("IsClientInCooldown", Native_IsClientInCooldown);
+    CreateNative("IsIGAEnabled", Native_IsIGAEnabled);
 
     return APLRes_Success;
 }
@@ -244,6 +237,11 @@ InternalStartCooldown(client)
     CreateTimer(GetConVarFloat(g_Cvar_IGARequestCooldownTime), RemoveCooldown, client);
 }
 
+public Native_IsIGAEnabled(Handle:plugin, args) { return _:InternalIsIGAEnabled(); }
+bool:InternalIsIGAEnabled()
+{
+    return GetConVarBool(g_Cvar_IGAEnabled);
+}
 public Native_ClientHasPallEnabled(Handle:plugin, args) { return _:InternalClientHasPallEnabled(GetNativeCell(1)); }
 bool:InternalClientHasPallEnabled(client)
 {
@@ -559,24 +557,37 @@ InternalPlaySong(client, String:song_id[])
     return;
 }
 
-public Native_StopSong(Handle:plugin, args)
-{
-    InternalStopSong(GetNativeCell(1));
-}
-
+public Native_StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
 InternalStopSong(client)
 {
     g_PNextFree[client] = 0;
     InternalPlaySong(client, "stop");//TODO
 }
 
-public Native_StopSongAll(Handle:plugin, args)
-{
-    InternalStopSongAll();
-}
+public Native_StopSongAll(Handle:plugin, args) { InternalStopSongAll(); }
 InternalStopSongAll()
 {
     g_PallNextFree = 0;
     InternalPlaySongAll("stop", true);//TODO
 }
 
+public Native_SongList(Handle:plugin, args) { InternalSongList(GetNativeCell(1)); }
+public InternalSongList(client)
+{
+    decl String:url[256], String:base_url[128];
+    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
+
+    TrimString(base_url);
+    new trim_length = strlen(base_url) - 1;
+
+    if(base_url[trim_length] == '/')
+    {
+        strcopy(base_url, trim_length + 1, base_url);
+    }
+
+    Format(url, sizeof(url),
+            "%s%s", base_url, DIRECTORIES_ROUTE);
+
+    ShowMOTDPanel(client, "Song List", url, MOTDPANEL_TYPE_URL);
+
+}

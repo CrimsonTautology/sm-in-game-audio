@@ -14,12 +14,30 @@
 #endif
 #define _in_game_audio_included_
 
+#define QUERY_SONG_ROUTE "/v1/api/query_song"
+#define MAP_THEME_ROUTE "/v1/api/map_theme"
+#define USER_THEME_ROUTE "/v1/api/user_theme"
+#define AUTHORIZE_USER_ROUTE "/v1/api/authorize_user"
+#define SONGS_ROUTE "/songs"
+#define DIRECTORIES_ROUTE "/directories"
+
+#define MAX_STEAMID_LENGTH 21 
+#define MAX_COMMUNITYID_LENGTH 18 
+#define MAX_SONG_LENGTH 64
+
 /**
  * Authorize the player to upload music on the webserver.
  *
  * @param client    The client index
  */
 native AuthorizeUser(client);
+
+/**
+ * Check if the server has in game audio enabled.
+ *
+ * @return          True if server has in game audio enabled.
+ */
+native bool:IsIGAEnabled();
 
 /**
  * Check if the player has elected to listen to music.
@@ -82,6 +100,13 @@ native StopSong(client);
 native StopSongAll();
 
 /**
+ * Show the song list to a player.
+ *
+ * @param client    The client index
+ */
+native SongList(client);
+
+/**
  * Performa song query.  Will search for a song named path and play
  * it, else will assume path is a directory and play a random song
  * in it.
@@ -91,7 +116,7 @@ native StopSongAll();
  * @param pall      If found, play to everyone
  * @param force     If found, force playing
  */
-native QuerySong(client, const String:path, bool:pall = false, bool:force=false);
+native QuerySong(client, const String:path[], bool:pall = false, bool:force=false);
 
 /**
  * Play a map transfer song
