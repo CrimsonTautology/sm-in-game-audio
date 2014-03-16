@@ -122,15 +122,18 @@ public OnClientCookiesCached(client)
     new String:buffer[11];
 
     GetClientCookie(client, g_Cookie_Volume, buffer, sizeof(buffer));
-    if (strlen(buffer) > 0)
+    if (strlen(buffer) > 0){
         g_Volume[client] = StringToInt(buffer);
+    }
 
     GetClientCookie(client, g_Cookie_PallEnabled, buffer, sizeof(buffer));
-    if (strlen(buffer) > 0)
+    if (strlen(buffer) > 0){
         g_IsPallEnabled[client] = bool:StringToInt(buffer);
+    }
 
-    if (DonatorCheck(client))
+    if (DonatorCheck(client)){
         UserTheme(client);
+    }
 }
 
 public OnPostDonatorCheck(client)
@@ -296,7 +299,7 @@ public Action:Command_AuthorizeIGA(client, args)
 }
 
 
-public Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
+public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
     //TODO get current map
     MapTheme("current_map");
@@ -495,7 +498,7 @@ stock UserTheme(client)
 
 stock MapTheme(String:map_theme[] ="")
 {
-    new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
+    new HTTPRequestHandle:request = CreateIGARequest(MAP_THEME_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)
     {
@@ -503,7 +506,7 @@ stock MapTheme(String:map_theme[] ="")
         return;
     }
 
-    Steam_SetHTTPRequestGetOrPostParameter(request, "map_theme", map_theme);
+    Steam_SetHTTPRequestGetOrPostParameter(request, "map", map_theme);
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
@@ -591,6 +594,10 @@ public PlaySongAll(String:song[], bool:force)
 
 public PlaySong(client, String:song_id[])
 {
+    if(!IsClientInGame(client))
+    {
+        return;
+    }
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
 
