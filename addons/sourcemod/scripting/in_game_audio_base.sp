@@ -404,9 +404,9 @@ InternalUserTheme(client)
 public Native_MapTheme(Handle:plugin, args)
 {
     new len;
-    GetNativeStringLength(2, len);
+    GetNativeStringLength(1, len);
     new String:map[len+1];
-    GetNativeString(2, map, len+1);
+    GetNativeString(1, map, len+1);
 
     InternalMapTheme(map);
 }
