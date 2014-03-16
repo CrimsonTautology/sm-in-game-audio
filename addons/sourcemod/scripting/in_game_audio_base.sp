@@ -144,8 +144,7 @@ public Action:Command_Vol(client, args)
         {
             SetClientCookie(client, g_Cookie_Volume, buffer);
             g_Volume[client] = volume;
-            ReplyToCommand(client, "[IGA] Set volume to %d.", volume);
-        }else{
+            ReplyToCommand(client, "[IGA] Set volume to %d.  Will take affect on the next song.", volume); }else{
             ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".");
         }
     }
