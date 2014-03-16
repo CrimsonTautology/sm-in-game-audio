@@ -123,7 +123,7 @@ native QuerySong(client, const String:path[], bool:pall = false, bool:force=fals
  *
  * @param map   The name of the map to check for
  */
-native MapTheme(const String:map[]);
+native MapTheme(const String:map[]="");
 
 /**
  * Play a user's theme song to all

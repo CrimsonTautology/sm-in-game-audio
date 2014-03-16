@@ -15,6 +15,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <in_game_audio>
 
 #define PLUGIN_VERSION "0.2"
 
@@ -34,13 +35,19 @@ public OnPluginStart()
 
 public OnMapVoteStarted()
 {
-    MapTheme("current_map");
+    if(IsIGAEnabled())
+    {
+        MapTheme();
+    }
 }
 
 public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
-    //TODO get next map
-    MapTheme("current_map");
+    if(IsIGAEnabled())
+    {
+        //TODO get next map
+        MapTheme();
+    }
     return Plugin_Continue;
 }
 
