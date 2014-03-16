@@ -41,7 +41,6 @@ public OnPluginStart()
     RegConsoleCmd("sm_stop", Command_Stop, "Stop the current song");
     RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
-    RegConsoleCmd("sm_plast", Command_Plast, "Play the last played song for yourself");
 
     g_DonatorLibrary = LibraryExists("donators");
 }
