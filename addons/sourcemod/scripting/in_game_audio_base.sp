@@ -56,14 +56,43 @@ new g_PNextFree[MAXPLAYERS+1];
 new g_PallNextFree = 0;
 new g_Volume[MAXPLAYERS+1];
 
+
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+    if (LibraryExists("in_game_audio"))
+    {
+        strcopy(error, err_max, "InGameAudio already loaded, aborting.");
+        return APLRes_Failure;
+    }
+
+    RegPluginLibrary("in_game_audio"); 
+
+    CreateNative("AuthorizeUser", Native_AuthorizeUser);
+    CreateNative("ClientHasPallEnabled", Native_ClientHasPallEnabled);
+    CreateNative("SetPallEnabled", Native_SetPallEnabled);
+    CreateNative("IsInP", Native_IsInP);
+    CreateNative("IsInPall", Native_IsInPall);
+    CreateNative("PlaySong", Native_PlaySong);
+    CreateNative("PlaySongAll", Native_PlaySongAll);
+    CreateNative("StopSong", Native_StopSong);
+    CreateNative("StopSongAll", Native_StopSongAll);
+    CreateNative("QuerySong", Native_QuerySong);
+    CreateNative("MapTheme", Native_MapTheme);
+    CreateNative("UserTheme", Native_UserTheme);
+    CreateNative("StartCoolDown", Native_StartCoolDown);
+    CreateNative("IsClientInCooldown", Native_IsClientInCooldown);
+
+    return APLRes_Success;
+}
+
 public OnPluginStart()
 {
-    
+
     g_Cvar_IGAApiKey = CreateConVar("sm_iga_api_key", "", "API Key for your IGA webpage");
     g_Cvar_IGAUrl = CreateConVar("sm_iga_url", "", "URL to your IGA webpage");
     g_Cvar_IGAEnabled = CreateConVar("sm_iga_enabled", "1", "Whether or not pall is enabled");
     g_Cvar_IGARequestCooldownTime = CreateConVar("sm_iga_request_cooldown_time", "2.0", "How long in seconds before a client can send another http request");
-    
+
     RegConsoleCmd("sm_vol", Command_Vol, "Adjust your play volume");
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
@@ -157,26 +186,26 @@ public Action:Command_AuthorizeIGA(client, args)
 {
     if (client && IsClientAuthorized(client))
     {
-        AuthorizeUser(client);
+        InternalAuthorizeUser(client);
     }
     return Plugin_Handled;
 }
 
-public Steam_SetHTTPRequestGetOrPostParameterInt(&HTTPRequestHandle:request, const String:param[], value)
+Steam_SetHTTPRequestGetOrPostParameterInt(&HTTPRequestHandle:request, const String:param[], value)
 {
     new String:tmp[64];
     IntToString(value, tmp, sizeof(tmp));
     Steam_SetHTTPRequestGetOrPostParameter(request, param, tmp);
 }
 
-public SetAccessCode(&HTTPRequestHandle:request)
+SetAccessCode(&HTTPRequestHandle:request)
 {
     decl String:api_key[128];
     GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
     Steam_SetHTTPRequestGetOrPostParameter(request, "access_token", api_key);
 }
 
-public HTTPRequestHandle:CreateIGARequest(const String:route[])
+HTTPRequestHandle:CreateIGARequest(const String:route[])
 {
     decl String:base_url[256], String:url[512];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
@@ -204,7 +233,8 @@ public HTTPRequestHandle:CreateIGARequest(const String:route[])
     return request;
 }
 
-public StartCooldown(client)
+public Native_StartCoolDown(Handle:plugin, args) { InternalStartCooldown(GetNativeCell(1)); }
+InternalStartCooldown(client)
 {
     //Ignore the server console
     if (client == 0)
@@ -214,7 +244,20 @@ public StartCooldown(client)
     CreateTimer(GetConVarFloat(g_Cvar_IGARequestCooldownTime), RemoveCooldown, client);
 }
 
-public bool:IsClientInCooldown(client)
+public Native_ClientHasPallEnabled(Handle:plugin, args) { return _:InternalClientHasPallEnabled(GetNativeCell(1)); }
+bool:InternalClientHasPallEnabled(client)
+{
+    return g_IsPallEnabled[client];
+}
+
+public Native_SetPallEnabled(Handle:plugin, args) { InternalSetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
+InternalSetPallEnabled(client, bool:val)
+{
+    g_IsPallEnabled[client] = val;
+}
+
+public Native_IsClientInCooldown(Handle:plugin, args) { return _:InternalIsClientInCooldown(GetNativeCell(1)); }
+bool:InternalIsClientInCooldown(client)
 {
     if(client == 0)
         return false;
@@ -227,16 +270,27 @@ public Action:RemoveCooldown(Handle:timer, any:client)
     g_IsInCooldown[client] = false;
 }
 
-public bool:IsInPall()
+public Native_IsInPall(Handle:plugin, args) { return _:InternalIsInPall(); }
+bool:InternalIsInPall()
 {
     return GetTime() < g_PallNextFree;
 }
-public bool:IsInP(client)
+
+public Native_IsInP(Handle:plugin, args) { return _:InternalIsInP(GetNativeCell(1)); }
+bool:InternalIsInP(client)
 {
     return GetTime() < g_PNextFree[client];
 }
 
-stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:force=false)
+public Native_QuerySong(Handle:plugin, args) {
+    new len;
+    GetNativeStringLength(2, len);
+    new String:path[len+1];
+    GetNativeString(2, path, len+1);
+
+    InternalQuerySong(GetNativeCell(1), path, GetNativeCell(3), GetNativeCell(4));
+}
+InternalQuerySong(client, String:path[], bool:pall, bool:force)
 {
     new HTTPRequestHandle:request = CreateIGARequest(QUERY_SONG_ROUTE);
     new player = client > 0 ? GetClientUserId(client) : 0;
@@ -253,7 +307,7 @@ stock QuerySong(client, String:path[MAX_SONG_LENGTH], bool:pall = false, bool:fo
 
     Steam_SendHTTPRequest(request, ReceiveQuerySong, player);
 
-    StartCooldown(client);
+    InternalStartCooldown(client);
 }
 
 
@@ -287,7 +341,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
         if(pall)
         {
-            if(!IsInPall())
+            if(!InternalIsInPall())
             {
                 g_PallNextFree = duration + GetTime();
 
@@ -298,7 +352,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
 
-                PlaySongAll(song_id, force);
+                InternalPlaySongAll(song_id, force);
             }else{
                 new minutes = (g_PallNextFree - GetTime()) / 60;
                 new seconds = (g_PallNextFree - GetTime()) % 60;
@@ -321,7 +375,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
-            PlaySong(client, song_id);
+            InternalPlaySong(client, song_id);
         }
     }else{
         PrintToChat(client, "[IGA] Could not find specified sound or directory.");
@@ -330,7 +384,8 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     CloseHandle(json);
 }
 
-stock UserTheme(client)
+public Native_UserTheme(Handle:plugin, args) { InternalUserTheme(GetNativeCell(1)); }
+InternalUserTheme(client)
 {
     new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
 
@@ -348,7 +403,16 @@ stock UserTheme(client)
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
-stock MapTheme(String:map_theme[] ="")
+public Native_MapTheme(Handle:plugin, args)
+{
+    new len;
+    GetNativeStringLength(2, len);
+    new String:map[len+1];
+    GetNativeString(2, map, len+1);
+
+    InternalMapTheme(map);
+}
+InternalMapTheme(String:map[] ="")
 {
     new HTTPRequestHandle:request = CreateIGARequest(MAP_THEME_ROUTE);
 
@@ -358,7 +422,7 @@ stock MapTheme(String:map_theme[] ="")
         return;
     }
 
-    Steam_SetHTTPRequestGetOrPostParameter(request, "map", map_theme);
+    Steam_SetHTTPRequestGetOrPostParameter(request, "map", map);
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
@@ -384,17 +448,19 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
         new String:song_id[64];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
 
-        if(force || !IsInPall())
+        if(force || !InternalIsInPall())
         {
             g_PallNextFree = 0;
-            PlaySongAll(song_id, force);
+            InternalPlaySongAll(song_id, force);
         }
     }
 
     CloseHandle(json);
 }
 
-stock AuthorizeUser(client)
+
+public Native_AuthorizeUser(Handle:plugin, args) { InternalAuthorizeUser(GetNativeCell(1)); }
+InternalAuthorizeUser(client)
 {
     new HTTPRequestHandle:request = CreateIGARequest(AUTHORIZE_USER_ROUTE);
     new player = client > 0 ? GetClientUserId(client) : 0;
@@ -411,7 +477,7 @@ stock AuthorizeUser(client)
 
     Steam_SendHTTPRequest(request, ReceiveAuthorizeUser, player);
 
-    StartCooldown(client);
+    InternalStartCooldown(client);
 }
 
 public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
@@ -431,18 +497,36 @@ public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStat
     }
 }
 
-public PlaySongAll(String:song[], bool:force)
+public Native_PlaySongAll(Handle:plugin, args)
+{
+    new len;
+    GetNativeStringLength(1, len);
+    new String:song[len+1];
+    GetNativeString(1, song, len+1);
+
+    InternalPlaySongAll(song, GetNativeCell(2));
+}
+InternalPlaySongAll(String:song[], bool:force)
 {
     for (new client=1; client <= MaxClients; client++)
     {
-        if ( ClientHasPallEnabled(client) && (force || !IsInP(client)) )
+        if ( InternalClientHasPallEnabled(client) && (force || !InternalIsInP(client)) )
         {
-            PlaySong(client, song);
+            InternalPlaySong(client, song);
         }
     }
 }
 
-public PlaySong(client, String:song_id[])
+public Native_PlaySong(Handle:plugin, args)
+{
+    new len;
+    GetNativeStringLength(2, len);
+    new String:song[len+1];
+    GetNativeString(2, song, len+1);
+
+    InternalPlaySong(GetNativeCell(1), song);
+}
+InternalPlaySong(client, String:song_id[])
 {
     if(!IsClientInGame(client))
     {
@@ -475,19 +559,24 @@ public PlaySong(client, String:song_id[])
     return;
 }
 
-public StopSong(client)
+public Native_StopSong(Handle:plugin, args)
 {
-    g_PNextFree[client] = 0;
-    PlaySong(client, "stop");//TODO
-}
-public StopSongAll()
-{
-    g_PallNextFree = 0;
-    PlaySongAll("stop", true);//TODO
+    InternalStopSong(GetNativeCell(1));
 }
 
-public bool:ClientHasPallEnabled(client)
+InternalStopSong(client)
 {
-    return g_IsPallEnabled[client];
+    g_PNextFree[client] = 0;
+    InternalPlaySong(client, "stop");//TODO
+}
+
+public Native_StopSongAll(Handle:plugin, args)
+{
+    InternalStopSongAll();
+}
+InternalStopSongAll()
+{
+    g_PallNextFree = 0;
+    InternalPlaySongAll("stop", true);//TODO
 }
 
