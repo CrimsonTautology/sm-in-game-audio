@@ -14,6 +14,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <in_game_audio>
 #include <donator>
 
 #define PLUGIN_VERSION "0.2"
@@ -29,5 +30,8 @@ public Plugin:myinfo =
 
 public OnPostDonatorCheck(client)
 {
-    UserTheme(client);
+    if(IsIGAEnabled())
+    {
+        UserTheme(client);
+    }
 }
