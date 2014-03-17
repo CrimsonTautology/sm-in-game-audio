@@ -18,7 +18,10 @@ before_script:
     - chmod +x spcomp
 
 script: 
-    - ./spcomp *.sp
+    - ./spcomp in_game_audio_base.sp
+    - ./spcomp in_game_audio_donator_intro.sp
+    - ./spcomp in_game_audio_map_change.sp
+    - ./spcomp in_game_audio_player.sp
 
 after_script:
     - ls *.smx
