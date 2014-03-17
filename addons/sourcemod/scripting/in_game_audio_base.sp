@@ -176,6 +176,12 @@ public Action:Command_Yespall(client, args)
 
 public Action:Command_AuthorizeIGA(client, args)
 {
+    if(IsClientInCooldown(client))
+    {
+        ReplyToCommand(client, "[IGA] User in cooldown.");
+        return Plugin_Handled;
+    }
+
     if (client && IsClientAuthorized(client))
     {
         InternalAuthorizeUser(client);
