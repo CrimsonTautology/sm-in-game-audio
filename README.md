@@ -21,6 +21,7 @@ Currently Adobe Flash Player must be installed for users to hear the music; alth
 ##Requirements
 * [SMJansson](https://forums.alliedmods.net/showthread.php?t=184604)
 * [SteamTools](https://forums.alliedmods.net/showthread.php?t=129763)
+* [A Web Site Backend](https://github.com/CrimsonTautology/in_game_audio)
 * [Donator Interface](https://forums.alliedmods.net/showthread.php?t=145542)(Optional)
 
 #CVARs
