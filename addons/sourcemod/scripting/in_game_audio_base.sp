@@ -559,7 +559,6 @@ InternalPlaySong(client, String:song_id[])
 
     ShowVGUIPanel(client, "info", panel, false);
     CloseHandle(panel);
-    return;
 }
 
 public Native_StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
@@ -593,6 +592,13 @@ public InternalSongList(client)
     Format(url, sizeof(url),
             "%s%s", base_url, DIRECTORIES_ROUTE);
 
-    ShowMOTDPanel(client, "Song List", url, MOTDPANEL_TYPE_URL);
+    new Handle:panel = CreateKeyValues("data");
+    KvSetString(panel, "title", "In Game Audio");
+    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
+    KvSetString(panel, "msg", url);
+    KvSetNum(panel, "customsvr", 1);
+
+    ShowVGUIPanel(client, "info", panel, true);
+    CloseHandle(panel);
 
 }
