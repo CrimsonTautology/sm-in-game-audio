@@ -358,7 +358,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 InternalPlaySongAll(song_id, force);
             }else{
                 new minutes = (g_PallNextFree - GetTime()) / 60;
-                new seconds = (g_PallNextFree - GetTime()) % 60;
+                new seconds = (g_PallNextFree - GetTime());
 
                 if (minutes > 1)
                     PrintToChat(client, "[IGA] pall currently playing %s \"%s\". Please wait %d more minutes.", g_CurrentPallPath, g_CurrentPallDescription, minutes);
