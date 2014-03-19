@@ -19,6 +19,10 @@
 
 #define PLUGIN_VERSION "0.2"
 
+new Handle:g_DelayTimer[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
+
+new bool:g_CanIntroPlay[MAXPLAYERS+1];
+
 public Plugin:myinfo =
 {
     name = "In Game Audio Donator Intro",
@@ -28,10 +32,29 @@ public Plugin:myinfo =
     url = "https://github.com/CrimsonTautology/sm_in_game_audio"
 };
 
+public OnPluginStart()
+{
+    AddCommandListener(Event_JoinClass, "joinclass");
+}
+
 public OnPostDonatorCheck(client)
 {
-    if(IsIGAEnabled())
+    g_CanIntroPlay[client] = IsPlayerDonator(client);
+}
+
+public Action:Event_JoinClass(client, const String:command[], args)
+{
+    if(g_CanIntroPlay[client])
     {
-        UserTheme(client);
+        g_DelayTimer[client] = CreateTimer(1.0, PlayDonatorIntro, client);
+        g_CanIntroPlay[client] = false;
     }
+
+    return Plugin_Continue;
+}
+
+public Action:PlayDonatorIntro(Handle:Timer, any:client)
+{
+    UserTheme(client);
+    g_DelayTimer[client] = INVALID_HANDLE; //TODO is this needed?
 }
