@@ -31,7 +31,7 @@ public Plugin:myinfo =
 
 new Handle:g_Cvar_IGADonatorsOnly = INVALID_HANDLE;
 new bool:g_IsDonator[MAXPLAYERS+1];
-new bool:g_DonatorLibrary = false;
+new bool:g_DonatorLibraryExists = false;
 
 public OnPluginStart()
 {
@@ -42,14 +42,20 @@ public OnPluginStart()
     RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
 
-    g_DonatorLibrary = LibraryExists("donators");
+    g_DonatorLibraryExists = LibraryExists("donators");
+}
+
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+	MarkNativeAsOptional("IsPlayerDonator");
+	return APLRes_Success;
 }
 
 public OnLibraryRemoved(const String:name[])
 {
 	if (StrEqual(name, "donators"))
 	{
-		g_DonatorLibrary = false;
+		g_DonatorLibraryExists = false;
 	}
 }
  
@@ -57,13 +63,16 @@ public OnLibraryAdded(const String:name[])
 {
 	if (StrEqual(name, "donators"))
 	{
-		g_DonatorLibrary = true;
+		g_DonatorLibraryExists = true;
 	}
 }
 
 public OnPostDonatorCheck(client)
 {
-    g_IsDonator[client] = true;
+    if (g_DonatorLibraryExists)
+    {
+        g_IsDonator[client] = IsPlayerDonator(client);
+    }
 }
 
 public OnClientDisconnect(client)
@@ -159,7 +168,7 @@ public Action:Command_Fpall(client, args)
 //will always be true, otherwise check if client is a donator.
 public bool:DonatorCheck(client)
 {
-    if(!g_DonatorLibrary || !GetConVarBool(g_Cvar_IGADonatorsOnly))
+    if(!g_DonatorLibraryExists || !GetConVarBool(g_Cvar_IGADonatorsOnly))
         return true;
     else
         return g_IsDonator[client];

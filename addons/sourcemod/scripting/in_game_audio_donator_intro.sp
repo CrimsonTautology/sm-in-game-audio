@@ -15,13 +15,13 @@
 
 #include <sourcemod>
 #include <in_game_audio>
+#undef REQUIRE_PLUGIN
 #include <donator>
 
 #define PLUGIN_VERSION "0.2"
 
-new Handle:g_DelayTimer[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
-
 new bool:g_CanIntroPlay[MAXPLAYERS+1];
+new bool:g_DonatorLibraryExists = false;
 
 public Plugin:myinfo =
 {
@@ -35,26 +35,46 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
     AddCommandListener(Event_JoinClass, "joinclass");
+    g_DonatorLibraryExists = LibraryExists("donators");
+}
+
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+	MarkNativeAsOptional("IsPlayerDonator");
+	return APLRes_Success;
+}
+
+public OnLibraryRemoved(const String:name[])
+{
+	if (StrEqual(name, "donators"))
+	{
+		g_DonatorLibraryExists = false;
+	}
+}
+ 
+public OnLibraryAdded(const String:name[])
+{
+	if (StrEqual(name, "donators"))
+	{
+		g_DonatorLibraryExists = true;
+	}
 }
 
 public OnPostDonatorCheck(client)
 {
-    g_CanIntroPlay[client] = IsPlayerDonator(client);
+    if (g_DonatorLibraryExists)
+    {
+        g_CanIntroPlay[client] = IsPlayerDonator(client);
+    }
 }
 
 public Action:Event_JoinClass(client, const String:command[], args)
 {
     if(g_CanIntroPlay[client])
     {
-        g_DelayTimer[client] = CreateTimer(1.0, PlayDonatorIntro, client);
+        UserTheme(client);
         g_CanIntroPlay[client] = false;
     }
 
     return Plugin_Continue;
-}
-
-public Action:PlayDonatorIntro(Handle:Timer, any:client)
-{
-    UserTheme(client);
-    g_DelayTimer[client] = INVALID_HANDLE; //TODO is this needed?
 }
