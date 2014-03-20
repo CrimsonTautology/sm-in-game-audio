@@ -346,6 +346,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         {
             if(!InternalIsInPall())
             {
+                g_PNextFree[client]=0;
                 g_PallNextFree = duration + GetTime();
 
                 PrintToChatAll("[IGA] Started Playing \"%s\" to all.", description);
@@ -564,15 +565,46 @@ InternalPlaySong(client, String:song_id[])
 public Native_StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
 InternalStopSong(client)
 {
+    if(!IsClientInGame(client))
+    {
+        return;
+    }
     g_PNextFree[client] = 0;
-    InternalPlaySong(client, "stop");//TODO
+    decl String:url[256], String:base_url[128];
+    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
+
+    TrimString(base_url);
+    new trim_length = strlen(base_url) - 1;
+
+    if(base_url[trim_length] == '/')
+    {
+        strcopy(base_url, trim_length + 1, base_url);
+    }
+
+
+    Format(url, sizeof(url),
+            "%s%s", base_url, STOP_ROUTE);
+
+    new Handle:panel = CreateKeyValues("data");
+    KvSetString(panel, "title", "In Game Audio");
+    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
+    KvSetString(panel, "msg", url);
+
+    ShowVGUIPanel(client, "info", panel, false);
+    CloseHandle(panel);
 }
 
 public Native_StopSongAll(Handle:plugin, args) { InternalStopSongAll(); }
 InternalStopSongAll()
 {
     g_PallNextFree = 0;
-    InternalPlaySongAll("stop", true);//TODO
+    for (new client=1; client <= MaxClients; client++)
+    {
+        if ( !InternalIsInP(client) ) 
+        {
+            StopSong(client);
+        }
+    }
 }
 
 public Native_SongList(Handle:plugin, args) { InternalSongList(GetNativeCell(1)); }

@@ -20,6 +20,7 @@
 #define AUTHORIZE_USER_ROUTE "/v1/api/authorize_user"
 #define SONGS_ROUTE "/songs"
 #define DIRECTORIES_ROUTE "/directories"
+#define STOP_ROUTE "/stop"
 
 #define MAX_STEAMID_LENGTH 21 
 #define MAX_COMMUNITYID_LENGTH 18 
