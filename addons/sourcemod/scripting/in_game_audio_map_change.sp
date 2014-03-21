@@ -37,7 +37,8 @@ public OnMapVoteStarted()
 {
     if(IsIGAEnabled())
     {
-        MapTheme();
+        //Don't let the map vote override a pall
+        MapTheme(false);
     }
 }
 

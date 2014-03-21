@@ -410,13 +410,13 @@ InternalUserTheme(client)
 public Native_MapTheme(Handle:plugin, args)
 {
     new len;
-    GetNativeStringLength(1, len);
+    GetNativeStringLength(2, len);
     new String:map[len+1];
-    GetNativeString(1, map, len+1);
+    GetNativeString(2, map, len+1);
 
-    InternalMapTheme(map);
+    InternalMapTheme(GetNativeCell(1), map);
 }
-InternalMapTheme(String:map[] ="")
+InternalMapTheme(bool:force=true, String:map[] ="")
 {
     new HTTPRequestHandle:request = CreateIGARequest(MAP_THEME_ROUTE);
 
@@ -426,6 +426,7 @@ InternalMapTheme(String:map[] ="")
         return;
     }
 
+    Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
     Steam_SetHTTPRequestGetOrPostParameter(request, "map", map);
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
 }
