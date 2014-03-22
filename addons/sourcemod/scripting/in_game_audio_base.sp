@@ -38,14 +38,14 @@ new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
 new Handle:g_Cookie_PallEnabled = INVALID_HANDLE;
 new Handle:g_Cookie_Volume = INVALID_HANDLE;
 
-new bool:g_IsInCooldown[MAXPLAYERS+1];
-new bool:g_IsPallEnabled[MAXPLAYERS+1];
+new bool:g_IsInCooldown[MAXPLAYERS+1] = {false, ...};
+new bool:g_IsPallEnabled[MAXPLAYERS+1] = {false, ...};
 new String:g_CurrentPallDescription[64];
 new String:g_CurrentPallPath[64];
 new String:g_CurrentPlastSongId[64];
-new g_PNextFree[MAXPLAYERS+1];
+new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
-new g_Volume[MAXPLAYERS+1];
+new g_Volume[MAXPLAYERS+1] = {7, ...};
 
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -98,6 +98,10 @@ public OnPluginStart()
 
 public OnClientConnected(client)
 {
+    if(IsFakeClient(client))
+    {
+        return;
+    }
     g_IsInCooldown[client] = false;
     g_PNextFree[client] = 0;
     g_Volume[client] = 7;
@@ -533,7 +537,8 @@ public Native_PlaySong(Handle:plugin, args)
 }
 InternalPlaySong(client, String:song_id[])
 {
-    if(!IsClientInGame(client))
+    //Don't play song if client is a bot or has a muted volume
+    if(!IsClientInGame(client) || IsFakeClient(client) || g_Volume[client] < 1)
     {
         return;
     }
@@ -566,7 +571,7 @@ InternalPlaySong(client, String:song_id[])
 public Native_StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
 InternalStopSong(client)
 {
-    if(!IsClientInGame(client))
+    if(!IsClientInGame(client) || IsFakeClient(client))
     {
         return;
     }
