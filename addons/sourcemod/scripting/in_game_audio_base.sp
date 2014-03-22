@@ -107,6 +107,15 @@ public OnClientConnected(client)
     g_Volume[client] = 7;
     g_IsPallEnabled[client] = true;
 
+    //Disable pall by default for quickplayers
+    new String:connect_method[5];
+    GetClientInfo(client, "cl_connectmethod", connect_method, sizeof(connect_method));
+    if( strncmp("quick", connect_method, 5, false) == 0 ||
+        strncmp("match", connect_method, 5, false) == 0)
+    {
+        g_IsPallEnabled[client] = false;
+    }
+
 }
 
 public OnClientCookiesCached(client)
