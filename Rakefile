@@ -77,7 +77,17 @@ task :rcon do
  
 end
  
+#rake version[1.2.3]
 desc "Update project's version number"
-task :version do
- 
+task :version, [:ver] do |t, args|
+  puts "hit version"
+  Dir.chdir File.join(PROJECT_ROOT, SCRIPTING)
+  Dir.glob('*.sp') do |f|
+    content = File.read(f)
+    content.gsub!(/#define PLUGIN_VERSION "[^"]*"/, %Q{#define PLUGIN_VERSION "#{args.ver}"})
+
+      File.open(f, "w") {|file| file.puts content}
+    puts "bump #{f} to version #{args.ver}"
+  end
+
 end
