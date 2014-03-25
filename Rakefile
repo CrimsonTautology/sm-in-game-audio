@@ -72,13 +72,22 @@ task :reload do
  
 end
  
-desc "Send an RCON command to the development server"
-task :rcon do
+desc "Send an RCON command to the development server (rake rcon['sv_cheats 1'])"
+task :rcon do |t, args|
+  local_ip = Socket::getaddrinfo(Socket.gethostname,"echo",Socket::AF_INET)[0][3]
+  server = SourceServer.new(local_ip)
+  begin
+    server.rcon_auth(PASSWORD)
+    puts server.rcon_exec("#{args.cmd}")
+  rescue RCONNoAuthError
+    warn 'Could not authenticate with the game server.'
+  rescue Errno::ECONNREFUSED
+    warn "Server not found"
+  end
  
 end
  
-#rake version[1.2.3]
-desc "Update project's version number"
+desc "Update project's version number (e.g. rake version[1.2.3])"
 task :version, [:ver] do |t, args|
   puts "hit version"
   Dir.chdir File.join(PROJECT_ROOT, SCRIPTING)
