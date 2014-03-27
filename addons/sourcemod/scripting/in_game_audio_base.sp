@@ -301,6 +301,11 @@ bool:InternalIsInP(client)
 }
 
 public Native_QuerySong(Handle:plugin, args) {
+    if (!InternalIsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+    }
+
     new len;
     GetNativeStringLength(2, len);
     new String:path[len+1];
@@ -405,6 +410,11 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 public Native_UserTheme(Handle:plugin, args) { InternalUserTheme(GetNativeCell(1)); }
 InternalUserTheme(client)
 {
+    if (!InternalIsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+    }
+
     new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)
@@ -432,6 +442,11 @@ public Native_MapTheme(Handle:plugin, args)
 }
 InternalMapTheme(bool:force=true, String:map[] ="")
 {
+    if (!InternalIsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+    }
+
     new HTTPRequestHandle:request = CreateIGARequest(MAP_THEME_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)

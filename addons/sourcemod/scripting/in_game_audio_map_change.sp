@@ -35,20 +35,14 @@ public OnPluginStart()
 
 public OnMapVoteStarted()
 {
-    if(IsIGAEnabled())
-    {
-        //Don't let the map vote override a pall
-        MapTheme(false);
-    }
+    //Don't let the map vote override a pall
+    MapTheme(false);
 }
 
 public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
-    if(IsIGAEnabled())
-    {
-        //TODO get next map
-        MapTheme();
-    }
+    //TODO get next map
+    MapTheme();
     return Plugin_Continue;
 }
 

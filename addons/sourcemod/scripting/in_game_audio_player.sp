@@ -155,6 +155,12 @@ public Action:Command_Fstop(client, args)
 
 public Action:Command_Fpall(client, args)
 {
+    if(!IsIGAEnabled())
+    {
+        ReplyToCommand(client, "%t", "not_enabled");
+        return Plugin_Handled;
+    }
+
     if(client && IsClientAuthorized(client)){
         decl String:path[MAX_SONG_LENGTH];
         GetCmdArgString(path, sizeof(path));
