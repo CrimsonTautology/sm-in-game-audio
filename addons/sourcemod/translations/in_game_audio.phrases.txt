@@ -1,0 +1,53 @@
+"Phrases"
+{
+    "started_playing_to_all"
+    {
+        "#format"   "{1:s}"
+        "en"    "[IGA] Started playing \"{1}\" to all."
+    }
+
+    "started_playing_to_self"
+    {
+        "#format"   "{1:s}, {2:s}, {3:s}"
+        "en"    "[IGA] {1} is currently playing \"{2}\", type !p {3} to play for yourself."
+    }
+
+    "duration"
+    {
+        "#format"   "{1:s}"
+        "en"    "Duration {1}."
+    }
+
+    "to_stop_all"
+    {
+        "en"    "Type !stop to cancel or !nopall to mute."
+    }
+
+    "to_stop"
+    {
+        "en"    "Type !stop to cancel."
+    }
+
+    "pall_currently_playing"
+    {
+        "#format"   "{1:s}, {2:s}, {3:i}, {4:s}"
+        "en"    "[IGA] pall currently playing {1} \"{2}\". Please wait {3} more {4}."
+    }
+
+    "not_found"
+    {
+        "en"    "[IGA] Could not find specified sound or directory."
+    }
+
+    "url_invalid"
+    {
+        "en"    "[IGA] sm_iga_url invalid; cannot create HTTP request"
+    }
+
+    "now_authorized_to_upload"
+    {
+        "en"    "[IGA] You are now authorized to upload songs."
+    }
+
+}
+

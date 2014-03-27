@@ -80,6 +80,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
+    LoadTranslations("in_game_audio.phrases");
 
     g_Cvar_IGAApiKey = CreateConVar("sm_iga_api_key", "", "API Key for your IGA webpage");
     g_Cvar_IGAUrl = CreateConVar("sm_iga_url", "", "URL to your IGA webpage");
@@ -362,9 +363,9 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 g_PNextFree[client]=0;
                 g_PallNextFree = duration + GetTime();
 
-                PrintToChatAll("[IGA] Started Playing \"%s\" to all.", description);
-                PrintToChatAll("Duration %s.", duration_formated);
-                PrintToChatAll("Type !stop to cancel or !nopall to mute.");
+                PrintToChatAll("%t", "started_playing_to_all", description);
+                PrintToChatAll("%t", "duration", duration_formated);
+                PrintToChatAll("%t", "to_stop_all");
 
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
@@ -375,9 +376,9 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 new seconds = (g_PallNextFree - GetTime());
 
                 if (minutes > 1)
-                    PrintToChat(client, "[IGA] pall currently playing %s \"%s\". Please wait %d more minutes.", g_CurrentPallPath, g_CurrentPallDescription, minutes);
+                    PrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, minutes, "minutes");
                 else
-                    PrintToChat(client, "[IGA] pall currently playing %s \"%s\". Please wait %d more seconds.", g_CurrentPallPath, g_CurrentPallDescription, seconds);
+                    PrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, seconds, "seconds");
             }
         }else if(client > 0){
             decl String:name[64];
@@ -385,17 +386,16 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
             g_PNextFree[client] = duration + GetTime();
 
-            //PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
-            PrintToChatAll("[IGA] %s is currently playing \"%s\", type !p %s to play for yourself.", name, description, full_path);
-            PrintToChat(client, "Duration %s.", duration_formated);
-            PrintToChat(client, "Type !stop to cancel.");
+            PrintToChatAll("%t", "started_playing_to_self", name, description, full_path);
+            PrintToChat(client, "%t", "duration", duration_formated);
+            PrintToChat(client, "%t", "to_stop");
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
             InternalPlaySong(client, song_id);
         }
     }else{
-        PrintToChat(client, "[IGA] Could not find specified sound or directory.");
+        PrintToChat(client, "%t", "not_found");
     }
 
     CloseHandle(json);
@@ -408,7 +408,7 @@ InternalUserTheme(client)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        PrintToConsole(0, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        PrintToConsole(0, "%t", "url_invalid");
         return;
     }
 
@@ -435,7 +435,7 @@ InternalMapTheme(bool:force=true, String:map[] ="")
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        PrintToConsole(0, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        PrintToConsole(0, "%t", "url_invalid");
         return;
     }
 
@@ -511,7 +511,7 @@ public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStat
     Steam_ReleaseHTTPRequest(request);
     if(client)
     {
-        PrintToChat(client, "[IGA] You are now authorized to upload songs.");
+        PrintToChat(client, "%t", "now_authorized_to_upload");
     }
 }
 
