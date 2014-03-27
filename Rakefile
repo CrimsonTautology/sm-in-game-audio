@@ -9,10 +9,11 @@ PASSWORD  = ENV["SOURCEMOD_DEV_SERVER_PASSWORD"] or fail 'Enviornment variable "
 SPCOMP    = ENV["SPCOMP"] || File.join(SOURCEMOD, "scripting/spcomp")
  
 PROJECT_ROOT = Dir.pwd
-SCRIPTING  = 'addons/sourcemod/scripting/'
-PLUGINS    = 'addons/sourcemod/plugins/'
-EXTENSIONS = 'addons/sourcemod/extensions/'
-CONFIGS    = 'cfg/sourcemod/'
+SCRIPTING    = 'addons/sourcemod/scripting/'
+PLUGINS      = 'addons/sourcemod/plugins/'
+EXTENSIONS   = 'addons/sourcemod/extensions/'
+TRANSLATIONS = 'addons/sourcemod/translations/'
+CONFIGS      = 'cfg/sourcemod/'
  
 task :default => [:compile, :install, :reload]
  
@@ -30,31 +31,16 @@ end
 desc "Copy compiled project to development server"
 task :install do
   #Install smx files
-  Dir.chdir File.join(PROJECT_ROOT, PLUGINS)
-  Dir.glob('*.smx') do |f|
-    FileUtils.cp(f, File.join(SERVER, PLUGINS, f))
-    puts "install #{f}"
-  end
+  install_filetype '*.smx', PLUGINS
+
+  #Install translations
+  install_filetype '*.phrases.txt', TRANSLATIONS
 
   #Install extensions if they don't exist
-  Dir.chdir File.join(PROJECT_ROOT, EXTENSIONS)
-  Dir.glob('*.so') do |f|
-    path = File.join(SERVER, EXTENSIONS, f)
-    unless FileTest.exists? path
-      FileUtils.cp(f, path)
-      puts "install #{f}"
-    end
-  end
+  install_filetype '*.so', EXTENSIONS, false
 
   #Install default configfiles if they don't exist
-  Dir.chdir File.join(PROJECT_ROOT, CONFIGS)
-  Dir.glob('*.cfg') do |f|
-    path = File.join(SERVER, CONFIGS, f)
-    unless FileTest.exists? path
-      FileUtils.cp(f, path)
-      puts "install #{f}"
-    end
-  end
+  install_filetype '*.cfg', CONFIGS, false
 end
  
 desc "Clean up compiled files"
@@ -118,5 +104,16 @@ def rcon_session
     warn 'Could not authenticate with the game server.'
   rescue Errno::ECONNREFUSED
     warn "Server not found"
+  end
+end
+
+def install_filetype glob, subdirectory, overwrite=true
+  Dir.chdir File.join(PROJECT_ROOT, subdirectory)
+  Dir.glob(glob) do |f|
+    path = File.join(SERVER, subdirectory, f)
+    if overwrite || !FileTest.exists?(path)
+      FileUtils.cp(f, path)
+      puts "install #{f}"
+    end
   end
 end
