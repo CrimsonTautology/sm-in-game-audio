@@ -144,7 +144,7 @@ public Action:Command_Vol(client, args)
 {
     if (client && args != 1)
     {
-        ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".  Currently %d.", g_Volume[client]);
+        ReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
         return Plugin_Handled;
     }
 
@@ -158,8 +158,9 @@ public Action:Command_Vol(client, args)
         {
             SetClientCookie(client, g_Cookie_Volume, buffer);
             g_Volume[client] = volume;
-            ReplyToCommand(client, "[IGA] Set volume to %d.  Will take affect on the next song.", volume); }else{
-            ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".");
+            ReplyToCommand(client, "%t", "volume_set", volume);
+        }else{
+            ReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
         }
     }
 
@@ -172,7 +173,7 @@ public Action:Command_Nopall(client, args)
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
         g_IsPallEnabled[client] = false;
-        ReplyToCommand(client, "[IGA] Disabled pall.  Type !yespall to renable it.");
+        ReplyToCommand(client, "%t", "disabled_pall");
     }
     return Plugin_Handled;
 }
@@ -183,7 +184,7 @@ public Action:Command_Yespall(client, args)
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "1");
         g_IsPallEnabled[client] = true;
-        ReplyToCommand(client, "[IGA] Enabled pall.  Type !nopall to disable it.");
+        ReplyToCommand(client, "%t", "enabled_pall");
     }
     return Plugin_Handled;
 }
@@ -192,7 +193,7 @@ public Action:Command_AuthorizeIGA(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown.");
+        ReplyToCommand(client, "%t", "user_in_cooldown");
         return Plugin_Handled;
     }
 
@@ -314,7 +315,7 @@ InternalQuerySong(client, String:path[], bool:pall, bool:force)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        ReplyToCommand(client, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        ReplyToCommand(client, "%t", "url_invalid");
         return;
     }
 
@@ -485,7 +486,7 @@ InternalAuthorizeUser(client)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        ReplyToCommand(client, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        ReplyToCommand(client, "%t", "url_invalid");
         return;
     }
 

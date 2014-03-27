@@ -3,19 +3,19 @@
     "started_playing_to_all"
     {
         "#format"   "{1:s}"
-        "en"    "[IGA] Started playing \"{1}\" to all."
+            "en"    "[IGA] Started playing \"{1}\" to all."
     }
 
     "started_playing_to_self"
     {
         "#format"   "{1:s}, {2:s}, {3:s}"
-        "en"    "[IGA] {1} is currently playing \"{2}\", type !p {3} to play for yourself."
+            "en"    "[IGA] {1} is currently playing \"{2}\", type !p {3} to play for yourself."
     }
 
     "duration"
     {
         "#format"   "{1:s}"
-        "en"    "Duration {1}."
+            "en"    "Duration {1}."
     }
 
     "to_stop_all"
@@ -31,7 +31,7 @@
     "pall_currently_playing"
     {
         "#format"   "{1:s}, {2:s}, {3:i}, {4:s}"
-        "en"    "[IGA] pall currently playing {1} \"{2}\". Please wait {3} more {4}."
+            "en"    "[IGA] pall currently playing {1} \"{2}\". Please wait {3} more {4}."
     }
 
     "not_found"
@@ -44,10 +44,48 @@
         "en"    "[IGA] sm_iga_url invalid; cannot create HTTP request"
     }
 
+    "not_enabled"
+    {
+        "en"    "[IGA] In Game Audio is not enabled."
+    }
+
+    "donators_only"
+    {
+        "en"    "[IGA] Only donators can use this command."
+    }
+
     "now_authorized_to_upload"
     {
         "en"    "[IGA] You are now authorized to upload songs."
     }
+
+    "volume_usage"
+    {
+        "#format"   "{1:i}"
+            "en"    "[IGA] usage \"!vol [0-10]\".  Currently {1}."
+    }
+
+    "volume_set"
+    {
+        "#format"   "{1:i}"
+            "en"    "[IGA] Set volume to {1}.  Will take affect on the next song."
+    }
+
+    "disabled_pall"
+    {
+        "en"    "[IGA] Disabled pall.  Type !yespall to renable it."
+    }
+    
+    "enabled_pall"
+    {
+        "en"    "[IGA] Enabled pall.  Type !nopall to disable it."
+    }
+    
+    "user_in_cooldown"
+    {
+        "en"    "[IGA] User in cooldown."
+    }
+
 
 }
 

@@ -84,13 +84,13 @@ public Action:Command_P(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown.");
+        ReplyToCommand(client, "%t", "user_in_cooldown");
         return Plugin_Handled;
     }
 
     if(!IsIGAEnabled())
     {
-        ReplyToCommand(client, "[IGA] IGA not enabled.");
+        ReplyToCommand(client, "%t", "not_enabled");
         return Plugin_Handled;
     }
 
@@ -107,19 +107,19 @@ public Action:Command_Pall(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown.");
+        ReplyToCommand(client, "%t", "user_in_cooldown");
         return Plugin_Handled;
     }
 
     if(!IsIGAEnabled())
     {
-        ReplyToCommand(client, "[IGA] IGA not enabled.");
+        ReplyToCommand(client, "%t", "not_enabled");
         return Plugin_Handled;
     }
 
     if(!DonatorCheck(client))
     {
-        ReplyToCommand(client, "[IGA] Only donators can use this command.");
+        ReplyToCommand(client, "%t", "donators_only");
         return Plugin_Handled;
     }
 
