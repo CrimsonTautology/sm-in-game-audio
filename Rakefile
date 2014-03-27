@@ -1,7 +1,6 @@
 require 'rake'
 require 'fileutils'
 require 'socket'
-require 'steam-condenser'
  
 SOURCEMOD = ENV["SOURCEMOD_DIR"]                 or fail 'Enviornment variable "SOURCEMOD_DIR" not set'
 SERVER    = ENV["SOURCEMOD_DEV_SERVER"]          or fail 'Enviornment variable "SOURCEMOD_DEV_SERVER" not set'
@@ -10,8 +9,11 @@ PASSWORD  = ENV["SOURCEMOD_DEV_SERVER_PASSWORD"] or fail 'Enviornment variable "
 SPCOMP    = ENV["SPCOMP"] || File.join(SOURCEMOD, "scripting/spcomp")
  
 PROJECT_ROOT = Dir.pwd
-SCRIPTING = 'addons/sourcemod/scripting/'
-PLUGINS   = 'addons/sourcemod/plugins/'
+SCRIPTING    = 'addons/sourcemod/scripting/'
+PLUGINS      = 'addons/sourcemod/plugins/'
+EXTENSIONS   = 'addons/sourcemod/extensions/'
+TRANSLATIONS = 'addons/sourcemod/translations/'
+CONFIGS      = 'cfg/sourcemod/'
  
 task :default => [:compile, :install, :reload]
  
@@ -28,11 +30,17 @@ end
  
 desc "Copy compiled project to development server"
 task :install do
-  Dir.chdir File.join(PROJECT_ROOT, PLUGINS)
-  Dir.glob('*.smx') do |f|
-    FileUtils.cp(f, File.join(SERVER, PLUGINS, f))
-    puts "install #{f}"
-  end
+  #Install smx files
+  install_filetype '*.smx', PLUGINS
+
+  #Install translations
+  install_filetype '*.phrases.txt', TRANSLATIONS
+
+  #Install extensions if they don't exist
+  install_filetype '*.so', EXTENSIONS, false
+
+  #Install default configfiles if they don't exist
+  install_filetype '*.cfg', CONFIGS, false
 end
  
 desc "Clean up compiled files"
@@ -55,29 +63,57 @@ end
  
 desc "Reload sourcemod on development server"
 task :reload do
+  rcon_session do |server|
+    puts server.rcon_exec('say [SRCDS] Reloading sourcemod')
+    puts server.rcon_exec('sm plugins unload_all')
+    puts server.rcon_exec('sm plugins refresh')
+    puts server.rcon_exec('say [SRCDS] Reload completed')
+  end
+end
+ 
+desc "Send an RCON command to the development server (rake rcon['sv_cheats 1'])"
+task :rcon do |t, args|
+  rcon_session do |server|
+    puts server.rcon_exec("#{args.cmd}")
+  end
+end
+ 
+desc "Update project's version number (e.g. rake version[1.2.3])"
+task :version, [:ver] do |t, args|
+  puts "hit version"
+  Dir.chdir File.join(PROJECT_ROOT, SCRIPTING)
+  Dir.glob('*.sp') do |f|
+    content = File.read(f)
+    content.gsub!(/#define PLUGIN_VERSION "[^"]*"/, %Q{#define PLUGIN_VERSION "#{args.ver}"})
+
+      File.open(f, "w") {|file| file.puts content}
+    puts "bump #{f} to version #{args.ver}"
+  end
+
+end
+
+def rcon_session
+  require 'steam-condenser'
   local_ip = Socket::getaddrinfo(Socket.gethostname,"echo",Socket::AF_INET)[0][3]
   server = SourceServer.new(local_ip)
   begin
     server.rcon_auth(PASSWORD)
 
-    puts server.rcon_exec('say [SRCDS] Reloading sourcemod')
-    puts server.rcon_exec('sm plugins unload_all')
-    puts server.rcon_exec('sm plugins refresh')
-    puts server.rcon_exec('say [SRCDS] Reload completed')
+    yield(server)
   rescue RCONNoAuthError
     warn 'Could not authenticate with the game server.'
   rescue Errno::ECONNREFUSED
     warn "Server not found"
   end
- 
 end
- 
-desc "Send an RCON command to the development server"
-task :rcon do
- 
-end
- 
-desc "Update project's version number"
-task :version do
- 
+
+def install_filetype glob, subdirectory, overwrite=true
+  Dir.chdir File.join(PROJECT_ROOT, subdirectory)
+  Dir.glob(glob) do |f|
+    path = File.join(SERVER, subdirectory, f)
+    if overwrite || !FileTest.exists?(path)
+      FileUtils.cp(f, path)
+      puts "install #{f}"
+    end
+  end
 end

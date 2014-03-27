@@ -18,7 +18,7 @@
 #undef REQUIRE_PLUGIN
 #include <donator>
 
-#define PLUGIN_VERSION "0.2"
+#define PLUGIN_VERSION "1.0"
 
 public Plugin:myinfo =
 {
@@ -84,13 +84,13 @@ public Action:Command_P(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown.");
+        ReplyToCommand(client, "%t", "user_in_cooldown");
         return Plugin_Handled;
     }
 
     if(!IsIGAEnabled())
     {
-        ReplyToCommand(client, "[IGA] IGA not enabled.");
+        ReplyToCommand(client, "%t", "not_enabled");
         return Plugin_Handled;
     }
 
@@ -107,19 +107,19 @@ public Action:Command_Pall(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown.");
+        ReplyToCommand(client, "%t", "user_in_cooldown");
         return Plugin_Handled;
     }
 
     if(!IsIGAEnabled())
     {
-        ReplyToCommand(client, "[IGA] IGA not enabled.");
+        ReplyToCommand(client, "%t", "not_enabled");
         return Plugin_Handled;
     }
 
     if(!DonatorCheck(client))
     {
-        ReplyToCommand(client, "[IGA] Only donators can use this command.");
+        ReplyToCommand(client, "%t", "donators_only");
         return Plugin_Handled;
     }
 
@@ -155,6 +155,12 @@ public Action:Command_Fstop(client, args)
 
 public Action:Command_Fpall(client, args)
 {
+    if(!IsIGAEnabled())
+    {
+        ReplyToCommand(client, "%t", "not_enabled");
+        return Plugin_Handled;
+    }
+
     if(client && IsClientAuthorized(client)){
         decl String:path[MAX_SONG_LENGTH];
         GetCmdArgString(path, sizeof(path));

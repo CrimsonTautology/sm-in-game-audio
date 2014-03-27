@@ -18,7 +18,7 @@
 #include <steamtools>
 #include <smjansson>
 
-#define PLUGIN_VERSION "0.2"
+#define PLUGIN_VERSION "1.0"
 
 public Plugin:myinfo =
 {
@@ -80,6 +80,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
+    LoadTranslations("in_game_audio.phrases");
 
     g_Cvar_IGAApiKey = CreateConVar("sm_iga_api_key", "", "API Key for your IGA webpage");
     g_Cvar_IGAUrl = CreateConVar("sm_iga_url", "", "URL to your IGA webpage");
@@ -143,7 +144,7 @@ public Action:Command_Vol(client, args)
 {
     if (client && args != 1)
     {
-        ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".  Currently %d.", g_Volume[client]);
+        ReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
         return Plugin_Handled;
     }
 
@@ -157,8 +158,9 @@ public Action:Command_Vol(client, args)
         {
             SetClientCookie(client, g_Cookie_Volume, buffer);
             g_Volume[client] = volume;
-            ReplyToCommand(client, "[IGA] Set volume to %d.  Will take affect on the next song.", volume); }else{
-            ReplyToCommand(client, "[IGA] usage \"!vol [0-10]\".");
+            ReplyToCommand(client, "%t", "volume_set", volume);
+        }else{
+            ReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
         }
     }
 
@@ -171,7 +173,7 @@ public Action:Command_Nopall(client, args)
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
         g_IsPallEnabled[client] = false;
-        ReplyToCommand(client, "[IGA] Disabled pall.  Type !yespall to renable it.");
+        ReplyToCommand(client, "%t", "disabled_pall");
     }
     return Plugin_Handled;
 }
@@ -182,7 +184,7 @@ public Action:Command_Yespall(client, args)
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "1");
         g_IsPallEnabled[client] = true;
-        ReplyToCommand(client, "[IGA] Enabled pall.  Type !nopall to disable it.");
+        ReplyToCommand(client, "%t", "enabled_pall");
     }
     return Plugin_Handled;
 }
@@ -191,7 +193,7 @@ public Action:Command_AuthorizeIGA(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "[IGA] User in cooldown.");
+        ReplyToCommand(client, "%t", "user_in_cooldown");
         return Plugin_Handled;
     }
 
@@ -299,6 +301,11 @@ bool:InternalIsInP(client)
 }
 
 public Native_QuerySong(Handle:plugin, args) {
+    if (!InternalIsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+    }
+
     new len;
     GetNativeStringLength(2, len);
     new String:path[len+1];
@@ -313,7 +320,7 @@ InternalQuerySong(client, String:path[], bool:pall, bool:force)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        ReplyToCommand(client, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        ReplyToCommand(client, "%t", "url_invalid");
         return;
     }
 
@@ -362,9 +369,9 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 g_PNextFree[client]=0;
                 g_PallNextFree = duration + GetTime();
 
-                PrintToChatAll("[IGA] Started Playing \"%s\" to all.", description);
-                PrintToChatAll("Duration %s.", duration_formated);
-                PrintToChatAll("Type !stop to cancel or !nopall to mute.");
+                PrintToChatAll("%t", "started_playing_to_all", description);
+                PrintToChatAll("%t", "duration", duration_formated);
+                PrintToChatAll("%t", "to_stop_all");
 
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
@@ -375,9 +382,9 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 new seconds = (g_PallNextFree - GetTime());
 
                 if (minutes > 1)
-                    PrintToChat(client, "[IGA] pall currently playing %s \"%s\". Please wait %d more minutes.", g_CurrentPallPath, g_CurrentPallDescription, minutes);
+                    PrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, minutes, "minutes");
                 else
-                    PrintToChat(client, "[IGA] pall currently playing %s \"%s\". Please wait %d more seconds.", g_CurrentPallPath, g_CurrentPallDescription, seconds);
+                    PrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, seconds, "seconds");
             }
         }else if(client > 0){
             decl String:name[64];
@@ -385,17 +392,16 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
             g_PNextFree[client] = duration + GetTime();
 
-            //PrintToChat(client, "[IGA] Started Playing \"%s\"", description);
-            PrintToChatAll("[IGA] %s is currently playing \"%s\", type !p %s to play for yourself.", name, description, full_path);
-            PrintToChat(client, "Duration %s.", duration_formated);
-            PrintToChat(client, "Type !stop to cancel.");
+            PrintToChatAll("%t", "started_playing_to_self", name, description, full_path);
+            PrintToChat(client, "%t", "duration", duration_formated);
+            PrintToChat(client, "%t", "to_stop");
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
             InternalPlaySong(client, song_id);
         }
     }else{
-        PrintToChat(client, "[IGA] Could not find specified sound or directory.");
+        PrintToChat(client, "%t", "not_found");
     }
 
     CloseHandle(json);
@@ -404,11 +410,16 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 public Native_UserTheme(Handle:plugin, args) { InternalUserTheme(GetNativeCell(1)); }
 InternalUserTheme(client)
 {
+    if (!InternalIsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+    }
+
     new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        PrintToConsole(0, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        PrintToConsole(0, "%t", "url_invalid");
         return;
     }
 
@@ -431,11 +442,16 @@ public Native_MapTheme(Handle:plugin, args)
 }
 InternalMapTheme(bool:force=true, String:map[] ="")
 {
+    if (!InternalIsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+    }
+
     new HTTPRequestHandle:request = CreateIGARequest(MAP_THEME_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        PrintToConsole(0, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        PrintToConsole(0, "%t", "url_invalid");
         return;
     }
 
@@ -485,7 +501,7 @@ InternalAuthorizeUser(client)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        ReplyToCommand(client, "[IGA] sm_iga_url invalid; cannot create HTTP request");
+        ReplyToCommand(client, "%t", "url_invalid");
         return;
     }
 
@@ -511,7 +527,7 @@ public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStat
     Steam_ReleaseHTTPRequest(request);
     if(client)
     {
-        PrintToChat(client, "[IGA] You are now authorized to upload songs.");
+        PrintToChat(client, "%t", "now_authorized_to_upload");
     }
 }
 
