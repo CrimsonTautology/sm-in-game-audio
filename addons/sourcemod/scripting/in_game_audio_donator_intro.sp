@@ -68,6 +68,14 @@ public OnPostDonatorCheck(client)
     }
 }
 
+public OnClientConnected(client)
+{
+    if (!g_DonatorLibraryExists)
+    {
+        g_CanIntroPlay[client] = true;
+    }
+}
+
 public Action:Event_JoinClass(client, const String:command[], args)
 {
     if(g_CanIntroPlay[client])
