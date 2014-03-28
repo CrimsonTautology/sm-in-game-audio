@@ -72,7 +72,7 @@ task :reload do
 end
  
 desc "Send an RCON command to the development server (rake rcon['sv_cheats 1'])"
-task :rcon do |t, args|
+task :rcon, [:cmd] do |t, args|
   rcon_session do |server|
     puts server.rcon_exec("#{args.cmd}")
   end
