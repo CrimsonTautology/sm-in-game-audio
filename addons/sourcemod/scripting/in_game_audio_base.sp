@@ -382,9 +382,9 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 new seconds = (g_PallNextFree - GetTime());
 
                 if (minutes > 1)
-                    PrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, minutes, "minutes");
+                    PrintToChat(client, "\x04%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, minutes, "minutes");
                 else
-                    PrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, seconds, "seconds");
+                    PrintToChat(client, "\x04%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, seconds, "seconds");
             }
         }else if(client > 0){
             decl String:name[64];
