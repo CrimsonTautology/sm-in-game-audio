@@ -8,7 +8,7 @@
 
     "started_playing_to_self"
     {
-        "#format"   "{1:s}, {2:s}, {3:s}"
+        "#format"   "{1:s},{2:s},{3:s}"
             "en"    "[IGA] {1} is currently playing \"{2}\", type !p {3} to play for yourself."
     }
 
@@ -30,7 +30,7 @@
 
     "pall_currently_playing"
     {
-        "#format"   "{1:s}, {2:s}, {3:i}, {4:s}"
+        "#format"   "{1:s},{2:s},{3:i},{4:s}"
             "en"    "[IGA] pall currently playing {1} \"{2}\". Please wait {3} more {4}."
     }
 
