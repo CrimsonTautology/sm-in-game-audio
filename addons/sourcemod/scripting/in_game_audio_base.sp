@@ -144,7 +144,7 @@ public Action:Command_Vol(client, args)
 {
     if (client && args != 1)
     {
-        ReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
+        ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
         return Plugin_Handled;
     }
 
@@ -158,9 +158,9 @@ public Action:Command_Vol(client, args)
         {
             SetClientCookie(client, g_Cookie_Volume, buffer);
             g_Volume[client] = volume;
-            ReplyToCommand(client, "%t", "volume_set", volume);
+            ReplyToCommand(client, "\x04%t", "volume_set", volume);
         }else{
-            ReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
+            ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
         }
     }
 
@@ -173,7 +173,7 @@ public Action:Command_Nopall(client, args)
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
         g_IsPallEnabled[client] = false;
-        ReplyToCommand(client, "%t", "disabled_pall");
+        ReplyToCommand(client, "\x04%t", "disabled_pall");
     }
     return Plugin_Handled;
 }
@@ -184,7 +184,7 @@ public Action:Command_Yespall(client, args)
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "1");
         g_IsPallEnabled[client] = true;
-        ReplyToCommand(client, "%t", "enabled_pall");
+        ReplyToCommand(client, "\x04%t", "enabled_pall");
     }
     return Plugin_Handled;
 }
@@ -193,7 +193,7 @@ public Action:Command_AuthorizeIGA(client, args)
 {
     if(IsClientInCooldown(client))
     {
-        ReplyToCommand(client, "%t", "user_in_cooldown");
+        ReplyToCommand(client, "\x04%t", "user_in_cooldown");
         return Plugin_Handled;
     }
 
@@ -320,7 +320,7 @@ InternalQuerySong(client, String:path[], bool:pall, bool:force)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        ReplyToCommand(client, "%t", "url_invalid");
+        ReplyToCommand(client, "\x04%t", "url_invalid");
         return;
     }
 
@@ -501,7 +501,7 @@ InternalAuthorizeUser(client)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        ReplyToCommand(client, "%t", "url_invalid");
+        ReplyToCommand(client, "\x04%t", "url_invalid");
         return;
     }
 
@@ -544,9 +544,20 @@ InternalPlaySongAll(String:song[], bool:force)
 {
     for (new client=1; client <= MaxClients; client++)
     {
-        if ( InternalClientHasPallEnabled(client) && (force || !InternalIsInP(client)) )
+        //Ignore players who can't hear this
+        if(!IsClientInGame(client) || IsFakeClient(client) || g_Volume[client] < 1)
+            continue;
+
+        if ( InternalClientHasPallEnabled(client) )
         {
-            InternalPlaySong(client, song);
+            if(force || !InternalIsInP(client))
+            {
+                InternalPlaySong(client, song);
+            }
+
+        }else{
+            //Mention that pall is not enabled
+            PrintToChat(client, "\x04%t", "pall_not_enabled");
         }
     }
 }

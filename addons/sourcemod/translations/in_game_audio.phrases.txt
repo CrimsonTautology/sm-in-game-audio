@@ -80,6 +80,11 @@
     {
         "en"    "[IGA] Enabled pall.  Type !nopall to disable it."
     }
+
+    "pall_not_enabled"
+    {
+        "en"    "[IGA] Cannot listen to song.  Type !yespall to listen to songs from other players"
+    }
     
     "user_in_cooldown"
     {
