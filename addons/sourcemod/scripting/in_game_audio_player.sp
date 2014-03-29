@@ -35,6 +35,8 @@ new bool:g_DonatorLibraryExists = false;
 
 public OnPluginStart()
 {
+    g_Cvar_IGADonatorsOnly = CreateConVar("sm_iga_donators_only", "0", "Whether only dontaors can use pall");
+
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");
     RegConsoleCmd("sm_pall", Command_Pall, "Play a song for everyone");
     RegConsoleCmd("sm_plist", Command_Plist, "Pop-up the song list");
