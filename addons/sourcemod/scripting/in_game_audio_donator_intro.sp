@@ -34,30 +34,31 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+    LoadTranslations("in_game_audio.phrases");
     AddCommandListener(Event_JoinClass, "joinclass");
-    g_DonatorLibraryExists = LibraryExists("donators");
+    g_DonatorLibraryExists = LibraryExists("donator.core");
 }
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
-	MarkNativeAsOptional("IsPlayerDonator");
-	return APLRes_Success;
+    MarkNativeAsOptional("IsPlayerDonator");
+    return APLRes_Success;
 }
 
 public OnLibraryRemoved(const String:name[])
 {
-	if (StrEqual(name, "donators"))
-	{
-		g_DonatorLibraryExists = false;
-	}
+    if (StrEqual(name, "donator.core"))
+    {
+        g_DonatorLibraryExists = false;
+    }
 }
- 
+
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "donators"))
-	{
-		g_DonatorLibraryExists = true;
-	}
+    if (StrEqual(name, "donator.core"))
+    {
+        g_DonatorLibraryExists = true;
+    }
 }
 
 public OnPostDonatorCheck(client)

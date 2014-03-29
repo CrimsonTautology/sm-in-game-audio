@@ -35,6 +35,8 @@ new bool:g_DonatorLibraryExists = false;
 
 public OnPluginStart()
 {
+    LoadTranslations("in_game_audio.phrases");
+
     g_Cvar_IGADonatorsOnly = CreateConVar("sm_iga_donators_only", "0", "Whether only dontaors can use pall");
 
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");
@@ -44,7 +46,7 @@ public OnPluginStart()
     RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
 
-    g_DonatorLibraryExists = LibraryExists("donators");
+    g_DonatorLibraryExists = LibraryExists("donator.core");
 }
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -55,7 +57,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnLibraryRemoved(const String:name[])
 {
-	if (StrEqual(name, "donators"))
+	if (StrEqual(name, "donator.core"))
 	{
 		g_DonatorLibraryExists = false;
 	}
@@ -63,7 +65,7 @@ public OnLibraryRemoved(const String:name[])
  
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "donators"))
+	if (StrEqual(name, "donator.core"))
 	{
 		g_DonatorLibraryExists = true;
 	}

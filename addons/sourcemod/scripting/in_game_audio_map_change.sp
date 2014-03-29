@@ -30,6 +30,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+    LoadTranslations("in_game_audio.phrases");
     HookEvent("teamplay_game_over", Event_MapChange);
 }
 
