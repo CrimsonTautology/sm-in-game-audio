@@ -18,7 +18,7 @@
 #undef REQUIRE_PLUGIN
 #include <donator>
 
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.1"
 
 public Plugin:myinfo =
 {
