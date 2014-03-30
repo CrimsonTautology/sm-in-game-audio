@@ -105,7 +105,7 @@ native StopSongAll();
  *
  * @param client    The client index
  */
-native SongList(client);
+native SongList(client, const String:search[]="");
 
 /**
  * Performa song query.  Will search for a song named path and play

@@ -139,7 +139,9 @@ public Action:Command_Pall(client, args)
 public Action:Command_Plist(client, args)
 {
     if(client && IsClientAuthorized(client)){
-        SongList(client);
+        decl String:search[MAX_SONG_LENGTH];
+        GetCmdArgString(search, sizeof(search));
+        SongList(client, search);
     }
 
     return Plugin_Handled;

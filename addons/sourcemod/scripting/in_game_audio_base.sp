@@ -649,8 +649,16 @@ InternalStopSongAll()
     }
 }
 
-public Native_SongList(Handle:plugin, args) { InternalSongList(GetNativeCell(1)); }
-public InternalSongList(client)
+public Native_SongList(Handle:plugin, args)
+{
+    new len;
+    GetNativeStringLength(2, len);
+    new String:search[len+1];
+    GetNativeString(2, search, len+1);
+
+    InternalSongList(GetNativeCell(1), search); 
+}
+public InternalSongList(client, String:search[])
 {
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
@@ -663,8 +671,15 @@ public InternalSongList(client)
         strcopy(base_url, trim_length + 1, base_url);
     }
 
-    Format(url, sizeof(url),
-            "%s%s", base_url, DIRECTORIES_ROUTE);
+    //Use a song search if give a search key
+    if(strlen(search) > 0)
+    {
+        Format(url, sizeof(url),
+                "%s%s?search=%s", base_url, SONGS_ROUTE, search);
+    }else{
+        Format(url, sizeof(url),
+                "%s%s", base_url, DIRECTORIES_ROUTE);
+    }
 
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
