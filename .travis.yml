@@ -3,6 +3,8 @@ language: c
 env:
     - SMVERSION=1.4
     - SMVERSION=1.5
+    - SMVERSION=1.6
+    - SMVERSION=2.0
 before_install:
     - sudo apt-get update
     - sudo apt-get install gcc-multilib
