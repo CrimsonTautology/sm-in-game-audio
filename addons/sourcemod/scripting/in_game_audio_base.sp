@@ -191,7 +191,7 @@ public Action:Command_Yespall(client, args)
 
 public Action:Command_AuthorizeIGA(client, args)
 {
-    if(IsClientInCooldown(client))
+    if(InternalIsClientInCooldown(client))
     {
         ReplyToCommand(client, "\x04%t", "user_in_cooldown");
         return Plugin_Handled;
@@ -591,6 +591,9 @@ InternalPlaySong(client, String:song_id[], String:access_token[])
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
 
+    //TODO make a pop-under motd method
+    //Format http string
+    //TODO store this on cvar change
     TrimString(base_url);
     new trim_length = strlen(base_url) - 1;
 
@@ -622,6 +625,8 @@ InternalStopSong(client)
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
 
+    //Format http string
+    //TODO store this on cvar change
     TrimString(base_url);
     new trim_length = strlen(base_url) - 1;
 
@@ -651,7 +656,7 @@ InternalStopSongAll()
     {
         if ( !InternalIsInP(client) ) 
         {
-            StopSong(client);
+            InternalStopSong(client);
         }
     }
 }
@@ -670,6 +675,8 @@ public InternalSongList(client, String:search[])
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
 
+    //Format http string
+    //TODO store this on cvar change
     TrimString(base_url);
     new trim_length = strlen(base_url) - 1;
 
@@ -678,7 +685,7 @@ public InternalSongList(client, String:search[])
         strcopy(base_url, trim_length + 1, base_url);
     }
 
-    //Use a song search if give a search key
+    //Use a song search if given a search key
     if(strlen(search) > 0)
     {
         Format(url, sizeof(url),
@@ -692,7 +699,7 @@ public InternalSongList(client, String:search[])
     KvSetString(panel, "title", "In Game Audio");
     KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
     KvSetString(panel, "msg", url);
-    KvSetNum(panel, "customsvr", 1);
+    KvSetNum(panel, "customsvr", 1); //Sets motd to be fullscreen
 
     ShowVGUIPanel(client, "info", panel, true);
     CloseHandle(panel);
