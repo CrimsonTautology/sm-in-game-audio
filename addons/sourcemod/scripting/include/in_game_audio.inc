@@ -74,18 +74,20 @@ native bool:IsInPall();
 /**
  * Play a song to a player
  *
- * @param client    The client index
- * @param song      The name of the song to play
+ * @param client        The client index
+ * @param song          The name of the song to play
+ * @param access_token  The access_token required by the server to play the song
  */
-native PlaySong(client, const String:song[]);
+native PlaySong(client, const String:song[], const String:access_token[]);
 
 /**
  * Play a song to all users
  *
- * @param song      The name of the song to play
- * @param force     If true will ignore isinpall and isinp
+ * @param song          The name of the song to play
+ * @param force         If true will ignore isinpall and isinp
+ * @param access_token  The access_token required by the server to play the song
  */
-native PlaySongAll(const String:song[], bool:force);
+native PlaySongAll(const String:song[], const String:access_token[], bool:force);
 
 /**
  * Stop a song for a given user

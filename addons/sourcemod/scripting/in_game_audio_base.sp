@@ -356,11 +356,12 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         new duration = json_object_get_int(json, "duration");
         new bool:pall = json_object_get_bool(json, "pall");
         new bool:force = json_object_get_bool(json, "force");
-        new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64];
+        new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64], String:access_token[128];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
         json_object_get_string(json, "full_path", full_path, sizeof(full_path));
         json_object_get_string(json, "description", description, sizeof(description));
         json_object_get_string(json, "duration_formated", duration_formated, sizeof(duration_formated));
+        json_object_get_string(json, "access_token", access_token, sizeof(access_token));
 
         if(pall)
         {
@@ -376,7 +377,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
 
-                InternalPlaySongAll(song_id, force);
+                InternalPlaySongAll(song_id, access_token, force);
             }else{
                 new minutes = (g_PallNextFree - GetTime()) / 60;
                 new seconds = (g_PallNextFree - GetTime());
@@ -398,7 +399,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
-            InternalPlaySong(client, song_id);
+            InternalPlaySong(client, song_id, access_token);
         }
     }else{
         PrintToChat(client, "%t", "not_found");
@@ -479,13 +480,14 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
     if(found)
     {
         new bool:force = json_object_get_bool(json, "force");
-        new String:song_id[64];
+        new String:song_id[64], String:access_token[128];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
+        json_object_get_string(json, "access_token", access_token, sizeof(access_token));
 
         if(force || !InternalIsInPall())
         {
             g_PallNextFree = 0;
-            InternalPlaySongAll(song_id, force);
+            InternalPlaySongAll(song_id, access_token, force);
         }
     }
 
@@ -538,9 +540,13 @@ public Native_PlaySongAll(Handle:plugin, args)
     new String:song[len+1];
     GetNativeString(1, song, len+1);
 
-    InternalPlaySongAll(song, GetNativeCell(2));
+    GetNativeStringLength(2, len);
+    new String:access_token[len+1];
+    GetNativeString(2, access_token, len+1);
+
+    InternalPlaySongAll(song, access_token, GetNativeCell(3));
 }
-InternalPlaySongAll(String:song[], bool:force)
+InternalPlaySongAll(String:song[], String:access_token[], bool:force)
 {
     for (new client=1; client <= MaxClients; client++)
     {
@@ -552,7 +558,7 @@ InternalPlaySongAll(String:song[], bool:force)
         {
             if(force || !InternalIsInP(client))
             {
-                InternalPlaySong(client, song);
+                InternalPlaySong(client, song, access_token);
             }
 
         }else{
@@ -569,9 +575,13 @@ public Native_PlaySong(Handle:plugin, args)
     new String:song[len+1];
     GetNativeString(2, song, len+1);
 
-    InternalPlaySong(GetNativeCell(1), song);
+    GetNativeStringLength(3, len);
+    new String:access_token[len+1];
+    GetNativeString(3, access_token, len+1);
+
+    InternalPlaySong(GetNativeCell(1), song, access_token);
 }
-InternalPlaySong(client, String:song_id[])
+InternalPlaySong(client, String:song_id[], String:access_token[])
 {
     //Don't play song if client is a bot or has a muted volume
     if(!IsClientInGame(client) || IsFakeClient(client) || g_Volume[client] < 1)
@@ -589,11 +599,8 @@ InternalPlaySong(client, String:song_id[])
         strcopy(base_url, trim_length + 1, base_url);
     }
 
-    decl String:api_key[128];
-    GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
-
     Format(url, sizeof(url),
-            "%s%s/%s/play?access_token=%s&volume=%f", base_url, SONGS_ROUTE, song_id, api_key, (g_Volume[client] / 10.0));
+            "%s%s/%s/play?access_token=%s&volume=%f", base_url, SONGS_ROUTE, song_id, access_token, (g_Volume[client] / 10.0));
 
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
