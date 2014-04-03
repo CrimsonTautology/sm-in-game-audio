@@ -77,6 +77,12 @@ public OnClientConnected(client)
     }
 }
 
+public OnClientDisconnect(client)
+{
+    g_CanIntroPlay[client] = false;
+}
+
+
 public Action:Event_JoinClass(client, const String:command[], args)
 {
     if(g_CanIntroPlay[client])
