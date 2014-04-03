@@ -18,7 +18,7 @@
 #include <steamtools>
 #include <smjansson>
 
-#define PLUGIN_VERSION "1.1"
+#define PLUGIN_VERSION "1.2"
 
 public Plugin:myinfo =
 {
