@@ -328,6 +328,11 @@ InternalQuerySong(client, String:path[], bool:pall, bool:force)
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
     Steam_SetHTTPRequestGetOrPostParameter(request, "path", path);
 
+    //Send caller's steamid64
+    decl String:uid[MAX_COMMUNITYID_LENGTH];
+    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+
     Steam_SendHTTPRequest(request, ReceiveQuerySong, player);
 
     InternalStartCooldown(client);
