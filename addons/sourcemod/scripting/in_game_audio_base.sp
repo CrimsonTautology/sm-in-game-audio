@@ -45,7 +45,7 @@ new String:g_CurrentPallPath[64];
 new String:g_CurrentPlastSongId[64];
 new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
-new g_Volume[MAXPLAYERS+1] = {7, ...};
+new g_Volume[MAXPLAYERS+1] = {4, ...};
 
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -105,7 +105,7 @@ public OnClientConnected(client)
     }
     g_IsInCooldown[client] = false;
     g_PNextFree[client] = 0;
-    g_Volume[client] = 7;
+    g_Volume[client] = 4;
     g_IsPallEnabled[client] = true;
 
     //Disable pall by default for quickplayers
