@@ -91,6 +91,7 @@ public OnPluginStart()
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
     RegConsoleCmd("sm_authorize_iga", Command_AuthorizeIGA, "Declare that you want to upload songs to the website.  This will set you as an uploader.");
+    RegConsoleCmd("sm_iga", Command_IGA, "Bring up the IGA settings and control menu");
 
     g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
@@ -201,6 +202,17 @@ public Action:Command_AuthorizeIGA(client, args)
     {
         InternalAuthorizeUser(client);
     }
+    return Plugin_Handled;
+}
+
+public Action:Command_IGA(client, args)
+{
+    if(client && IsClientAuthorized(client))
+    {
+        //TODO show menu
+        //ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
+    }
+
     return Plugin_Handled;
 }
 
