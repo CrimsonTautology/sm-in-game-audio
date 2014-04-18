@@ -39,7 +39,7 @@ new Handle:g_Cookie_PallEnabled = INVALID_HANDLE;
 new Handle:g_Cookie_Volume = INVALID_HANDLE;
 
 new Handle:g_MenuItems = INVALID_HANDLE;
-new g_MenuId, g_MenuCount;
+new g_MenuId;
 
 new bool:g_IsInCooldown[MAXPLAYERS+1] = {false, ...};
 new bool:g_IsPallEnabled[MAXPLAYERS+1] = {false, ...};
@@ -121,7 +121,7 @@ public OnClientConnected(client)
     new String:connect_method[5];
     GetClientInfo(client, "cl_connectmethod", connect_method, sizeof(connect_method));
     if( strncmp("quick", connect_method, 5, false) == 0 ||
-        strncmp("match", connect_method, 5, false) == 0)
+            strncmp("match", connect_method, 5, false) == 0)
     {
         g_IsPallEnabled[client] = false;
     }
@@ -217,8 +217,7 @@ public Action:Command_IGA(client, args)
 {
     if(client && IsClientAuthorized(client))
     {
-        //TODO show menu
-        //ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
+        ShowIGAMenu(client);
     }
 
     return Plugin_Handled;
@@ -733,47 +732,85 @@ public InternalSongList(client, String:search[])
 
 public Native_RegisterMenuItem(Handle:plugin, args)
 {
-	decl String:plugin_name[PLATFORM_MAX_PATH];
-	GetPluginFilename(plugin, plugin_name, sizeof(plugin_name));
+    decl String:plugin_name[PLATFORM_MAX_PATH];
+    GetPluginFilename(plugin, plugin_name, sizeof(plugin_name));
 
-	new Handle: = CreateForward(ET_Single, Param_Cell, Param_CellByRef);	
-	if (!AddToForward(plugin_forward, plugin, GetNativeCell(2)))
-		ThrowError("Failed to add forward from %s", plugin_name);
+    new Handle: = CreateForward(ET_Single, Param_Cell, Param_CellByRef);	
+    if (!AddToForward(plugin_forward, plugin, GetNativeCell(2)))
+        ThrowError("Failed to add forward from %s", plugin_name);
 
     new len;
     GetNativeStringLength(1, len);
     new String:title[len+1];
     GetNativeString(1, title, len+1);
 
-	new Handle:new_item = CreateArray(15);
-	new id = g_MenuId++;
-	g_MenuCount++;
+    new Handle:new_item = CreateArray(15);
+    new id = g_MenuId++;
 
-	PushArrayString(new_item, plugin_name);
-	PushArrayString(new_item, title);
-	PushArrayCell(new_item, id);
-	PushArrayCell(new_item, plugin_forward);
-	PushArrayCell(g_MenuItems, new_item);
+    PushArrayString(new_item, plugin_name);
+    PushArrayString(new_item, title);
+    PushArrayCell(new_item, id);
+    PushArrayCell(new_item, plugin_forward);
+    PushArrayCell(g_MenuItems, new_item);
 
-	return id;
+    return id;
 }
 
 
 public Native_UnregisterMenuItem(Handle:plugin, args)
 {
-	new Handle:tmp;
-	for (new i = 0; i < g_MenuCount; i++)
-	{
-		tmp = GetArrayCell(g_MenuItems, i);
-		new id = GetArrayCell(tmp, 2);
-		if (id == GetNativeCell(1))
-		{
-			RemoveFromArray(g_MenuItems, i);
-			g_MenuCount--;
-			return true;
-		}
-	}
-	return false;
+    new Handle:tmp;
+    for (new i = 0; i < GetArraySize(g_MenuItems); i++)
+    {
+        tmp = GetArrayCell(g_MenuItems, i);
+        new id = GetArrayCell(tmp, 2);
+        if (id == GetNativeCell(1))
+        {
+            RemoveFromArray(g_MenuItems, i);
+            return true;
+        }
+    }
+    return false;
 }
 
+ShowIGAMenu(client)
+{
+    new Handle:menu = CreateMenu(IGAMenuSelected);
+    SetMenuTitle(menu,"IGA Menu");
+
+    decl Handle:item, String:tmp[64], String:item_number[4];
+
+    for(new i = 0; i < GetArraySize(g_MenuItems); i++)
+    {
+        FormatEx(item_number, sizeof(item_number), "%i", i);
+        item = GetArrayCell(g_MenuItems, i);
+        GetArrayString(item, 1, tmp, sizeof(tmp));
+
+        AddMenuItem(menu, item_number, tmp, ITEMDRAW_DEFAULT);
+    }
+
+    DisplayMenu(menu, client, 20);
+}
+
+
+IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
+{
+    decl String:tmp[32], selected;
+    GetMenuItem(menu, param2, tmp, sizeof(tmp));
+    selected = StringToInt(tmp);
+
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                new Handle:item = GetArrayCell(g_MenuItems, selected);
+                new Handle:plugin_forward = GetArrayCell(item, 3);
+                new bool:result;
+                Call_StartForward(plugin_forward);
+                Call_PushCell(param1);
+                Call_Finish(result);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
+}
 
