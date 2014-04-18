@@ -865,8 +865,6 @@ public IGAMenu:ChangeVolumeMenu(client)
     DisplayMenu(menu, client, 20);
 }
 
-
-// Menu Handler
 public ChangeVolumeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 {
     switch (action)
@@ -897,7 +895,6 @@ public IGAMenu:PallEnabledMenu(client)
     DisplayMenu(menu, client, 20);
 }
 
-// Menu Handler
 public PallEnabledMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 {
     switch (action)

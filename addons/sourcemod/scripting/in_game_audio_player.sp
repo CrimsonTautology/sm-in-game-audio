@@ -49,26 +49,32 @@ public OnPluginStart()
     g_DonatorLibraryExists = LibraryExists("donator.core");
 }
 
+public OnAllPluginsLoaded()
+{
+    IGA_RegisterMenuItem("How to play songs", TutorialMenu);
+}
+
+
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
-	MarkNativeAsOptional("IsPlayerDonator");
-	return APLRes_Success;
+    MarkNativeAsOptional("IsPlayerDonator");
+    return APLRes_Success;
 }
 
 public OnLibraryRemoved(const String:name[])
 {
-	if (StrEqual(name, "donator.core"))
-	{
-		g_DonatorLibraryExists = false;
-	}
+    if (StrEqual(name, "donator.core"))
+    {
+        g_DonatorLibraryExists = false;
+    }
 }
- 
+
 public OnLibraryAdded(const String:name[])
 {
-	if (StrEqual(name, "donator.core"))
-	{
-		g_DonatorLibraryExists = true;
-	}
+    if (StrEqual(name, "donator.core"))
+    {
+        g_DonatorLibraryExists = true;
+    }
 }
 
 public OnPostDonatorCheck(client)
@@ -184,5 +190,29 @@ public bool:DonatorCheck(client)
         return true;
     else
         return g_IsDonator[client];
+}
+
+public IGAMenu:TutorialMenu(client)
+{
+    new Handle:menu = CreateMenu(PallEnabledMenuHandler);
+
+    SetMenuTitle(menu, "How to play music");
+
+    AddMenuItem(menu, "0", "!p                Play a random song");
+    AddMenuItem(menu, "0", "!p category       Play a random song in category");
+    AddMenuItem(menu, "0", "!p category/name  Play a specific song name in category");
+    AddMenuItem(menu, "0", "!pall             Same as !p except it plays to everyone on the server");
+    AddMenuItem(menu, "0", "!plist            Use to find a song or category");
+    AddMenuItem(menu, "0", "!stop             Stop currently playing song");
+
+    DisplayMenu(menu, client, 20);
+}
+
+public TutorialMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+    switch (action)
+    {
+        case MenuAction_End: CloseHandle(menu);
+    }
 }
 
