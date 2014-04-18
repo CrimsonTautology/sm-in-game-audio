@@ -735,7 +735,7 @@ public Native_RegisterMenuItem(Handle:plugin, args)
     decl String:plugin_name[PLATFORM_MAX_PATH];
     GetPluginFilename(plugin, plugin_name, sizeof(plugin_name));
 
-    new Handle: = CreateForward(ET_Single, Param_Cell, Param_CellByRef);	
+    new Handle:plugin_forward = CreateForward(ET_Single, Param_Cell, Param_CellByRef);	
     if (!AddToForward(plugin_forward, plugin, GetNativeCell(2)))
         ThrowError("Failed to add forward from %s", plugin_name);
 
@@ -793,7 +793,7 @@ ShowIGAMenu(client)
 }
 
 
-IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
+public IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
 {
     decl String:tmp[32], selected;
     GetMenuItem(menu, param2, tmp, sizeof(tmp));
