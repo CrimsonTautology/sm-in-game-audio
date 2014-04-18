@@ -75,6 +75,9 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("IsClientInCooldown", Native_IsClientInCooldown);
     CreateNative("IsIGAEnabled", Native_IsIGAEnabled);
 
+    CreateNative("IGA_RegisterMenuItem", Native_RegisterMenuItem);
+    CreateNative("IGA_UnregisterMenuItem", Native_UnregisterMenuItem);
+
     return APLRes_Success;
 }
 

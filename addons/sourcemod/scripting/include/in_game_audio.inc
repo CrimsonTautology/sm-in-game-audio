@@ -149,3 +149,21 @@ native StartCoolDown(client);
  * @return          True if user is in cool down, else false
  */
 native bool:IsClientInCooldown(client);
+
+functag IGA_MenuCallback IGA_Menu:public(client);
+
+/**
+ * Register a menu item.
+ * 
+ * @param name			Name of the menu item.
+ * @param func			Callback for menu items.
+ * @return				Menu item ID.
+ */
+native IGA_RegisterMenuItem(const String:name[], IGA_MenuCallback:func);
+
+/**
+ * Unregister a menu item.
+ * 
+ * @param item			Menu Item ID
+ */
+native IGA_UnregisterMenuItem(item);
