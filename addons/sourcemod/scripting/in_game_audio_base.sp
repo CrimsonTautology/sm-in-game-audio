@@ -103,7 +103,12 @@ public OnPluginStart()
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
 
     g_MenuItems = CreateArray();
+}
 
+public OnAllPluginsLoaded()
+{
+    IGA_RegisterMenuItem("Change Volume", ChangeVolumeMenu);
+    IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
 }
 
 public OnClientConnected(client)
@@ -838,7 +843,7 @@ public IGAMenu:ChangeVolumeMenu(client)
     new volume_state = g_Volume[client];//TODO
     new String:tmp[32];
 
-    SetMenuTitle(menu, "Set IGA volume");
+    SetMenuTitle(menu, "Set IGA volume (!vol)");
 
     AddMenuItem(menu, "1",  " █         (min)");
     AddMenuItem(menu, "2",  " ██");
