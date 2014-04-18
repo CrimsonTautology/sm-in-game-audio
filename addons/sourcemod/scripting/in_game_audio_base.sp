@@ -38,6 +38,9 @@ new Handle:g_Cvar_IGARequestCooldownTime = INVALID_HANDLE;
 new Handle:g_Cookie_PallEnabled = INVALID_HANDLE;
 new Handle:g_Cookie_Volume = INVALID_HANDLE;
 
+new Handle:g_MenuItems = INVALID_HANDLE;
+new g_MenuId, g_MenuCount;
+
 new bool:g_IsInCooldown[MAXPLAYERS+1] = {false, ...};
 new bool:g_IsPallEnabled[MAXPLAYERS+1] = {false, ...};
 new String:g_CurrentPallDescription[64];
@@ -98,6 +101,8 @@ public OnPluginStart()
 
     g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
+
+    g_MenuItems = CreateArray();
 
 }
 
@@ -725,3 +730,50 @@ public InternalSongList(client, String:search[])
     CloseHandle(panel);
 
 }
+
+public Native_RegisterMenuItem(Handle:plugin, args)
+{
+	decl String:plugin_name[PLATFORM_MAX_PATH];
+	GetPluginFilename(plugin, plugin_name, sizeof(plugin_name));
+
+	new Handle: = CreateForward(ET_Single, Param_Cell, Param_CellByRef);	
+	if (!AddToForward(plugin_forward, plugin, GetNativeCell(2)))
+		ThrowError("Failed to add forward from %s", plugin_name);
+
+    new len;
+    GetNativeStringLength(1, len);
+    new String:title[len+1];
+    GetNativeString(1, title, len+1);
+
+	new Handle:new_item = CreateArray(15);
+	new id = g_MenuId++;
+	g_MenuCount++;
+
+	PushArrayString(new_item, plugin_name);
+	PushArrayString(new_item, title);
+	PushArrayCell(new_item, id);
+	PushArrayCell(new_item, plugin_forward);
+	PushArrayCell(g_MenuItems, new_item);
+
+	return id;
+}
+
+
+public Native_UnregisterMenuItem(Handle:plugin, args)
+{
+	new Handle:tmp;
+	for (new i = 0; i < g_MenuCount; i++)
+	{
+		tmp = GetArrayCell(g_MenuItems, i);
+		new id = GetArrayCell(tmp, 2);
+		if (id == GetNativeCell(1))
+		{
+			RemoveFromArray(g_MenuItems, i);
+			g_MenuCount--;
+			return true;
+		}
+	}
+	return false;
+}
+
+
