@@ -153,7 +153,7 @@ public Action:Command_Vol(client, args)
 {
     if (client && args != 1)
     {
-        ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
+        ChangeVolumeMenu(client);
         return Plugin_Handled;
     }
 
@@ -163,14 +163,7 @@ public Action:Command_Vol(client, args)
         new volume;
         GetCmdArgString(buffer, sizeof(buffer));
         volume = StringToInt(buffer);
-        if (volume >=0 && volume <= 10)
-        {
-            SetClientCookie(client, g_Cookie_Volume, buffer);
-            g_Volume[client] = volume;
-            ReplyToCommand(client, "\x04%t", "volume_set", volume);
-        }else{
-            ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
-        }
+        SetClientVolume(client, volume);
     }
 
     return Plugin_Handled;
@@ -291,6 +284,19 @@ public Native_SetPallEnabled(Handle:plugin, args) { InternalSetPallEnabled(GetNa
 InternalSetPallEnabled(client, bool:val)
 {
     g_IsPallEnabled[client] = val;
+}
+
+SetClientVolume(client, volume)
+{
+    if (volume >=0 && volume <= 10)
+    {
+        SetClientCookie(client, g_Cookie_Volume, buffer);
+        g_Volume[client] = volume;
+        ReplyToCommand(client, "\x04%t", "volume_set", volume);
+    }else{
+        ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
+    }
+
 }
 
 public Native_IsClientInCooldown(Handle:plugin, args) { return _:InternalIsClientInCooldown(GetNativeCell(1)); }
@@ -730,6 +736,9 @@ public InternalSongList(client, String:search[])
 
 }
 
+
+//Menu Logic
+
 public Native_RegisterMenuItem(Handle:plugin, args)
 {
     decl String:plugin_name[PLATFORM_MAX_PATH];
@@ -814,3 +823,43 @@ public IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
     }
 }
 
+public IGAMenu:ChangeVolumeMenu(client)
+{
+    new Handle:menu = CreateMenu(ClassMenuHandler);
+	new selected = g_Volume[client];
+    new String:tmp[32];
+
+    SetMenuTitle(menu, "Set volume");
+
+    AddMenuItem(menu, "1", " █         (min)");
+    AddMenuItem(menu, "2", " ██");
+    AddMenuItem(menu, "3", " ███");
+    AddMenuItem(menu, "4", " ████");
+    AddMenuItem(menu, "5", " █████");
+    AddMenuItem(menu, "6", " ██████");
+    AddMenuItem(menu, "7", " ███████");
+    AddMenuItem(menu, "8", " ████████");
+    AddMenuItem(menu, "9", " █████████");
+    AddMenuItem(menu, "0", " ██████████(max)");
+
+    SetMenuExitButton(menu, false);
+    SetMenuPagination(menu, MENU_NO_PAGINATION);
+
+    DisplayMenu(menu, client, 20);
+}
+
+
+// Menu Handler
+public ChangeVolumeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+	switch (action)
+	{
+		case MenuAction_Select:
+		{
+            new selected = StringToInt(param2);
+            selected = selected == 0 ? 10 : selected; //0 on the menu corresponds to 10
+            SetClientVolume(param1, selected);
+		}
+		case MenuAction_End: CloseHandle(menu);
+	}
+}
