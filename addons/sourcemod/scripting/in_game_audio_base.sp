@@ -173,9 +173,7 @@ public Action:Command_Nopall(client, args)
 {
     if (client && IsClientAuthorized(client))
     {
-        SetClientCookie(client, g_Cookie_PallEnabled, "0");
-        g_IsPallEnabled[client] = false;
-        ReplyToCommand(client, "\x04%t", "disabled_pall");
+        SetPallEnabled(client, false);
     }
     return Plugin_Handled;
 }
@@ -184,9 +182,7 @@ public Action:Command_Yespall(client, args)
 {
     if (client && IsClientAuthorized(client))
     {
-        SetClientCookie(client, g_Cookie_PallEnabled, "1");
-        g_IsPallEnabled[client] = true;
-        ReplyToCommand(client, "\x04%t", "enabled_pall");
+        SetPallEnabled(client, true);
     }
     return Plugin_Handled;
 }
@@ -283,7 +279,18 @@ bool:InternalClientHasPallEnabled(client)
 public Native_SetPallEnabled(Handle:plugin, args) { InternalSetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
 InternalSetPallEnabled(client, bool:val)
 {
-    g_IsPallEnabled[client] = val;
+    if(val)
+    {
+        SetClientCookie(client, g_Cookie_PallEnabled, "1");
+        g_IsPallEnabled[client] = true;
+        ReplyToCommand(client, "\x04%t", "enabled_pall");
+
+    }else{
+        SetClientCookie(client, g_Cookie_PallEnabled, "0");
+        g_IsPallEnabled[client] = false;
+        ReplyToCommand(client, "\x04%t", "disabled_pall");
+
+    }
 }
 
 SetClientVolume(client, volume)
@@ -828,7 +835,7 @@ public IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
 public IGAMenu:ChangeVolumeMenu(client)
 {
     new Handle:menu = CreateMenu(ChangeVolumeMenuHandler);
-    new set_volume = g_Volume[client];
+    new volume_state = g_Volume[client];//TODO
     new String:tmp[32];
 
     SetMenuTitle(menu, "Set IGA volume");
@@ -863,6 +870,38 @@ public ChangeVolumeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 decl volume = StringToInt(info);
                 decl client = param1;
                 SetClientVolume(client, volume);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
+}
+
+public IGAMenu:PallEnabledMenu(client)
+{
+    new Handle:menu = CreateMenu(PallEnabledMenuHandler);
+    new pall_enabled_state = g_IsPallEnabled[client];//TODO
+    new String:tmp[32];
+
+    SetMenuTitle(menu, "Listen To Unrequested Music?");
+
+    AddMenuItem(menu, "1", "Yes (!yespall)");
+    AddMenuItem(menu, "0", "No  (!nopall)");
+
+    DisplayMenu(menu, client, 20);
+}
+
+
+// Menu Handler
+public PallEnabledMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                decl String:info[32];
+                GetMenuItem(menu, param2, info, sizeof(info));
+                decl val = bool:StringToInt(info)
+                decl client = param1;
+                SetPallEnabled(client, val);
             }
         case MenuAction_End: CloseHandle(menu);
     }
