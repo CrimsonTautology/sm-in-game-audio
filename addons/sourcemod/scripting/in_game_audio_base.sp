@@ -109,6 +109,9 @@ public OnAllPluginsLoaded()
 {
     IGA_RegisterMenuItem("Change Volume", ChangeVolumeMenu);
     IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
+    IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
+    IGA_RegisterMenuItem("View Play List (!plist)", SongListMenu);
+    IGA_RegisterMenuItem("Authorize yourself to upload songs", AuthorizeUserMenu);
 }
 
 public OnClientConnected(client)
@@ -910,3 +913,7 @@ public PallEnabledMenuHandler(Handle:menu, MenuAction:action, param1, param2)
         case MenuAction_End: CloseHandle(menu);
     }
 }
+
+public IGAMenu:StopSongMenu(client) StopSong(client);
+public IGAMenu:SongListMenu(client) SongList(client);
+public IGAMenu:AuthorizeUserMenu(client) AuthorizeUser(client);
