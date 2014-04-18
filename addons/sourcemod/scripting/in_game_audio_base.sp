@@ -889,7 +889,6 @@ public IGAMenu:PallEnabledMenu(client)
     DisplayMenu(menu, client, 20);
 }
 
-
 // Menu Handler
 public PallEnabledMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 {
