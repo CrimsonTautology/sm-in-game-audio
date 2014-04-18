@@ -290,7 +290,9 @@ SetClientVolume(client, volume)
 {
     if (volume >=0 && volume <= 10)
     {
-        SetClientCookie(client, g_Cookie_Volume, buffer);
+        new String:tmp[11];
+        IntToString(volume, tmp, sizeof(tmp));
+        SetClientCookie(client, g_Cookie_Volume, tmp);
         g_Volume[client] = volume;
         ReplyToCommand(client, "\x04%t", "volume_set", volume);
     }else{
@@ -825,22 +827,22 @@ public IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
 
 public IGAMenu:ChangeVolumeMenu(client)
 {
-    new Handle:menu = CreateMenu(ClassMenuHandler);
-	new selected = g_Volume[client];
+    new Handle:menu = CreateMenu(ChangeVolumeMenuHandler);
+    new set_volume = g_Volume[client];
     new String:tmp[32];
 
-    SetMenuTitle(menu, "Set volume");
+    SetMenuTitle(menu, "Set IGA volume");
 
-    AddMenuItem(menu, "1", " █         (min)");
-    AddMenuItem(menu, "2", " ██");
-    AddMenuItem(menu, "3", " ███");
-    AddMenuItem(menu, "4", " ████");
-    AddMenuItem(menu, "5", " █████");
-    AddMenuItem(menu, "6", " ██████");
-    AddMenuItem(menu, "7", " ███████");
-    AddMenuItem(menu, "8", " ████████");
-    AddMenuItem(menu, "9", " █████████");
-    AddMenuItem(menu, "0", " ██████████(max)");
+    AddMenuItem(menu, "1",  " █         (min)");
+    AddMenuItem(menu, "2",  " ██");
+    AddMenuItem(menu, "3",  " ███");
+    AddMenuItem(menu, "4",  " ████");
+    AddMenuItem(menu, "5",  " █████");
+    AddMenuItem(menu, "6",  " ██████");
+    AddMenuItem(menu, "7",  " ███████");
+    AddMenuItem(menu, "8",  " ████████");
+    AddMenuItem(menu, "9",  " █████████");
+    AddMenuItem(menu, "10", " ██████████(max)");
 
     SetMenuExitButton(menu, false);
     SetMenuPagination(menu, MENU_NO_PAGINATION);
@@ -852,14 +854,16 @@ public IGAMenu:ChangeVolumeMenu(client)
 // Menu Handler
 public ChangeVolumeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 {
-	switch (action)
-	{
-		case MenuAction_Select:
-		{
-            new selected = StringToInt(param2);
-            selected = selected == 0 ? 10 : selected; //0 on the menu corresponds to 10
-            SetClientVolume(param1, selected);
-		}
-		case MenuAction_End: CloseHandle(menu);
-	}
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                decl String:info[32];
+                GetMenuItem(menu, param2, info, sizeof(info));
+                decl volume = StringToInt(info);
+                decl client = param1;
+                SetClientVolume(client, volume);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
 }
