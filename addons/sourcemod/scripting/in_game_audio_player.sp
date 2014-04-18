@@ -194,7 +194,7 @@ public bool:DonatorCheck(client)
 
 public IGAMenu:TutorialMenu(client)
 {
-    new Handle:menu = CreateMenu(PallEnabledMenuHandler);
+    new Handle:menu = CreateMenu(TutorialMenuHandler);
 
     SetMenuTitle(menu, "How to play music");
 
