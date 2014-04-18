@@ -150,7 +150,7 @@ native StartCoolDown(client);
  */
 native bool:IsClientInCooldown(client);
 
-functag IGA_MenuCallback IGA_Menu:public(client);
+functag IGA_MenuCallback IGAMenu:public(client);
 
 /**
  * Register a menu item.
