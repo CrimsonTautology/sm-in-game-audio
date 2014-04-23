@@ -112,6 +112,7 @@ public OnAllPluginsLoaded()
     IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
     IGA_RegisterMenuItem("View Play List (!plist)", SongListMenu);
     IGA_RegisterMenuItem("Authorize yourself to upload songs", AuthorizeUserMenu);
+    IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
 }
 
 public OnClientConnected(client)
@@ -917,3 +918,22 @@ public PallEnabledMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 public IGAMenu:StopSongMenu(client) StopSong(client);
 public IGAMenu:SongListMenu(client) SongList(client);
 public IGAMenu:AuthorizeUserMenu(client) AuthorizeUser(client);
+
+public IGAMenu:TroubleShootingMenu(client)
+{
+    //List some steps that can fix the problem
+    if (!InternalClientHasPallEnabled(client))
+    {
+        PrintToChat(client, "\x04%t", "pall_not_enabled");
+    }
+
+    if (g_Volume[client] < 1)
+    {
+        PrintToChat(client, "\x04%t", "volume_muted");
+    }
+
+    //Checking cl_disablehtmlmotd != 0 requires a callback, this is simpler
+    PrintToChat(client, "\x04%t", "motd_not_enabled");
+
+    PrintToChat(client, "\x04%t", "install_flash");
+}

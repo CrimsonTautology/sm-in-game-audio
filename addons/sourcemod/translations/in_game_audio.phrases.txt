@@ -90,11 +90,28 @@
     {
         "en"    "[IGA] Cannot listen to song.  Type !yespall to listen to songs from other players"
     }
-    
+
     "user_in_cooldown"
     {
         "en"    "[IGA] User in cooldown."
     }
+
+    "volume_muted"
+    {
+        "en"    "[IGA] Volume muted, cannot listen to song.  Type !vol to adjust your volume"
+    }
+    
+    "motd_not_enabled"
+    {
+        "en"    "[IGA] Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type 'cl_disablehtmlmotd 0' into console."
+    }
+
+    "install_flash"
+    {
+        "en"    "[IGA] Adobe Flash Player for Other Browsers must be installed to play music.  Visit http://get.adobe.com/flashplayer/otherversions/"
+    }
+    
+    
 
 
 }
