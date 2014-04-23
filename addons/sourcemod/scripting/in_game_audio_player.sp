@@ -198,12 +198,12 @@ public IGAMenu:TutorialMenu(client)
 
     SetMenuTitle(menu, "How to play music");
 
-    AddMenuItem(menu, "0", "!p                Play a random song");
-    AddMenuItem(menu, "0", "!p category       Play a random song in category");
-    AddMenuItem(menu, "0", "!p category/name  Play a specific song name in category");
-    AddMenuItem(menu, "0", "!pall             Same as !p except it plays to everyone on the server");
-    AddMenuItem(menu, "0", "!plist            Use to find a song or category");
-    AddMenuItem(menu, "0", "!stop             Stop currently playing song");
+    AddMenuItem(menu, "0", "!p         Play a random song");
+    AddMenuItem(menu, "0", "!p c       Play a random song in category c");
+    AddMenuItem(menu, "0", "!p c/name  Play a specific song name in category c");
+    AddMenuItem(menu, "0", "!pall      Same as !p except it plays to everyone on the server");
+    AddMenuItem(menu, "0", "!plist     Use to find a song or category");
+    AddMenuItem(menu, "0", "!stop      Stop currently playing song");
 
     DisplayMenu(menu, client, 20);
 }
