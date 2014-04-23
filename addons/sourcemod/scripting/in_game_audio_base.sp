@@ -420,6 +420,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 PrintToChatAll("%t", "started_playing_to_all", description);
                 PrintToChatAll("%t", "duration", duration_formated);
                 PrintToChatAll("%t", "to_stop_all");
+                PrintToChatAll("\x04%t", "iga_settings");
 
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
@@ -443,6 +444,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
             PrintToChatAll("%t", "started_playing_to_self", name, description, full_path);
             PrintToChat(client, "%t", "duration", duration_formated);
             PrintToChat(client, "%t", "to_stop");
+            PrintToChat(client, "\x04%t", "iga_settings");
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
@@ -535,6 +537,7 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
         {
             g_PallNextFree = 0;
             InternalPlaySongAll(song_id, access_token, force);
+            PrintToChatAll("\x04%t", "iga_settings");
         }
     }
 

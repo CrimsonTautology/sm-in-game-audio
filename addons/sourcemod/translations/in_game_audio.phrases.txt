@@ -28,6 +28,11 @@
         "en"    "Type !stop to cancel."
     }
 
+    "iga_settings"
+    {
+        "en"    "Type !iga to adjust your audio settings or if you can't hear anything."
+    }
+
     "pall_currently_playing"
     {
         "#format"   "{1:s},{2:s},{3:i},{4:s}"
