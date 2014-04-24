@@ -347,6 +347,7 @@ public Native_QuerySong(Handle:plugin, args) {
     if (!InternalIsIGAEnabled())
     {
         PrintToConsole(0, "%t", "not_enabled");
+        return;
     }
 
     new len;
@@ -464,6 +465,7 @@ InternalUserTheme(client)
     if (!InternalIsIGAEnabled())
     {
         PrintToConsole(0, "%t", "not_enabled");
+        return;
     }
 
     new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
@@ -496,6 +498,7 @@ InternalMapTheme(bool:force=true, String:map[] ="")
     if (!InternalIsIGAEnabled())
     {
         PrintToConsole(0, "%t", "not_enabled");
+        return;
     }
 
     new HTTPRequestHandle:request = CreateIGARequest(MAP_THEME_ROUTE);
