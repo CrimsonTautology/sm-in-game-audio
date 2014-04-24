@@ -35,10 +35,12 @@ Currently Adobe Flash Player must be installed for users to hear the music; alth
 # IGA Base
 Handles all calls to the web server and plays the music for players.  Also controls the user's preferences such as whether they have pall enabled and the volume
 
-* `sm_vol [0-10]` - Set's the user's volume; 10 the loudest and 0 is mute.
+* `sm_vol [0-10]` - Set's the user's volume; 10 the loudest and 0 is mute.  Brings up a menu if called without an argument.
 * `sm_nopall` - Disables playing music that is played for all users (e.g. `sm_pall`, donator intros).  The user can still play to themselves with commands such as `sm_p`
 * `sm_yespall` - Enables playing music that is played for all users.
 * `sm_authorize_iga` - Authorize the user to upload songs to the web server. (NOTE: I may change how authorization is handled in the future)
+* `sm_iga` - Bring up the IGA settings and control menu.
+
 
 # IGA Player
 Handles the commands that let players play songs to themselves and to each other.
