@@ -18,7 +18,7 @@
 #include <steamtools>
 #include <smjansson>
 
-#define PLUGIN_VERSION "1.3"
+#define PLUGIN_VERSION "1.3.52.1.3.15.12.5.1.9.666.is.this.a.good.version.number.malachi?.42"
 
 public Plugin:myinfo =
 {
@@ -94,6 +94,7 @@ public OnPluginStart()
     g_Cvar_IGARequestCooldownTime = CreateConVar("sm_iga_request_cooldown_time", "2.0", "How long in seconds before a client can send another http request");
 
     RegConsoleCmd("sm_vol", Command_Vol, "Adjust your play volume");
+    RegConsoleCmd("sm_volume", Command_Vol, "Adjust your play volume");
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
     RegConsoleCmd("sm_authorize_iga", Command_AuthorizeIGA, "Declare that you want to upload songs to the website.  This will set you as an uploader.");
