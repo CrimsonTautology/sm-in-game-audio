@@ -2,9 +2,9 @@ require 'rake'
 require 'fileutils'
 require 'socket'
  
-SOURCEMOD = ENV["SOURCEMOD_DIR"]                 or fail 'Enviornment variable "SOURCEMOD_DIR" not set'
-SERVER    = ENV["SOURCEMOD_DEV_SERVER"]          or fail 'Enviornment variable "SOURCEMOD_DEV_SERVER" not set'
-PASSWORD  = ENV["SOURCEMOD_DEV_SERVER_PASSWORD"] or fail 'Enviornment variable "SOURCEMOD_DEV_SERVER_PASSWORD" not set'
+SOURCEMOD = ENV["SOURCEMOD_DIR"]
+SERVER    = ENV["SOURCEMOD_DEV_SERVER"]
+PASSWORD  = ENV["SOURCEMOD_DEV_SERVER_PASSWORD"]
  
 SPCOMP    = ENV["SPCOMP"] || File.join(SOURCEMOD, "scripting/spcomp")
  
@@ -19,6 +19,8 @@ task :default => [:compile, :install, :reload]
  
 desc "Compile project"
 task :compile do
+  fail 'Enviornment variable "SPCOMP" not set' unless SPCOMP
+
   Dir.chdir File.join(PROJECT_ROOT, SCRIPTING)
   Dir.glob('*.sp') do |f|
     smxfile = f.gsub(/\.sp$/, ".smx")
@@ -54,6 +56,8 @@ end
 
 desc "Remove project from development server"
 task :uninstall do
+  fail 'Enviornment variable "SOURCEMOD_DEV_SERVER" not set' unless SERVER
+
   Dir.chdir File.join(PROJECT_ROOT, PLUGINS)
   Dir.glob('*.smx') do |f|
     FileUtils.rm(File.join(SERVER, PLUGINS, f))
@@ -94,6 +98,8 @@ end
 
 def rcon_session
   require 'steam-condenser'
+  fail 'Enviornment variable "SOURCEMOD_DEV_SERVER_PASSWORD" not set' unless PASSWORD
+
   local_ip = Socket::getaddrinfo(Socket.gethostname,"echo",Socket::AF_INET)[0][3]
   server = SourceServer.new(local_ip)
   begin
@@ -108,6 +114,8 @@ def rcon_session
 end
 
 def install_filetype glob, subdirectory, overwrite=true
+  fail 'Enviornment variable "SOURCEMOD_DEV_SERVER" not set' unless SERVER
+
   Dir.chdir File.join(PROJECT_ROOT, subdirectory)
   Dir.glob(glob) do |f|
     path = File.join(SERVER, subdirectory, f)
