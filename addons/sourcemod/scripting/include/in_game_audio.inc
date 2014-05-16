@@ -138,6 +138,14 @@ native MapTheme(bool:force=true, const String:map[]="");
 native UserTheme(client);
 
 /**
+ * Play a user's theme song to all
+ *
+ * @param client    The client index
+ * @param callback  HTTP callback function called when the call returns
+ */
+native GenerateLoginToken(client, HTTPRequestComplete:callback);
+
+/**
  * Start a user's api calling cool down
  *
  * @param client    The client index

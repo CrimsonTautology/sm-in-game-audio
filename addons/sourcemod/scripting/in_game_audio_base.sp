@@ -80,6 +80,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("QuerySong", Native_QuerySong);
     CreateNative("MapTheme", Native_MapTheme);
     CreateNative("UserTheme", Native_UserTheme);
+    CreateNative("GenerateLoginToken", Native_GenerateLoginToken);
     CreateNative("StartCoolDown", Native_StartCoolDown);
     CreateNative("IsClientInCooldown", Native_IsClientInCooldown);
     CreateNative("IsIGAEnabled", Native_IsIGAEnabled);
@@ -605,6 +606,25 @@ public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStat
     {
         PrintToChat(client, "%t", "now_authorized_to_upload");
     }
+}
+
+public Native_GenerateLoginToken(Handle:plugin, args) { InternalGenerateLoginToken(GetNativeCell(1), HTTPRequestComplete:GetNativeCell(2)); }
+InternalGenerateLoginToken(client, HTTPRequestComplete:callback)
+{
+    new HTTPRequestHandle:request = CreateIGARequest(GENERATE_LOGIN_TOKEN_ROUTE);
+    new player = client > 0 ? GetClientUserId(client) : 0;
+
+    if(request == INVALID_HTTP_HANDLE)
+    {
+        ReplyToCommand(client, "\x04%t", "url_invalid");
+        return;
+    }
+
+    decl String:uid[MAX_COMMUNITYID_LENGTH];
+    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+
+    Steam_SendHTTPRequest(request, callback, player);
 }
 
 public Native_PlaySongAll(Handle:plugin, args)
