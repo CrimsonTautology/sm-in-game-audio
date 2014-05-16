@@ -13,6 +13,8 @@
 
 #include <sourcemod>
 #include <in_game_audio>
+#include <steamtools>
+#include <smjansson>
 
 #define PLUGIN_VERSION "1.0"
 

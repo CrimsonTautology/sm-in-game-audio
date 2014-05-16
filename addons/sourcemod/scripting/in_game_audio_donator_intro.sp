@@ -15,6 +15,8 @@
 
 #include <sourcemod>
 #include <in_game_audio>
+#include <steamtools>
+#include <smjansson>
 #undef REQUIRE_PLUGIN
 #include <donator>
 
