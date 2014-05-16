@@ -411,7 +411,7 @@ InternalQuerySong(client, String:path[], bool:pall, bool:force)
 }
 
 
-public HTTPRequestComplete:ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
     if(!successful || code != HTTPStatusCode_OK)
@@ -542,7 +542,7 @@ InternalMapTheme(bool:force=true, String:map[] ="")
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
-public HTTPRequestComplete:ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     if(!successful || code != HTTPStatusCode_OK)
     {
