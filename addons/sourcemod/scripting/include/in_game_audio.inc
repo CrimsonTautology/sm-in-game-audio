@@ -141,7 +141,7 @@ native UserTheme(client);
  * @param client    The client index
  * @param callback  HTTP callback function called when the call returns
  */
-native GenerateLoginToken(client, HTTPRequestComplete:callback);
+native GenerateLoginToken(client, callback);
 
 /**
  * Start a user's api calling cool down
