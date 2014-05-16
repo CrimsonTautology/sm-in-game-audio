@@ -43,12 +43,17 @@ new g_MenuId;
 
 new bool:g_IsInCooldown[MAXPLAYERS+1] = {false, ...};
 new bool:g_IsPallEnabled[MAXPLAYERS+1] = {false, ...};
+
 new String:g_CurrentPallDescription[64];
 new String:g_CurrentPallPath[64];
 new String:g_CurrentPlastSongId[64];
+
 new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
 new g_Volume[MAXPLAYERS+1] = {2, ...};
+
+new String:g_LoginTokenInvalidatedAt[64][MAXPLAYERS+1];
+new g_LoginTokenInvalidatedAt[MAXPLAYERS+1] = {0, ...};
 
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -66,6 +71,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("SetPallEnabled", Native_SetPallEnabled);
     CreateNative("IsInP", Native_IsInP);
     CreateNative("IsInPall", Native_IsInPall);
+    CreateNative("GetLoginTokenForClient", Native_GetLoginTokenForClient);
     CreateNative("PlaySong", Native_PlaySong);
     CreateNative("PlaySongAll", Native_PlaySongAll);
     CreateNative("StopSong", Native_StopSong);
@@ -342,6 +348,18 @@ public Native_IsInP(Handle:plugin, args) { return _:InternalIsInP(GetNativeCell(
 bool:InternalIsInP(client)
 {
     return GetTime() < g_PNextFree[client];
+}
+
+public Native_GetLoginTokenForClient(Handle:plugin, args) {
+    new len;
+    GetNativeStringLength(2, len);
+    new String:login_token[len+1];
+    GetNativeString(2, login_token, len+1);
+
+    InternalGetLoginTokenForClient(GetNativeCell(1), login_token);
+}
+InternalGetLoginTokenForClient(client, String:login_token[])
+{
 }
 
 public Native_QuerySong(Handle:plugin, args) {
