@@ -42,7 +42,16 @@ public OnPluginStart()
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
     MarkNativeAsOptional("IsPlayerDonator");
+    MarkNativeAsOptional("Donator_RegisterMenuItem");
     return APLRes_Success;
+}
+
+public OnAllPluginsLoaded()
+{
+    if (g_DonatorLibraryExists)
+    {
+        Donator_RegisterMenuItem("Donator Intro Song", DonatorIntroMenu);
+    }
 }
 
 public OnLibraryRemoved(const String:name[])
@@ -92,4 +101,43 @@ public Action:Event_JoinClass(client, const String:command[], args)
     }
 
     return Plugin_Continue;
+}
+
+public DonatorMenu:DonatorIntroMenu(client) GenerateLoginToken(client, ReceiveGenerateLoginToken);
+
+public ReceiveGenerateLoginToken(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+{
+    new client = GetClientOfUserId(userid);
+    if(!successful || code != HTTPStatusCode_OK)
+    {
+        LogError("[IGA] Error at RecivedGenerateLoginToken (HTTP Code %d; success %d)", code, successful);
+        Steam_ReleaseHTTPRequest(request);
+        return;
+    }
+
+    if(client)
+    {
+        decl String:data[4096];
+        Steam_GetHTTPResponseBodyData(request, data, sizeof(data));
+        Steam_ReleaseHTTPRequest(request);
+
+        new Handle:json = json_load(data);
+        new String:uid[128], String:login_token[128];
+        json_object_get_string(json, "uid", uid, sizeof(uid));
+        json_object_get_string(json, "login_token", login_token, sizeof(login_token));
+
+        UserThemesPage(client, uid, login_token);
+
+        CloseHandle(json);
+    }else{
+        Steam_ReleaseHTTPRequest(request);
+    }
+}
+
+UserThemesPage(client, String:uid[], String:login_token[])
+{
+    decl String:args[256]="";
+    Format(args, sizeof(args),
+            "/%s/themes?login_token=%s", uid, login_token);
+    CreateIGAPopup(client, USERS_ROUTE, args);
 }

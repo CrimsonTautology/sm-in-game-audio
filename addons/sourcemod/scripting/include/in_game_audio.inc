@@ -22,6 +22,7 @@
 #define SONGS_ROUTE "/songs"
 #define NEW_SONGS_ROUTE "/songs/new"
 #define DIRECTORIES_ROUTE "/directories"
+#define USERS_ROUTE "/users"
 #define STOP_ROUTE "/stop"
 
 #define MAX_STEAMID_LENGTH 21 
