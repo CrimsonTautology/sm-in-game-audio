@@ -136,7 +136,10 @@ native MapTheme(bool:force=true, const String:map[]="");
 native UserTheme(client);
 
 /**
- * Play a user's theme song to all
+ * Gets the auto-login token for a client so they can use the IGA
+ * website via the MOTD without logging in.  Internally caches the
+ * token and when it expires so a new one can be generated if need be.
+ *
  *
  * @param client    The client index
  * @param callback  HTTP callback function called when the call returns
@@ -157,16 +160,6 @@ native StartCoolDown(client);
  * @return          True if user is in cool down, else false
  */
 native bool:IsClientInCooldown(client);
-
-/**
- * Gets the auto-login token for a client so they can use the IGA
- * website via the MOTD without logging in.  Internally caches the
- * token and when it expires so a new one can be generated if need be.
- *
- * @param client        The client index
- * @param login_token   Buffer to hold the login token for this client.  Returned via parameter.
- */
-native GetLoginTokenForClient(client, String:login_token[]);
 
 functag IGA_MenuCallback IGAMenu:public(client);
 
