@@ -360,6 +360,7 @@ public Native_GetLoginTokenForClient(Handle:plugin, args) {
 }
 InternalGetLoginTokenForClient(client, String:login_token[])
 {
+    //If token is invalid (or has never been generated) send a request for a new one
 }
 
 public Native_QuerySong(Handle:plugin, args) {

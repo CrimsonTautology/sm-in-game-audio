@@ -160,7 +160,7 @@ native bool:IsClientInCooldown(client);
  * @param client        The client index
  * @param login_token   Buffer to hold the login token for this client.  Returned via parameter.
  */
-native GetLoginTokenForClient(client, const String:login_token[]);
+native GetLoginTokenForClient(client, String:login_token[]);
 
 functag IGA_MenuCallback IGAMenu:public(client);
 
