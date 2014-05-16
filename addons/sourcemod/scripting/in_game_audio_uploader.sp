@@ -76,7 +76,7 @@ public ReceiveGenerateLoginToken(HTTPRequestHandle:request, bool:successful, HTT
         new String:login_token[128];
         json_object_get_string(json, "login_token", login_token, sizeof(login_token));
 
-        UploadPage(client, login_token);
+        UploadPage(client, login_token)
 
         CloseHandle(json);
     }else{
