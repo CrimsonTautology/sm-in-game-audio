@@ -255,10 +255,10 @@ public Native_CreateIGAPopup(Handle:plugin, args)
     GetNativeString(2, route, len+1);
 
     GetNativeStringLength(3, len);
-    new String:args[len+1];
-    GetNativeString(3, args, len+1);
+    new String:argstring[len+1];
+    GetNativeString(3, argstring, len+1);
 
-    InternalCreateIGAPopup(GetNativeCell(1), route, args, bool:GetNativeCell(4), bool:GetNativeCell(5));
+    InternalCreateIGAPopup(GetNativeCell(1), route, argstring, bool:GetNativeCell(4), bool:GetNativeCell(5));
 }
 InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:popup=true, bool:fullscreen=true)
 {
@@ -411,7 +411,7 @@ InternalQuerySong(client, String:path[], bool:pall, bool:force)
 }
 
 
-public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public HTTPRequestComplete:ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
     if(!successful || code != HTTPStatusCode_OK)
@@ -542,7 +542,7 @@ InternalMapTheme(bool:force=true, String:map[] ="")
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
-public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public HTTPRequestComplete:ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     if(!successful || code != HTTPStatusCode_OK)
     {
