@@ -48,17 +48,46 @@ public Action:Command_Upload(client, args)
     }
 
     if(client && IsClientAuthorized(client)){
-        decl String:path[MAX_SONG_LENGTH];
-        GetCmdArgString(path, sizeof(path));
-        UploadSong(client, path);
+        GenerateLoginToken(client, ReceiveGenerateLoginToken);
     }
 
     return Plugin_Handled;
 }
 
-public IGAMenu:UploadSongMenu(client) UploadSong(client);
+public IGAMenu:UploadSongMenu(client) GenerateLoginToken(client, ReceiveGenerateLoginToken);
 
-UploadSong(client, String:path[])
+public ReceiveGenerateLoginToken(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
+    new client = GetClientOfUserId(userid);
+    if(!successful || code != HTTPStatusCode_OK)
+    {
+        LogError("[IGA] Error at RecivedGenerateLoginToken (HTTP Code %d; success %d)", code, successful);
+        Steam_ReleaseHTTPRequest(request);
+        return;
+    }
+
+    if(client)
+    {
+        decl String:data[4096];
+        Steam_GetHTTPResponseBodyData(request, data, sizeof(data));
+        Steam_ReleaseHTTPRequest(request);
+
+        new Handle:json = json_load(data);
+        new String:login_token[128];
+        json_object_get_string(json, "login_token", login_token, sizeof(login_token));
+
+        UploadPage(client, login_token);
+
+        CloseHandle(json);
+    }else{
+        Steam_ReleaseHTTPRequest(request);
+    }
 }
 
+UploadPage(client, String:login_token[])
+{
+    decl String:args[256]="";
+    Format(args, sizeof(args),
+            "?login_token=%s", login_token);
+    CreateIGAPopup(client, NEW_SONGS_ROUTE, args);
+}
