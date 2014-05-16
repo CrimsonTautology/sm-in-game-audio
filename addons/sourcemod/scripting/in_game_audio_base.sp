@@ -253,6 +253,40 @@ HTTPRequestHandle:CreateIGARequest(const String:route[])
     return request;
 }
 
+CreateIGAPopup(const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
+{
+    //Don't display if client is a bot
+    if(!IsClientInGame(client) || IsFakeClient(client))
+    {
+        return;
+    }
+    decl String:url[256], String:base_url[128];
+    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
+
+    //TODO make a pop-under motd method
+    //Format http string
+    //TODO store this on cvar change
+    TrimString(base_url);
+    new trim_length = strlen(base_url) - 1;
+
+    if(base_url[trim_length] == '/')
+    {
+        strcopy(base_url, trim_length + 1, base_url);
+    }
+
+    Format(url, sizeof(url),
+            "%s%s/%s", base_url, route, args);
+
+    new Handle:panel = CreateKeyValues("data");
+    KvSetString(panel, "title", "In Game Audio");
+    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
+    KvSetString(panel, "msg", url);
+    if(fullscreen) {KvSetNum(panel, "customsvr", 1);} //Sets motd to be fullscreen
+
+    ShowVGUIPanel(client, "info", panel, popup);
+    CloseHandle(panel);
+}
+
 public Native_StartCoolDown(Handle:plugin, args) { InternalStartCooldown(GetNativeCell(1)); }
 InternalStartCooldown(client)
 {
