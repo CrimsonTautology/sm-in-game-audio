@@ -253,7 +253,7 @@ HTTPRequestHandle:CreateIGARequest(const String:route[])
     return request;
 }
 
-CreateIGAPopup(const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
+CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
 {
     //Don't display if client is a bot
     if(!IsClientInGame(client) || IsFakeClient(client))
@@ -281,7 +281,7 @@ CreateIGAPopup(const String:route[]="", const String:args[]="", bool:show=true, 
     KvSetString(panel, "title", "In Game Audio");
     KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
     KvSetString(panel, "msg", url);
-    if(fullscreen) {KvSetNum(panel, "customsvr", 1);} //Sets motd to be fullscreen
+    if(!popup && fullscreen) {KvSetNum(panel, "customsvr", 1);} //Sets motd to be fullscreen
 
     ShowVGUIPanel(client, "info", panel, popup);
     CloseHandle(panel);
@@ -654,69 +654,24 @@ public Native_PlaySong(Handle:plugin, args)
 }
 InternalPlaySong(client, String:song_id[], String:access_token[])
 {
-    //Don't play song if client is a bot or has a muted volume
-    if(!IsClientInGame(client) || IsFakeClient(client) || g_Volume[client] < 1)
+    //Don't play song if client has a muted volume
+    if(g_Volume[client] < 1)
     {
         return;
     }
-    decl String:url[256], String:base_url[128];
-    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
 
-    //TODO make a pop-under motd method
-    //Format http string
-    //TODO store this on cvar change
-    TrimString(base_url);
-    new trim_length = strlen(base_url) - 1;
+    decl String:args[256];
+    Format(args, sizeof(args),
+            "%s/play?access_token=%s&volume=%f", song_id, access_token, (g_Volume[client] / 10.0));
 
-    if(base_url[trim_length] == '/')
-    {
-        strcopy(base_url, trim_length + 1, base_url);
-    }
-
-    Format(url, sizeof(url),
-            "%s%s/%s/play?access_token=%s&volume=%f", base_url, SONGS_ROUTE, song_id, access_token, (g_Volume[client] / 10.0));
-
-    new Handle:panel = CreateKeyValues("data");
-    KvSetString(panel, "title", "In Game Audio");
-    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
-    KvSetString(panel, "msg", url);
-
-    ShowVGUIPanel(client, "info", panel, false);
-    CloseHandle(panel);
+    CreateIGAPopup(client, SONGS_ROUTE, args, false);
 }
 
 public Native_StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
 InternalStopSong(client)
 {
-    if(!IsClientInGame(client) || IsFakeClient(client))
-    {
-        return;
-    }
     g_PNextFree[client] = 0;
-    decl String:url[256], String:base_url[128];
-    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
-
-    //Format http string
-    //TODO store this on cvar change
-    TrimString(base_url);
-    new trim_length = strlen(base_url) - 1;
-
-    if(base_url[trim_length] == '/')
-    {
-        strcopy(base_url, trim_length + 1, base_url);
-    }
-
-
-    Format(url, sizeof(url),
-            "%s%s", base_url, STOP_ROUTE);
-
-    new Handle:panel = CreateKeyValues("data");
-    KvSetString(panel, "title", "In Game Audio");
-    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
-    KvSetString(panel, "msg", url);
-
-    ShowVGUIPanel(client, "info", panel, false);
-    CloseHandle(panel);
+    CreateIGAPopup(client, STOP_ROUTE, "", false);
 }
 
 public Native_StopSongAll(Handle:plugin, args) { InternalStopSongAll(); }
@@ -743,38 +698,17 @@ public Native_SongList(Handle:plugin, args)
 }
 public InternalSongList(client, String:search[])
 {
-    decl String:url[256], String:base_url[128];
-    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
-
-    //Format http string
-    //TODO store this on cvar change
-    TrimString(base_url);
-    new trim_length = strlen(base_url) - 1;
-
-    if(base_url[trim_length] == '/')
-    {
-        strcopy(base_url, trim_length + 1, base_url);
-    }
 
     //Use a song search if given a search key
     if(strlen(search) > 0)
     {
-        Format(url, sizeof(url),
-                "%s%s?search=%s", base_url, SONGS_ROUTE, search);
+        decl String:args[256]="";
+        Format(url, sizeof(args),
+                "?search=%s", search);
+        CreateIGAPopup(client, SONGS_ROUTE, args);
     }else{
-        Format(url, sizeof(url),
-                "%s%s", base_url, DIRECTORIES_ROUTE);
+        CreateIGAPopup(client, DIRECTORIES_ROUTE);
     }
-
-    new Handle:panel = CreateKeyValues("data");
-    KvSetString(panel, "title", "In Game Audio");
-    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
-    KvSetString(panel, "msg", url);
-    KvSetNum(panel, "customsvr", 1); //Sets motd to be fullscreen
-
-    ShowVGUIPanel(client, "info", panel, true);
-    CloseHandle(panel);
-
 }
 
 
