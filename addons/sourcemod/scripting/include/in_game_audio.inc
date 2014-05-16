@@ -98,11 +98,15 @@ native StopSong(client);
 native StopSongAll();
 
 /**
- * Show the song list to a player.
+ * Popup an IGA webpage via a MOTD panel to the player
  *
- * @param client    The client index
+ * @param client        The client index
+ * @param route         The main route to use
+ * @param args          The args and query paramaters to use
+ * @param popup         If true it will popup the page for the player to see. else it will popunder
+ * @param fullscreen    If true will display as a full screen(TF2 only)
  */
-native SongList(client, const String:search[]="");
+native CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
 
 /**
  * Performa song query.  Will search for a song named path and play

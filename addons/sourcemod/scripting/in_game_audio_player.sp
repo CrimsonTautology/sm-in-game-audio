@@ -51,6 +51,7 @@ public OnPluginStart()
 
 public OnAllPluginsLoaded()
 {
+    IGA_RegisterMenuItem("View Play List (!plist)", SongListMenu);
     IGA_RegisterMenuItem("How to play songs", TutorialMenu);
 }
 
@@ -191,6 +192,23 @@ public bool:DonatorCheck(client)
     else
         return g_IsDonator[client];
 }
+
+public SongList(client, String:search[])
+{
+
+    //Use a song search if given a search key
+    if(strlen(search) > 0)
+    {
+        decl String:args[256]="";
+        Format(url, sizeof(args),
+                "?search=%s", search);
+        CreateIGAPopup(client, SONGS_ROUTE, args);
+    }else{
+        CreateIGAPopup(client, DIRECTORIES_ROUTE);
+    }
+}
+
+public IGAMenu:SongListMenu(client) SongList(client);
 
 public IGAMenu:TutorialMenu(client)
 {

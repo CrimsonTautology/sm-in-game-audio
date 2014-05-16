@@ -75,10 +75,10 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("PlaySongAll", Native_PlaySongAll);
     CreateNative("StopSong", Native_StopSong);
     CreateNative("StopSongAll", Native_StopSongAll);
-    CreateNative("SongList", Native_SongList);
     CreateNative("QuerySong", Native_QuerySong);
     CreateNative("MapTheme", Native_MapTheme);
     CreateNative("UserTheme", Native_UserTheme);
+    CreateNative("CreateIGAPopup", Native_CreateIGAPopup);
     CreateNative("GenerateLoginToken", Native_GenerateLoginToken);
     CreateNative("StartCoolDown", Native_StartCoolDown);
     CreateNative("IsClientInCooldown", Native_IsClientInCooldown);
@@ -116,7 +116,6 @@ public OnAllPluginsLoaded()
     IGA_RegisterMenuItem("Change Volume", ChangeVolumeMenu);
     IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
     IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
-    IGA_RegisterMenuItem("View Play List (!plist)", SongListMenu);
     IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
 }
 
@@ -253,7 +252,20 @@ HTTPRequestHandle:CreateIGARequest(const String:route[])
     return request;
 }
 
-CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
+public Native_CreateIGAPopup(Handle:plugin, args)
+{
+    new len;
+    GetNativeStringLength(2, len);
+    new String:route[len+1];
+    GetNativeString(2, route, len+1);
+
+    GetNativeStringLength(3, len);
+    new String:args[len+1];
+    GetNativeString(3, args, len+1);
+
+    InternalCreateIGAPopup(GetNativeCell(1), route, args, bool:GetNativeCell(4), bool:GetNativeCell(5));
+}
+InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
 {
     //Don't display if client is a bot
     if(!IsClientInGame(client) || IsFakeClient(client))
@@ -263,9 +275,6 @@ CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:sho
     decl String:url[256], String:base_url[128];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
 
-    //TODO make a pop-under motd method
-    //Format http string
-    //TODO store this on cvar change
     TrimString(base_url);
     new trim_length = strlen(base_url) - 1;
 
@@ -664,14 +673,14 @@ InternalPlaySong(client, String:song_id[], String:access_token[])
     Format(args, sizeof(args),
             "%s/play?access_token=%s&volume=%f", song_id, access_token, (g_Volume[client] / 10.0));
 
-    CreateIGAPopup(client, SONGS_ROUTE, args, false);
+    InternalCreateIGAPopup(client, SONGS_ROUTE, args, false);
 }
 
 public Native_StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
 InternalStopSong(client)
 {
     g_PNextFree[client] = 0;
-    CreateIGAPopup(client, STOP_ROUTE, "", false);
+    InternalCreateIGAPopup(client, STOP_ROUTE, "", false);
 }
 
 public Native_StopSongAll(Handle:plugin, args) { InternalStopSongAll(); }
@@ -686,31 +695,6 @@ InternalStopSongAll()
         }
     }
 }
-
-public Native_SongList(Handle:plugin, args)
-{
-    new len;
-    GetNativeStringLength(2, len);
-    new String:search[len+1];
-    GetNativeString(2, search, len+1);
-
-    InternalSongList(GetNativeCell(1), search); 
-}
-public InternalSongList(client, String:search[])
-{
-
-    //Use a song search if given a search key
-    if(strlen(search) > 0)
-    {
-        decl String:args[256]="";
-        Format(url, sizeof(args),
-                "?search=%s", search);
-        CreateIGAPopup(client, SONGS_ROUTE, args);
-    }else{
-        CreateIGAPopup(client, DIRECTORIES_ROUTE);
-    }
-}
-
 
 //Menu Logic
 
@@ -757,7 +741,7 @@ public Native_UnregisterMenuItem(Handle:plugin, args)
     return false;
 }
 
-ShowIGAMenu(client)
+InternalShowIGAMenu(client)
 {
     new Handle:menu = CreateMenu(IGAMenuSelected);
     SetMenuTitle(menu,"IGA Menu");
@@ -870,7 +854,6 @@ public PallEnabledMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 }
 
 public IGAMenu:StopSongMenu(client) StopSong(client);
-public IGAMenu:SongListMenu(client) SongList(client);
 
 public IGAMenu:TroubleShootingMenu(client)
 {
