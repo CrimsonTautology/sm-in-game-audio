@@ -106,7 +106,7 @@ native StopSongAll();
  * @param popup         If true it will popup the page for the player to see. else it will popunder
  * @param fullscreen    If true will display as a full screen(TF2 only)
  */
-native CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
+native CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:popup=true, bool:fullscreen=true)
 
 /**
  * Performa song query.  Will search for a song named path and play
@@ -118,7 +118,7 @@ native CreateIGAPopup(client, const String:route[]="", const String:args[]="", b
  * @param pall      If found, play to everyone
  * @param force     If found, force playing
  */
-native QuerySong(client, const String:path[], bool:pall = false, bool:force=false);
+native QuerySong(client, const String:path[], bool:pall = false, bool:force=false)
 
 /**
  * Play a map transfer song

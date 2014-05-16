@@ -200,7 +200,7 @@ public SongList(client, String:search[])
     if(strlen(search) > 0)
     {
         decl String:args[256]="";
-        Format(url, sizeof(args),
+        Format(args, sizeof(args),
                 "?search=%s", search);
         CreateIGAPopup(client, SONGS_ROUTE, args);
     }else{
@@ -208,7 +208,7 @@ public SongList(client, String:search[])
     }
 }
 
-public IGAMenu:SongListMenu(client) SongList(client);
+public IGAMenu:SongListMenu(client) SongList(client, "");
 
 public IGAMenu:TutorialMenu(client)
 {

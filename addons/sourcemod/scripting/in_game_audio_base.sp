@@ -52,10 +52,6 @@ new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
 new g_Volume[MAXPLAYERS+1] = {2, ...};
 
-new String:g_LoginTokenInvalidatedAt[64][MAXPLAYERS+1];
-new g_LoginTokenInvalidatedAt[MAXPLAYERS+1] = {0, ...};
-
-
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
     if (LibraryExists("in_game_audio"))
@@ -70,7 +66,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("SetPallEnabled", Native_SetPallEnabled);
     CreateNative("IsInP", Native_IsInP);
     CreateNative("IsInPall", Native_IsInPall);
-    CreateNative("GetLoginTokenForClient", Native_GetLoginTokenForClient);
     CreateNative("PlaySong", Native_PlaySong);
     CreateNative("PlaySongAll", Native_PlaySongAll);
     CreateNative("StopSong", Native_StopSong);
@@ -265,7 +260,7 @@ public Native_CreateIGAPopup(Handle:plugin, args)
 
     InternalCreateIGAPopup(GetNativeCell(1), route, args, bool:GetNativeCell(4), bool:GetNativeCell(5));
 }
-InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:show=true, bool:fullscreen=true)
+InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:popup=true, bool:fullscreen=true)
 {
     //Don't display if client is a bot
     if(!IsClientInGame(client) || IsFakeClient(client))
@@ -374,19 +369,6 @@ public Native_IsInP(Handle:plugin, args) { return _:InternalIsInP(GetNativeCell(
 bool:InternalIsInP(client)
 {
     return GetTime() < g_PNextFree[client];
-}
-
-public Native_GetLoginTokenForClient(Handle:plugin, args) {
-    new len;
-    GetNativeStringLength(2, len);
-    new String:login_token[len+1];
-    GetNativeString(2, login_token, len+1);
-
-    InternalGetLoginTokenForClient(GetNativeCell(1), login_token);
-}
-InternalGetLoginTokenForClient(client, String:login_token[])
-{
-    //If token is invalid (or has never been generated) send a request for a new one
 }
 
 public Native_QuerySong(Handle:plugin, args) {
@@ -741,7 +723,7 @@ public Native_UnregisterMenuItem(Handle:plugin, args)
     return false;
 }
 
-InternalShowIGAMenu(client)
+ShowIGAMenu(client)
 {
     new Handle:menu = CreateMenu(IGAMenuSelected);
     SetMenuTitle(menu,"IGA Menu");
@@ -785,8 +767,6 @@ public IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
 public IGAMenu:ChangeVolumeMenu(client)
 {
     new Handle:menu = CreateMenu(ChangeVolumeMenuHandler);
-    new volume_state = g_Volume[client];//TODO
-    new String:tmp[32];
 
     SetMenuTitle(menu, "Set IGA volume (!vol)");
 
@@ -826,8 +806,6 @@ public ChangeVolumeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 public IGAMenu:PallEnabledMenu(client)
 {
     new Handle:menu = CreateMenu(PallEnabledMenuHandler);
-    new pall_enabled_state = g_IsPallEnabled[client];//TODO
-    new String:tmp[32];
 
     SetMenuTitle(menu, "Listen To Unrequested Music?");
 
