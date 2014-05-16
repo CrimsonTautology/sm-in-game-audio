@@ -29,13 +29,6 @@
 #define MAX_SONG_LENGTH 64
 
 /**
- * Authorize the player to upload music on the webserver.
- *
- * @param client    The client index
- */
-native AuthorizeUser(client);
-
-/**
  * Check if the server has in game audio enabled.
  *
  * @return          True if server has in game audio enabled.

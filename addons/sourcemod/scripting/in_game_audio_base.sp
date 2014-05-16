@@ -66,7 +66,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
     RegPluginLibrary("in_game_audio"); 
 
-    CreateNative("AuthorizeUser", Native_AuthorizeUser);
     CreateNative("ClientHasPallEnabled", Native_ClientHasPallEnabled);
     CreateNative("SetPallEnabled", Native_SetPallEnabled);
     CreateNative("IsInP", Native_IsInP);
@@ -104,7 +103,6 @@ public OnPluginStart()
     RegConsoleCmd("sm_volume", Command_Vol, "Adjust your play volume");
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
-    RegConsoleCmd("sm_authorize_iga", Command_AuthorizeIGA, "Declare that you want to upload songs to the website.  This will set you as an uploader.");
     RegConsoleCmd("sm_iga", Command_IGA, "Bring up the IGA settings and control menu");
 
     g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
@@ -119,7 +117,6 @@ public OnAllPluginsLoaded()
     IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
     IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
     IGA_RegisterMenuItem("View Play List (!plist)", SongListMenu);
-    IGA_RegisterMenuItem("Authorize yourself to upload songs", AuthorizeUserMenu);
     IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
 }
 
@@ -200,21 +197,6 @@ public Action:Command_Yespall(client, args)
     if (client && IsClientAuthorized(client))
     {
         SetPallEnabled(client, true);
-    }
-    return Plugin_Handled;
-}
-
-public Action:Command_AuthorizeIGA(client, args)
-{
-    if(InternalIsClientInCooldown(client))
-    {
-        ReplyToCommand(client, "\x04%t", "user_in_cooldown");
-        return Plugin_Handled;
-    }
-
-    if (client && IsClientAuthorized(client))
-    {
-        InternalAuthorizeUser(client);
     }
     return Plugin_Handled;
 }
@@ -569,45 +551,6 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
     CloseHandle(json);
 }
 
-
-public Native_AuthorizeUser(Handle:plugin, args) { InternalAuthorizeUser(GetNativeCell(1)); }
-InternalAuthorizeUser(client)
-{
-    new HTTPRequestHandle:request = CreateIGARequest(AUTHORIZE_USER_ROUTE);
-    new player = client > 0 ? GetClientUserId(client) : 0;
-
-    if(request == INVALID_HTTP_HANDLE)
-    {
-        ReplyToCommand(client, "\x04%t", "url_invalid");
-        return;
-    }
-
-    decl String:uid[MAX_COMMUNITYID_LENGTH];
-    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
-    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
-
-    Steam_SendHTTPRequest(request, ReceiveAuthorizeUser, player);
-
-    InternalStartCooldown(client);
-}
-
-public ReceiveAuthorizeUser(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
-{
-    new client = GetClientOfUserId(userid);
-    if(!successful || code != HTTPStatusCode_OK)
-    {
-        LogError("[IGA] Error at RecivedAuthorizeUser (HTTP Code %d; success %d)", code, successful);
-        Steam_ReleaseHTTPRequest(request);
-        return;
-    }
-
-    Steam_ReleaseHTTPRequest(request);
-    if(client)
-    {
-        PrintToChat(client, "%t", "now_authorized_to_upload");
-    }
-}
-
 public Native_GenerateLoginToken(Handle:plugin, args) { InternalGenerateLoginToken(GetNativeCell(1), HTTPRequestComplete:GetNativeCell(2)); }
 InternalGenerateLoginToken(client, HTTPRequestComplete:callback)
 {
@@ -960,7 +903,6 @@ public PallEnabledMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 
 public IGAMenu:StopSongMenu(client) StopSong(client);
 public IGAMenu:SongListMenu(client) SongList(client);
-public IGAMenu:AuthorizeUserMenu(client) AuthorizeUser(client);
 
 public IGAMenu:TroubleShootingMenu(client)
 {

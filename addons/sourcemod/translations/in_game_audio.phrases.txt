@@ -59,11 +59,6 @@
         "en"    "[IGA] Only donators can use this command."
     }
 
-    "now_authorized_to_upload"
-    {
-        "en"    "[IGA] You are now authorized to upload songs."
-    }
-
     "volume_usage"
     {
         "#format"   "{1:i}"
