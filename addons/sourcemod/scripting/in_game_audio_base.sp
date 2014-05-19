@@ -770,16 +770,16 @@ public IGAMenu:ChangeVolumeMenu(client)
 
     SetMenuTitle(menu, "Set IGA volume (!vol)");
 
-    AddMenuItem(menu, "1",  " █         (min)");
-    AddMenuItem(menu, "2",  " ██");
-    AddMenuItem(menu, "3",  " ███");
-    AddMenuItem(menu, "4",  " ████");
-    AddMenuItem(menu, "5",  " █████");
-    AddMenuItem(menu, "6",  " ██████");
-    AddMenuItem(menu, "7",  " ███████");
-    AddMenuItem(menu, "8",  " ████████");
-    AddMenuItem(menu, "9",  " █████████");
-    AddMenuItem(menu, "10", " ██████████(max)");
+    AddMenuItem(menu , "1"  , "%s█         (min)" , g_Volume[client] == 1 ? "*" : " ");
+    AddMenuItem(menu , "2"  , "%s██"              , g_Volume[client] == 2 ? "*" : " ");
+    AddMenuItem(menu , "3"  , "%s███"             , g_Volume[client] == 3 ? "*" : " ");
+    AddMenuItem(menu , "4"  , "%s████"            , g_Volume[client] == 4 ? "*" : " ");
+    AddMenuItem(menu , "5"  , "%s█████"           , g_Volume[client] == 5 ? "*" : " ");
+    AddMenuItem(menu , "6"  , "%s██████"          , g_Volume[client] == 6 ? "*" : " ");
+    AddMenuItem(menu , "7"  , "%s███████"         , g_Volume[client] == 7 ? "*" : " ");
+    AddMenuItem(menu , "8"  , "%s████████"        , g_Volume[client] == 8 ? "*" : " ");
+    AddMenuItem(menu , "9"  , "%s█████████"       , g_Volume[client] == 9 ? "*" : " ");
+    AddMenuItem(menu , "10" , "%s██████████(max)" , g_Volume[client] == 10 ? "*" : " ");
 
     SetMenuExitButton(menu, false);
     SetMenuPagination(menu, MENU_NO_PAGINATION);
@@ -809,8 +809,8 @@ public IGAMenu:PallEnabledMenu(client)
 
     SetMenuTitle(menu, "Listen To Unrequested Music?");
 
-    AddMenuItem(menu, "1", "Yes (!yespall)");
-    AddMenuItem(menu, "0", "No  (!nopall)");
+    AddMenuItem(menu , "1" , "%sYes (!yespall)" , g_IsPallEnabled[client] ? "*" : " ");
+    AddMenuItem(menu , "0" , "%sNo  (!nopall)"  , !g_IsPallEnabled[client] ? "*" : " ");
 
     DisplayMenu(menu, client, 20);
 }
