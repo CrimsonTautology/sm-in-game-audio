@@ -145,17 +145,6 @@ native MapTheme(bool:force=true, const String:map[]="");
 native UserTheme(client);
 
 /**
- * Gets the auto-login token for a client so they can use the IGA
- * website via the MOTD without logging in.  Internally caches the
- * token and when it expires so a new one can be generated if need be.
- *
- *
- * @param client    The client index
- * @param callback  HTTP callback function called when the call returns
- */
-native GenerateLoginToken(client, callback);
-
-/**
  * Start a user's api calling cool down
  *
  * @param client    The client index

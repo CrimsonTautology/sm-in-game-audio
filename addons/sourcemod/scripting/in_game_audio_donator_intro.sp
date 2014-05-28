@@ -107,6 +107,10 @@ public Action:Event_JoinClass(client, const String:command[], args)
 
 public DonatorMenu:DonatorIntroMenu(client) UserThemesPage(client);
 
+/**
+ * Gets the auto-login token for a client so they can use the IGA
+ * website via the MOTD without logging in.
+ */
 UserThemesPage(client)
 {
     new HTTPRequestHandle:request = CreateIGARequest(GENERATE_LOGIN_TOKEN_ROUTE);
