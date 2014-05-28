@@ -757,19 +757,60 @@ public IGAMenuSelected(Handle:menu, MenuAction:action, param1, param2)
 public IGAMenu:ChangeVolumeMenu(client)
 {
     new Handle:menu = CreateMenu(ChangeVolumeMenuHandler);
+    new volume = g_Volume[client];
 
     SetMenuTitle(menu, "Set IGA volume (!vol)");
 
-    AddMenuItem(menu , "1"  , "█         (min)");
-    AddMenuItem(menu , "2"  , "██"             );
-    AddMenuItem(menu , "3"  , "███"            );
-    AddMenuItem(menu , "4"  , "████"           );
-    AddMenuItem(menu , "5"  , "█████"          );
-    AddMenuItem(menu , "6"  , "██████"         );
-    AddMenuItem(menu , "7"  , "███████"        );
-    AddMenuItem(menu , "8"  , "████████"       );
-    AddMenuItem(menu , "9"  , "█████████"      );
-    AddMenuItem(menu , "10" , "██████████(max)");
+    if(volume == 1)
+    {AddMenuItem(menu , "1"  , "*█         (min)");}
+    else
+    {AddMenuItem(menu , "1"  , " █         (min)");}
+
+    if(volume == 2)
+    {AddMenuItem(menu , "2"  , "*██"             );}
+    else
+    {AddMenuItem(menu , "2"  , " ██"             );}
+
+    if(volume == 3)
+    {AddMenuItem(menu , "3"  , "*███"            );}
+    else
+    {AddMenuItem(menu , "3"  , " ███"            );}
+
+    if(volume == 4)
+    {AddMenuItem(menu , "4"  , "*████"           );}
+    else
+    {AddMenuItem(menu , "4"  , " ████"           );}
+
+    if(volume == 5)
+    {AddMenuItem(menu , "5"  , "*█████"          );}
+    else
+    {AddMenuItem(menu , "5"  , " █████"          );}
+
+    if(volume == 6)
+    {AddMenuItem(menu , "6"  , "*██████"         );}
+    else
+    {AddMenuItem(menu , "6"  , " ██████"         );}
+
+    if(volume == 7)
+    {AddMenuItem(menu , "7"  , "*███████"        );}
+    else
+    {AddMenuItem(menu , "7"  , " ███████"        );}
+
+    if(volume == 8)
+    {AddMenuItem(menu , "8"  , "*████████"       );}
+    else
+    {AddMenuItem(menu , "8"  , " ████████"       );}
+
+    if(volume == 9)
+    {AddMenuItem(menu , "9"  , "*█████████"      );}
+    else
+    {AddMenuItem(menu , "9"  , " █████████"      );}
+
+    if(volume == 10)
+    {AddMenuItem(menu , "10" , "*██████████(max)");}
+    else
+    {AddMenuItem(menu , "10" , " ██████████(max)");}
+
 
     SetMenuExitButton(menu, false);
     SetMenuPagination(menu, MENU_NO_PAGINATION);
@@ -799,8 +840,14 @@ public IGAMenu:PallEnabledMenu(client)
 
     SetMenuTitle(menu, "Listen To Unrequested Music?");
 
-    AddMenuItem(menu , "1" , "Yes (!yespall)");
-    AddMenuItem(menu , "0" , "No  (!nopall)" );
+    if(g_IsPallEnabled[client])
+    {
+        AddMenuItem(menu , "1" , "*Yes (!yespall)");
+        AddMenuItem(menu , "0" , " No  (!nopall)" );
+    }else{
+        AddMenuItem(menu , "1" , " Yes (!yespall)");
+        AddMenuItem(menu , "0" , "*No  (!nopall)" );
+    }
 
     DisplayMenu(menu, client, 20);
 }
