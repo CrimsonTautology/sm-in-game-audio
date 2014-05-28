@@ -105,14 +105,31 @@ public Action:Event_JoinClass(client, const String:command[], args)
     return Plugin_Continue;
 }
 
-public DonatorMenu:DonatorIntroMenu(client) GenerateLoginToken(client, ReceiveGenerateLoginToken);
+public DonatorMenu:DonatorIntroMenu(client) UserThemesPage(client);
 
-public ReceiveGenerateLoginToken(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+UserThemesPage(client)
+{
+    new HTTPRequestHandle:request = CreateIGARequest(GENERATE_LOGIN_TOKEN_ROUTE);
+    new player = client > 0 ? GetClientUserId(client) : 0;
+
+    if(request == INVALID_HTTP_HANDLE)
+    {
+        ReplyToCommand(client, "\x04%t", "url_invalid");
+        return;
+    }
+
+    decl String:uid[MAX_COMMUNITYID_LENGTH];
+    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+
+    Steam_SendHTTPRequest(request, callback, player);
+}
+public ReceiveUserThemesPage(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
     if(!successful || code != HTTPStatusCode_OK)
     {
-        LogError("[IGA] Error at RecivedGenerateLoginToken (HTTP Code %d; success %d)", code, successful);
+        LogError("[IGA] Error at UserThemesPage (HTTP Code %d; success %d)", code, successful);
         Steam_ReleaseHTTPRequest(request);
         return;
     }
@@ -128,18 +145,14 @@ public ReceiveGenerateLoginToken(HTTPRequestHandle:request, bool:successful, HTT
         json_object_get_string(json, "uid", uid, sizeof(uid));
         json_object_get_string(json, "login_token", login_token, sizeof(login_token));
 
-        UserThemesPage(client, uid, login_token);
+        //Popup webpage
+        decl String:args[256]="";
+        Format(args, sizeof(args),
+                "/%s/themes?login_token=%s", uid, login_token);
+        CreateIGAPopup(client, USERS_ROUTE, args);
 
         CloseHandle(json);
     }else{
         Steam_ReleaseHTTPRequest(request);
     }
-}
-
-UserThemesPage(client, String:uid[], String:login_token[])
-{
-    decl String:args[256]="";
-    Format(args, sizeof(args),
-            "/%s/themes?login_token=%s", uid, login_token);
-    CreateIGAPopup(client, USERS_ROUTE, args);
 }
