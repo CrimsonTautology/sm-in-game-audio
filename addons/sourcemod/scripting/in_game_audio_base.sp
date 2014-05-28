@@ -294,7 +294,7 @@ InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", 
     KvSetString(panel, "title", "In Game Audio");
     KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
     KvSetString(panel, "msg", url);
-    if(!popup && fullscreen) {KvSetNum(panel, "customsvr", 1);} //Sets motd to be fullscreen
+    if(popup && fullscreen) {KvSetNum(panel, "customsvr", 1);} //Sets motd to be fullscreen
 
     ShowVGUIPanel(client, "info", panel, popup);
     CloseHandle(panel);
