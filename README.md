@@ -3,8 +3,6 @@
 
 Allows users to listen to music while in game.  Uses a hidden MOTD page to play the music [using an external web service](http://iga.crimsontautology.com).  Should work for any Source game that can run [Sourcemod](http://www.sourcemod.net).
 
-Currently Adobe Flash Player must be installed for users to hear the music; although an HTML5/Javascript based solution may be possible in the future.
-
 ##Installation
 * Install the [smjansson](https://forums.alliedmods.net/showthread.php?t=184604) extension (Included in repository).
 * Install the [steamtools](https://forums.alliedmods.net/showthread.php?t=129763) extension (Included in repository).
@@ -33,12 +31,11 @@ Currently Adobe Flash Player must be installed for users to hear the music; alth
 * `sm_iga_request_cooldown_time` - the cool down period a user must wait through before they can use another command that makes an HTTP call.
 
 # IGA Base
-Handles all calls to the web server and plays the music for players.  Also controls the user's preferences such as whether they have pall enabled and the volume
+Handles all calls to the web server and provides a framework to play music for players.  Also controls the user's preferences such as whether they have pall enabled and the volume
 
 * `sm_vol [0-10]` - Set's the user's volume; 10 the loudest and 0 is mute.  Brings up a menu if called without an argument.
 * `sm_nopall` - Disables playing music that is played for all users (e.g. `sm_pall`, donator intros).  The user can still play to themselves with commands such as `sm_p`
 * `sm_yespall` - Enables playing music that is played for all users.
-* `sm_authorize_iga` - Authorize the user to upload songs to the web server. (NOTE: I may change how authorization is handled in the future)
 * `sm_iga` - Bring up the IGA settings and control menu.
 
 
