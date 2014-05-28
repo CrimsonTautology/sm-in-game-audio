@@ -838,6 +838,4 @@ public IGAMenu:TroubleShootingMenu(client)
 
     //Checking cl_disablehtmlmotd != 0 requires a callback, this is simpler
     PrintToChat(client, "\x04%t", "motd_not_enabled");
-
-    PrintToChat(client, "\x04%t", "install_flash");
 }

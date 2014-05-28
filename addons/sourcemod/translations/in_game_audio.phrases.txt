@@ -101,13 +101,6 @@
         "en"    "[IGA] Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type 'cl_disablehtmlmotd 0' into console."
     }
 
-    "install_flash"
-    {
-        "en"    "[IGA] Adobe Flash Player for Other Browsers must be installed to play music.  Visit http://get.adobe.com/flashplayer/otherversions/"
-    }
-    
-    
-
 
 }
 
