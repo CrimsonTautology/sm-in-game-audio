@@ -50,7 +50,7 @@ new String:g_CurrentPlastSongId[64];
 
 new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
-new g_Volume[MAXPLAYERS+1] = {2, ...};
+new g_Volume[MAXPLAYERS+1] = {5, ...};
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
@@ -100,8 +100,8 @@ public OnPluginStart()
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
     RegConsoleCmd("sm_iga", Command_IGA, "Bring up the IGA settings and control menu");
 
-    g_Cookie_Volume = RegClientCookie("iga_volume", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
-    g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
+    g_Cookie_Volume = RegClientCookie("iga_volume_1.4", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
+    g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled_1.4", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
 
     g_MenuItems = CreateArray();
 }
@@ -122,7 +122,7 @@ public OnClientConnected(client)
     }
     g_IsInCooldown[client] = false;
     g_PNextFree[client] = 0;
-    g_Volume[client] = 2;
+    g_Volume[client] = 5;
     g_IsPallEnabled[client] = true;
 
     //Disable pall by default for quickplayers
