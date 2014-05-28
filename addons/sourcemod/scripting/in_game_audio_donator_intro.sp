@@ -126,7 +126,7 @@ UserThemesPage(client)
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
     Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
-    Steam_SendHTTPRequest(request, callback, player);
+    Steam_SendHTTPRequest(request, ReceiveUserThemesPage, player);
 }
 public ReceiveUserThemesPage(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {

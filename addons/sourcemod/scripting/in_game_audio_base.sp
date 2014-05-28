@@ -226,7 +226,7 @@ public Native_CreateIGARequest(Handle:plugin, args)
     new String:route[len+1];
     GetNativeString(1, route, len+1);
 
-    return _:InternalIsIGAEnabled(route);
+    return _:InternalCreateIGARequest(route);
 }
 HTTPRequestHandle:InternalCreateIGARequest(const String:route[])
 {
