@@ -14,6 +14,8 @@
 #endif
 #define _in_game_audio_included_
 
+#include <steamtools>
+
 #define QUERY_SONG_ROUTE "/v1/api/query_song"
 #define MAP_THEME_ROUTE "/v1/api/map_theme"
 #define USER_THEME_ROUTE "/v1/api/user_theme"
@@ -97,6 +99,13 @@ native StopSong(client);
  *
  */
 native StopSongAll();
+
+/**
+ * Create an HTTP request with the iga website
+ *
+ * @param route         The main route to use
+ */
+native HTTPRequestHandle:CreateIGARequest(const String:route[]);
 
 /**
  * Popup an IGA webpage via a MOTD panel to the player

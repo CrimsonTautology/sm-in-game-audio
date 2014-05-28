@@ -74,6 +74,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("MapTheme", Native_MapTheme);
     CreateNative("UserTheme", Native_UserTheme);
     CreateNative("CreateIGAPopup", Native_CreateIGAPopup);
+    CreateNative("CreateIGARequest", Native_CreateIGARequest);
     CreateNative("GenerateLoginToken", Native_GenerateLoginToken);
     CreateNative("StartCoolDown", Native_StartCoolDown);
     CreateNative("IsClientInCooldown", Native_IsClientInCooldown);
@@ -219,7 +220,16 @@ SetAccessCode(&HTTPRequestHandle:request)
     Steam_SetHTTPRequestGetOrPostParameter(request, "access_token", api_key);
 }
 
-HTTPRequestHandle:CreateIGARequest(const String:route[])
+public Native_CreateIGARequest(Handle:plugin, args)
+{ 
+    new len;
+    GetNativeStringLength(1, len);
+    new String:route[len+1];
+    GetNativeString(1, route, len+1);
+
+    return _:InternalIsIGAEnabled(route);
+}
+HTTPRequestHandle:InternalCreateIGARequest(const String:route[])
 {
     decl String:base_url[256], String:url[512];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
