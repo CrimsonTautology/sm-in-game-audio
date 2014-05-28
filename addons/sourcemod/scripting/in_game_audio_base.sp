@@ -18,7 +18,7 @@
 #include <steamtools>
 #include <smjansson>
 
-#define PLUGIN_VERSION "1.3.52.1.3.15.12.5.1.9.666.is.this.a.good.version.number.malachi?.42"
+#define PLUGIN_VERSION "1.4"
 
 public Plugin:myinfo =
 {
