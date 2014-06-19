@@ -311,8 +311,8 @@ InternalStartCooldown(client)
     CreateTimer(GetConVarFloat(g_Cvar_IGARequestCooldownTime), RemoveCooldown, client);
 }
 
-public _IsIGAEnabled(Handle:plugin, args) { return _:InternalIsIGAEnabled(); }
-bool:InternalIsIGAEnabled()
+public _IsIGAEnabled(Handle:plugin, args) { return _:IsIGAEnabled(); }
+bool:IsIGAEnabled()
 {
     return GetConVarBool(g_Cvar_IGAEnabled);
 }
@@ -381,7 +381,7 @@ bool:InternalIsInP(client)
 }
 
 public _QuerySong(Handle:plugin, args) {
-    if (!InternalIsIGAEnabled())
+    if (!IsIGAEnabled())
     {
         PrintToConsole(0, "%t", "not_enabled");
         return;
@@ -499,7 +499,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 public _UserTheme(Handle:plugin, args) { InternalUserTheme(GetNativeCell(1)); }
 InternalUserTheme(client)
 {
-    if (!InternalIsIGAEnabled())
+    if (!IsIGAEnabled())
     {
         PrintToConsole(0, "%t", "not_enabled");
         return;
@@ -532,7 +532,7 @@ public _MapTheme(Handle:plugin, args)
 }
 InternalMapTheme(bool:force=true, String:map[] ="")
 {
-    if (!InternalIsIGAEnabled())
+    if (!IsIGAEnabled())
     {
         PrintToConsole(0, "%t", "not_enabled");
         return;
