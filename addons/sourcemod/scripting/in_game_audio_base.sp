@@ -62,25 +62,25 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
     RegPluginLibrary("in_game_audio"); 
 
-    CreateNative("ClientHasPallEnabled", Native_ClientHasPallEnabled);
-    CreateNative("SetPallEnabled", Native_SetPallEnabled);
-    CreateNative("IsInP", Native_IsInP);
-    CreateNative("IsInPall", Native_IsInPall);
-    CreateNative("PlaySong", Native_PlaySong);
-    CreateNative("PlaySongAll", Native_PlaySongAll);
-    CreateNative("StopSong", Native_StopSong);
-    CreateNative("StopSongAll", Native_StopSongAll);
-    CreateNative("QuerySong", Native_QuerySong);
-    CreateNative("MapTheme", Native_MapTheme);
-    CreateNative("UserTheme", Native_UserTheme);
-    CreateNative("CreateIGAPopup", Native_CreateIGAPopup);
-    CreateNative("CreateIGARequest", Native_CreateIGARequest);
-    CreateNative("StartCoolDown", Native_StartCoolDown);
-    CreateNative("IsClientInCooldown", Native_IsClientInCooldown);
-    CreateNative("IsIGAEnabled", Native_IsIGAEnabled);
+    CreateNative("ClientHasPallEnabled", _ClientHasPallEnabled);
+    CreateNative("SetPallEnabled", _SetPallEnabled);
+    CreateNative("IsInP", _IsInP);
+    CreateNative("IsInPall", _IsInPall);
+    CreateNative("PlaySong", _PlaySong);
+    CreateNative("PlaySongAll", _PlaySongAll);
+    CreateNative("StopSong", _StopSong);
+    CreateNative("StopSongAll", _StopSongAll);
+    CreateNative("QuerySong", _QuerySong);
+    CreateNative("MapTheme", _MapTheme);
+    CreateNative("UserTheme", _UserTheme);
+    CreateNative("CreateIGAPopup", _CreateIGAPopup);
+    CreateNative("CreateIGARequest", _CreateIGARequest);
+    CreateNative("StartCoolDown", _StartCoolDown);
+    CreateNative("IsClientInCooldown", _IsClientInCooldown);
+    CreateNative("IsIGAEnabled", _IsIGAEnabled);
 
-    CreateNative("IGA_RegisterMenuItem", Native_RegisterMenuItem);
-    CreateNative("IGA_UnregisterMenuItem", Native_UnregisterMenuItem);
+    CreateNative("IGA_RegisterMenuItem", _RegisterMenuItem);
+    CreateNative("IGA_UnregisterMenuItem", _UnregisterMenuItem);
 
     return APLRes_Success;
 }
@@ -219,7 +219,7 @@ SetAccessCode(&HTTPRequestHandle:request)
     Steam_SetHTTPRequestGetOrPostParameter(request, "access_token", api_key);
 }
 
-public Native_CreateIGARequest(Handle:plugin, args)
+public _CreateIGARequest(Handle:plugin, args)
 { 
     new len;
     GetNativeStringLength(1, len);
@@ -256,7 +256,7 @@ HTTPRequestHandle:InternalCreateIGARequest(const String:route[])
     return request;
 }
 
-public Native_CreateIGAPopup(Handle:plugin, args)
+public _CreateIGAPopup(Handle:plugin, args)
 {
     new len;
     GetNativeStringLength(2, len);
@@ -300,7 +300,7 @@ InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", 
     CloseHandle(panel);
 }
 
-public Native_StartCoolDown(Handle:plugin, args) { InternalStartCooldown(GetNativeCell(1)); }
+public _StartCoolDown(Handle:plugin, args) { InternalStartCooldown(GetNativeCell(1)); }
 InternalStartCooldown(client)
 {
     //Ignore the server console
@@ -311,18 +311,18 @@ InternalStartCooldown(client)
     CreateTimer(GetConVarFloat(g_Cvar_IGARequestCooldownTime), RemoveCooldown, client);
 }
 
-public Native_IsIGAEnabled(Handle:plugin, args) { return _:InternalIsIGAEnabled(); }
+public _IsIGAEnabled(Handle:plugin, args) { return _:InternalIsIGAEnabled(); }
 bool:InternalIsIGAEnabled()
 {
     return GetConVarBool(g_Cvar_IGAEnabled);
 }
-public Native_ClientHasPallEnabled(Handle:plugin, args) { return _:InternalClientHasPallEnabled(GetNativeCell(1)); }
+public _ClientHasPallEnabled(Handle:plugin, args) { return _:InternalClientHasPallEnabled(GetNativeCell(1)); }
 bool:InternalClientHasPallEnabled(client)
 {
     return g_IsPallEnabled[client];
 }
 
-public Native_SetPallEnabled(Handle:plugin, args) { InternalSetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
+public _SetPallEnabled(Handle:plugin, args) { InternalSetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
 InternalSetPallEnabled(client, bool:val)
 {
     if(val)
@@ -354,7 +354,7 @@ SetClientVolume(client, volume)
 
 }
 
-public Native_IsClientInCooldown(Handle:plugin, args) { return _:InternalIsClientInCooldown(GetNativeCell(1)); }
+public _IsClientInCooldown(Handle:plugin, args) { return _:InternalIsClientInCooldown(GetNativeCell(1)); }
 bool:InternalIsClientInCooldown(client)
 {
     if(client == 0)
@@ -368,19 +368,19 @@ public Action:RemoveCooldown(Handle:timer, any:client)
     g_IsInCooldown[client] = false;
 }
 
-public Native_IsInPall(Handle:plugin, args) { return _:InternalIsInPall(); }
+public _IsInPall(Handle:plugin, args) { return _:InternalIsInPall(); }
 bool:InternalIsInPall()
 {
     return GetTime() < g_PallNextFree;
 }
 
-public Native_IsInP(Handle:plugin, args) { return _:InternalIsInP(GetNativeCell(1)); }
+public _IsInP(Handle:plugin, args) { return _:InternalIsInP(GetNativeCell(1)); }
 bool:InternalIsInP(client)
 {
     return GetTime() < g_PNextFree[client];
 }
 
-public Native_QuerySong(Handle:plugin, args) {
+public _QuerySong(Handle:plugin, args) {
     if (!InternalIsIGAEnabled())
     {
         PrintToConsole(0, "%t", "not_enabled");
@@ -496,7 +496,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     CloseHandle(json);
 }
 
-public Native_UserTheme(Handle:plugin, args) { InternalUserTheme(GetNativeCell(1)); }
+public _UserTheme(Handle:plugin, args) { InternalUserTheme(GetNativeCell(1)); }
 InternalUserTheme(client)
 {
     if (!InternalIsIGAEnabled())
@@ -521,7 +521,7 @@ InternalUserTheme(client)
     Steam_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
-public Native_MapTheme(Handle:plugin, args)
+public _MapTheme(Handle:plugin, args)
 {
     new len;
     GetNativeStringLength(2, len);
@@ -585,7 +585,7 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
     CloseHandle(json);
 }
 
-public Native_PlaySongAll(Handle:plugin, args)
+public _PlaySongAll(Handle:plugin, args)
 {
     new len;
     GetNativeStringLength(1, len);
@@ -620,7 +620,7 @@ InternalPlaySongAll(String:song[], String:access_token[], bool:force)
     }
 }
 
-public Native_PlaySong(Handle:plugin, args)
+public _PlaySong(Handle:plugin, args)
 {
     new len;
     GetNativeStringLength(2, len);
@@ -648,14 +648,14 @@ InternalPlaySong(client, String:song_id[], String:access_token[])
     InternalCreateIGAPopup(client, SONGS_ROUTE, args, false);
 }
 
-public Native_StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
+public _StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
 InternalStopSong(client)
 {
     g_PNextFree[client] = 0;
     InternalCreateIGAPopup(client, STOP_ROUTE, "", false);
 }
 
-public Native_StopSongAll(Handle:plugin, args) { InternalStopSongAll(); }
+public _StopSongAll(Handle:plugin, args) { InternalStopSongAll(); }
 InternalStopSongAll()
 {
     g_PallNextFree = 0;
@@ -670,7 +670,7 @@ InternalStopSongAll()
 
 //Menu Logic
 
-public Native_RegisterMenuItem(Handle:plugin, args)
+public _RegisterMenuItem(Handle:plugin, args)
 {
     decl String:plugin_name[PLATFORM_MAX_PATH];
     GetPluginFilename(plugin, plugin_name, sizeof(plugin_name));
@@ -697,7 +697,7 @@ public Native_RegisterMenuItem(Handle:plugin, args)
 }
 
 
-public Native_UnregisterMenuItem(Handle:plugin, args)
+public _UnregisterMenuItem(Handle:plugin, args)
 {
     new Handle:tmp;
     for (new i = 0; i < GetArraySize(g_MenuItems); i++)
