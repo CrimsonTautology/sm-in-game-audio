@@ -382,12 +382,6 @@ bool:IsInP(client)
 }
 
 public _QuerySong(Handle:plugin, args) {
-    if (!IsIGAEnabled())
-    {
-        PrintToConsole(0, "%t", "not_enabled");
-        return;
-    }
-
     new len;
     GetNativeStringLength(2, len);
     new String:path[len+1];
@@ -397,6 +391,12 @@ public _QuerySong(Handle:plugin, args) {
 }
 QuerySong(client, String:path[], bool:pall, bool:force)
 {
+    if (!IsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+        return;
+    }
+
     new HTTPRequestHandle:request = CreateIGARequest(QUERY_SONG_ROUTE);
     new player = client > 0 ? GetClientUserId(client) : 0;
 
