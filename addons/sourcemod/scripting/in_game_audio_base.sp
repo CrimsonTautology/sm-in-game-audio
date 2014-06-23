@@ -80,8 +80,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("IsClientInCooldown", _IsClientInCooldown);
     CreateNative("IsIGAEnabled", _IsIGAEnabled);
 
-    CreateNative("IGA_RegisterMenuItem", IGA_RegisterMenuItem);
-    CreateNative("IGA_UnregisterMenuItem", IGA_UnregisterMenuItem);
+    CreateNative("IGA_RegisterMenuItem", _RegisterMenuItem);
+    CreateNative("IGA_UnregisterMenuItem", _UnregisterMenuItem);
 
     return APLRes_Success;
 }
@@ -109,10 +109,10 @@ public OnPluginStart()
 
 public OnAllPluginsLoaded()
 {
-    IGA_RegisterMenuItem("Change Volume", ChangeVolumeMenu);
-    IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
-    IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
-    IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
+    _RegisterMenuItem("Change Volume", ChangeVolumeMenu);
+    _RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
+    _RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
+    _RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
 }
 
 public OnClientConnected(client)
@@ -671,7 +671,7 @@ StopSongAll()
 
 //Menu Logic
 
-public IGA_RegisterMenuItem(Handle:plugin, args)
+public _RegisterMenuItem(Handle:plugin, args)
 {
     decl String:plugin_name[PLATFORM_MAX_PATH];
     GetPluginFilename(plugin, plugin_name, sizeof(plugin_name));
@@ -698,7 +698,7 @@ public IGA_RegisterMenuItem(Handle:plugin, args)
 }
 
 
-public IGA_UnregisterMenuItem(Handle:plugin, args)
+public _UnregisterMenuItem(Handle:plugin, args)
 {
     new Handle:tmp;
     for (new i = 0; i < GetArraySize(g_MenuItems); i++)
