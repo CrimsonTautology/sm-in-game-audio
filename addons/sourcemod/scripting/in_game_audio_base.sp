@@ -13,7 +13,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <in_game_audio>
+#include <routes>
 #include <clientprefs>
 #include <steamtools>
 #include <smjansson>
@@ -28,7 +28,6 @@ public Plugin:myinfo =
     version = PLUGIN_VERSION,
     url = "https://github.com/CrimsonTautology/sm_in_game_audio"
 };
-
 
 new Handle:g_Cvar_IGAApiKey = INVALID_HANDLE;
 new Handle:g_Cvar_IGAUrl = INVALID_HANDLE;

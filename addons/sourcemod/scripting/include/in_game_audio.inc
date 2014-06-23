@@ -16,19 +16,6 @@
 
 #include <steamtools>
 
-#define QUERY_SONG_ROUTE "/v1/api/query_song"
-#define MAP_THEME_ROUTE "/v1/api/map_theme"
-#define USER_THEME_ROUTE "/v1/api/user_theme"
-#define AUTHORIZE_USER_ROUTE "/v1/api/authorize_user"
-#define GENERATE_LOGIN_TOKEN_ROUTE "/v1/api/generate_login_token"
-#define SONGS_ROUTE "/songs"
-#define NEW_SONGS_ROUTE "/songs/new"
-#define DIRECTORIES_ROUTE "/directories"
-#define USERS_ROUTE "/users"
-#define STOP_ROUTE "/stop"
-
-#define MAX_STEAMID_LENGTH 21 
-#define MAX_COMMUNITYID_LENGTH 18 
 #define MAX_SONG_LENGTH 64
 
 /**
