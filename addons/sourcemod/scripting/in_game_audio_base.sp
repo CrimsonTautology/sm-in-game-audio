@@ -29,6 +29,8 @@ public Plugin:myinfo =
     url = "https://github.com/CrimsonTautology/sm_in_game_audio"
 };
 
+#define MAX_COMMUNITYID_LENGTH 18 
+
 new Handle:g_Cvar_IGAApiKey = INVALID_HANDLE;
 new Handle:g_Cvar_IGAUrl = INVALID_HANDLE;
 new Handle:g_Cvar_IGAEnabled = INVALID_HANDLE;

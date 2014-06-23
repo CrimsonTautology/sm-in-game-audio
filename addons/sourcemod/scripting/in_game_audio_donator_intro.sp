@@ -15,14 +15,11 @@
 
 #include <sourcemod>
 #include <in_game_audio>
-#include <steamtools>
-#include <smjansson>
 #undef REQUIRE_PLUGIN
 #include <donator>
 
 #define PLUGIN_VERSION "1.4"
 
-#define MAX_COMMUNITYID_LENGTH 18 
 
 new bool:g_CanIntroPlay[MAXPLAYERS+1];
 new bool:g_DonatorLibraryExists = false;
