@@ -109,10 +109,10 @@ public OnPluginStart()
 
 public OnAllPluginsLoaded()
 {
-    _RegisterMenuItem("Change Volume", ChangeVolumeMenu);
-    _RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
-    _RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
-    _RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
+    IGA_RegisterMenuItem("Change Volume", ChangeVolumeMenu);
+    IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
+    IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
+    IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
 }
 
 public OnClientConnected(client)
