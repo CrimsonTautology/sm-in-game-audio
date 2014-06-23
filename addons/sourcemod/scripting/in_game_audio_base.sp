@@ -271,8 +271,8 @@ public _CreateIGAPopup(Handle:plugin, args)
 }
 InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:popup=true, bool:fullscreen=true)
 {
-    //Don't display if client is a bot
-    if(!IsClientInGame(client) || IsFakeClient(client))
+    //Don't display if client is a bot or not assigned a team
+    if(!IsClientInGame(client) || IsFakeClient(client) || GetClientTeam(client) == 0)
     {
         return;
     }
