@@ -225,9 +225,9 @@ public _CreateIGARequest(Handle:plugin, args)
     new String:route[len+1];
     GetNativeString(1, route, len+1);
 
-    return _:InternalCreateIGARequest(route);
+    return _:CreateIGARequest(route);
 }
-HTTPRequestHandle:InternalCreateIGARequest(const String:route[])
+HTTPRequestHandle:CreateIGARequest(const String:route[])
 {
     decl String:base_url[256], String:url[512];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
@@ -266,9 +266,9 @@ public _CreateIGAPopup(Handle:plugin, args)
     new String:argstring[len+1];
     GetNativeString(3, argstring, len+1);
 
-    InternalCreateIGAPopup(GetNativeCell(1), route, argstring, bool:GetNativeCell(4), bool:GetNativeCell(5));
+    CreateIGAPopup(GetNativeCell(1), route, argstring, bool:GetNativeCell(4), bool:GetNativeCell(5));
 }
-InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:popup=true, bool:fullscreen=true)
+CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:popup=true, bool:fullscreen=true)
 {
     //Don't display if client is a bot or not assigned a team
     if(!IsClientInGame(client) || IsFakeClient(client) || GetClientTeam(client) == 0)
@@ -299,8 +299,8 @@ InternalCreateIGAPopup(client, const String:route[]="", const String:args[]="", 
     CloseHandle(panel);
 }
 
-public _StartCoolDown(Handle:plugin, args) { InternalStartCooldown(GetNativeCell(1)); }
-InternalStartCooldown(client)
+public _StartCoolDown(Handle:plugin, args) { StartCooldown(GetNativeCell(1)); }
+StartCooldown(client)
 {
     //Ignore the server console
     if (client == 0)
@@ -315,14 +315,14 @@ bool:IsIGAEnabled()
 {
     return GetConVarBool(g_Cvar_IGAEnabled);
 }
-public _ClientHasPallEnabled(Handle:plugin, args) { return _:InternalClientHasPallEnabled(GetNativeCell(1)); }
-bool:InternalClientHasPallEnabled(client)
+public _ClientHasPallEnabled(Handle:plugin, args) { return _:ClientHasPallEnabled(GetNativeCell(1)); }
+bool:ClientHasPallEnabled(client)
 {
     return g_IsPallEnabled[client];
 }
 
-public _SetPallEnabled(Handle:plugin, args) { InternalSetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
-InternalSetPallEnabled(client, bool:val)
+public _SetPallEnabled(Handle:plugin, args) { SetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
+SetPallEnabled(client, bool:val)
 {
     if(val)
     {
@@ -353,8 +353,8 @@ SetClientVolume(client, volume)
 
 }
 
-public _IsClientInCooldown(Handle:plugin, args) { return _:InternalIsClientInCooldown(GetNativeCell(1)); }
-bool:InternalIsClientInCooldown(client)
+public _IsClientInCooldown(Handle:plugin, args) { return _:IsClientInCooldown(GetNativeCell(1)); }
+bool:IsClientInCooldown(client)
 {
     if(client == 0)
         return false;
@@ -367,14 +367,14 @@ public Action:RemoveCooldown(Handle:timer, any:client)
     g_IsInCooldown[client] = false;
 }
 
-public _IsInPall(Handle:plugin, args) { return _:InternalIsInPall(); }
-bool:InternalIsInPall()
+public _IsInPall(Handle:plugin, args) { return _:IsInPall(); }
+bool:IsInPall()
 {
     return GetTime() < g_PallNextFree;
 }
 
-public _IsInP(Handle:plugin, args) { return _:InternalIsInP(GetNativeCell(1)); }
-bool:InternalIsInP(client)
+public _IsInP(Handle:plugin, args) { return _:IsInP(GetNativeCell(1)); }
+bool:IsInP(client)
 {
     return GetTime() < g_PNextFree[client];
 }
@@ -391,9 +391,9 @@ public _QuerySong(Handle:plugin, args) {
     new String:path[len+1];
     GetNativeString(2, path, len+1);
 
-    InternalQuerySong(GetNativeCell(1), path, GetNativeCell(3), GetNativeCell(4));
+    QuerySong(GetNativeCell(1), path, GetNativeCell(3), GetNativeCell(4));
 }
-InternalQuerySong(client, String:path[], bool:pall, bool:force)
+QuerySong(client, String:path[], bool:pall, bool:force)
 {
     new HTTPRequestHandle:request = CreateIGARequest(QUERY_SONG_ROUTE);
     new player = client > 0 ? GetClientUserId(client) : 0;
@@ -415,7 +415,7 @@ InternalQuerySong(client, String:path[], bool:pall, bool:force)
 
     Steam_SendHTTPRequest(request, ReceiveQuerySong, player);
 
-    InternalStartCooldown(client);
+    StartCooldown(client);
 }
 
 
@@ -450,7 +450,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
         if(pall)
         {
-            if(!InternalIsInPall())
+            if(!IsInPall())
             {
                 g_PNextFree[client]=0;
                 g_PallNextFree = duration + GetTime();
@@ -463,7 +463,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
 
-                InternalPlaySongAll(song_id, access_token, force);
+                PlaySongAll(song_id, access_token, force);
             }else{
                 new minutes = (g_PallNextFree - GetTime()) / 60;
                 new seconds = (g_PallNextFree - GetTime());
@@ -486,7 +486,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
-            InternalPlaySong(client, song_id, access_token);
+            PlaySong(client, song_id, access_token);
         }
     }else{
         PrintToChat(client, "%t", "not_found");
@@ -495,8 +495,8 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     CloseHandle(json);
 }
 
-public _UserTheme(Handle:plugin, args) { InternalUserTheme(GetNativeCell(1)); }
-InternalUserTheme(client)
+public _UserTheme(Handle:plugin, args) { UserTheme(GetNativeCell(1)); }
+UserTheme(client)
 {
     if (!IsIGAEnabled())
     {
@@ -527,9 +527,9 @@ public _MapTheme(Handle:plugin, args)
     new String:map[len+1];
     GetNativeString(2, map, len+1);
 
-    InternalMapTheme(GetNativeCell(1), map);
+    MapTheme(GetNativeCell(1), map);
 }
-InternalMapTheme(bool:force=true, String:map[] ="")
+MapTheme(bool:force=true, String:map[] ="")
 {
     if (!IsIGAEnabled())
     {
@@ -573,10 +573,10 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
         json_object_get_string(json, "access_token", access_token, sizeof(access_token));
 
-        if(force || !InternalIsInPall())
+        if(force || !IsInPall())
         {
             g_PallNextFree = 0;
-            InternalPlaySongAll(song_id, access_token, force);
+            PlaySongAll(song_id, access_token, force);
             PrintToChatAll("\x04%t", "iga_settings");
         }
     }
@@ -595,9 +595,9 @@ public _PlaySongAll(Handle:plugin, args)
     new String:access_token[len+1];
     GetNativeString(2, access_token, len+1);
 
-    InternalPlaySongAll(song, access_token, GetNativeCell(3));
+    PlaySongAll(song, access_token, GetNativeCell(3));
 }
-InternalPlaySongAll(String:song[], String:access_token[], bool:force)
+PlaySongAll(String:song[], String:access_token[], bool:force)
 {
     for (new client=1; client <= MaxClients; client++)
     {
@@ -605,11 +605,11 @@ InternalPlaySongAll(String:song[], String:access_token[], bool:force)
         if(!IsClientInGame(client) || IsFakeClient(client) || g_Volume[client] < 1)
             continue;
 
-        if ( InternalClientHasPallEnabled(client) )
+        if ( ClientHasPallEnabled(client) )
         {
-            if(force || !InternalIsInP(client))
+            if(force || !IsInP(client))
             {
-                InternalPlaySong(client, song, access_token);
+                PlaySong(client, song, access_token);
             }
 
         }else{
@@ -630,9 +630,9 @@ public _PlaySong(Handle:plugin, args)
     new String:access_token[len+1];
     GetNativeString(3, access_token, len+1);
 
-    InternalPlaySong(GetNativeCell(1), song, access_token);
+    PlaySong(GetNativeCell(1), song, access_token);
 }
-InternalPlaySong(client, String:song_id[], String:access_token[])
+PlaySong(client, String:song_id[], String:access_token[])
 {
     //Don't play song if client has a muted volume
     if(g_Volume[client] < 1)
@@ -644,25 +644,25 @@ InternalPlaySong(client, String:song_id[], String:access_token[])
     Format(args, sizeof(args),
             "%s/play?access_token=%s&volume=%f", song_id, access_token, (g_Volume[client] / 10.0));
 
-    InternalCreateIGAPopup(client, SONGS_ROUTE, args, false);
+    CreateIGAPopup(client, SONGS_ROUTE, args, false);
 }
 
-public _StopSong(Handle:plugin, args) { InternalStopSong(GetNativeCell(1)); }
-InternalStopSong(client)
+public _StopSong(Handle:plugin, args) { StopSong(GetNativeCell(1)); }
+StopSong(client)
 {
     g_PNextFree[client] = 0;
-    InternalCreateIGAPopup(client, STOP_ROUTE, "", false);
+    CreateIGAPopup(client, STOP_ROUTE, "", false);
 }
 
-public _StopSongAll(Handle:plugin, args) { InternalStopSongAll(); }
-InternalStopSongAll()
+public _StopSongAll(Handle:plugin, args) { StopSongAll(); }
+StopSongAll()
 {
     g_PallNextFree = 0;
     for (new client=1; client <= MaxClients; client++)
     {
-        if ( !InternalIsInP(client) ) 
+        if ( !IsInP(client) ) 
         {
-            InternalStopSong(client);
+            StopSong(client);
         }
     }
 }
@@ -872,7 +872,7 @@ public IGAMenu:StopSongMenu(client) StopSong(client);
 public IGAMenu:TroubleShootingMenu(client)
 {
     //List some steps that can fix the problem
-    if (!InternalClientHasPallEnabled(client))
+    if (!ClientHasPallEnabled(client))
     {
         PrintToChat(client, "\x04%t", "pall_not_enabled");
     }
