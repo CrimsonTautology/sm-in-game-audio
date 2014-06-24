@@ -45,6 +45,8 @@ public OnPluginStart()
     RegConsoleCmd("sm_stop", Command_Stop, "Stop the current song");
     RegConsoleCmd("sm_psearch", Command_Psearch, "Search for a song to play");
     RegConsoleCmd("sm_pgrep", Command_Psearch, "Search for a song to play");
+    RegConsoleCmd("sm_pallsearch", Command_Psearch, "Search for a song to play to all");
+    RegConsoleCmd("sm_pallgrep", Command_Psearch, "Search for a song to play to all");
     RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
 
@@ -179,7 +181,36 @@ public Action:Command_Psearch(client, args)
     if(client && IsClientAuthorized(client)){
         decl String:search[MAX_SONG_LENGTH];
         GetCmdArgString(search, sizeof(search));
-        SearchSong(client, search, SearchSongMenuHandler);
+        SearchSong(client, search, PMenuHandler);
+    }
+
+    return Plugin_Handled;
+}
+
+public Action:Command_Pallsearch(client, args)
+{
+    if(IsClientInCooldown(client))
+    {
+        ReplyToCommand(client, "\x04%t", "user_in_cooldown");
+        return Plugin_Handled;
+    }
+
+    if(!IsIGAEnabled())
+    {
+        ReplyToCommand(client, "\x04%t", "not_enabled");
+        return Plugin_Handled;
+    }
+
+    if(!DonatorCheck(client))
+    {
+        ReplyToCommand(client, "\x04%t", "donators_only");
+        return Plugin_Handled;
+    }
+
+    if(client && IsClientAuthorized(client)){
+        decl String:search[MAX_SONG_LENGTH];
+        GetCmdArgString(search, sizeof(search));
+        SearchSong(client, search, PallMenuHandler);
     }
 
     return Plugin_Handled;
@@ -259,7 +290,7 @@ public TutorialMenuHandler(Handle:menu, MenuAction:action, param1, param2)
     }
 }
 
-public SearchSongMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+public PMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 {
     switch (action)
     {
@@ -268,7 +299,22 @@ public SearchSongMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 new String:path[32];
                 GetMenuItem(menu, param2, path, sizeof(path));
                 new client = param1;
-                QuerySong(client, path, false, false);
+                QuerySong(client, path);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
+}
+
+public PallMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                new String:path[32];
+                GetMenuItem(menu, param2, path, sizeof(path));
+                new client = param1;
+                QuerySong(client, path, true);
             }
         case MenuAction_End: CloseHandle(menu);
     }
