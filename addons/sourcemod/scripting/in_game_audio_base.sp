@@ -629,8 +629,11 @@ SearchSong(client, String:search[], MenuHandler:handler)
 
 public ReceiveSearchSong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:pack)
 {
+    ResetPack(pack);
     new player - ReadPackCell(pack);
     new MenuHandler:handler = ReadPackCell(pack); 
+    CloseHandle(pack);
+
     new client = GetClientOfUserId(player);
     if(!successful || code != HTTPStatusCode_OK)
     {
