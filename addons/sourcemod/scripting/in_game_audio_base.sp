@@ -53,6 +53,10 @@ new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
 new g_Volume[MAXPLAYERS+1] = {5, ...};
 
+functag IGA_MenuCallback IGAMenu:public(client);
+native IGA_RegisterMenuItem(const String:name[], IGA_MenuCallback:func);
+native IGA_UnregisterMenuItem(item);
+
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
     if (LibraryExists("in_game_audio"))
