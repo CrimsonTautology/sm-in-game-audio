@@ -133,6 +133,15 @@ native MapTheme(bool:force=true, const String:map[]="");
 native UserTheme(client);
 
 /**
+ * Perform a song search.  Will search for a song matching the search key and
+ * will return a menu with a list of matching songs.
+ *
+ * @param client    The client index
+ * @param path      The path to search for
+ */
+native SearchSong(client, const String:path[]);
+
+/**
  * Start a user's api calling cool down
  *
  * @param client    The client index

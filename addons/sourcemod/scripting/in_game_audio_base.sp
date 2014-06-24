@@ -78,6 +78,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("QuerySong", _QuerySong);
     CreateNative("MapTheme", _MapTheme);
     CreateNative("UserTheme", _UserTheme);
+    CreateNative("SearchSong", _SearchSong);
     CreateNative("CreateIGAPopup", _CreateIGAPopup);
     CreateNative("CreateIGARequest", _CreateIGARequest);
     CreateNative("StartCoolDown", _StartCoolDown);
