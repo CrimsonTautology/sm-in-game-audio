@@ -43,6 +43,8 @@ public OnPluginStart()
     RegConsoleCmd("sm_pall", Command_Pall, "Play a song for everyone");
     RegConsoleCmd("sm_plist", Command_Plist, "Pop-up the song list");
     RegConsoleCmd("sm_stop", Command_Stop, "Stop the current song");
+    RegConsoleCmd("sm_psearch", Command_Psearch, "Search for a song to play");
+    RegConsoleCmd("sm_pgrep", Command_Psearch, "Search for a song to play");
     RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
 
@@ -157,6 +159,29 @@ public Action:Command_Plist(client, args)
 public Action:Command_Stop(client, args)
 {
     StopSong(client);
+    return Plugin_Handled;
+}
+
+public Action:Command_Psearch(client, args)
+{
+    if(IsClientInCooldown(client))
+    {
+        ReplyToCommand(client, "\x04%t", "user_in_cooldown");
+        return Plugin_Handled;
+    }
+
+    if(!IsIGAEnabled())
+    {
+        ReplyToCommand(client, "\x04%t", "not_enabled");
+        return Plugin_Handled;
+    }
+
+    if(client && IsClientAuthorized(client)){
+        decl String:search[MAX_SONG_LENGTH];
+        GetCmdArgString(search, sizeof(search));
+        SearchSong(client, search, SearchSongMenuHandler);
+    }
+
     return Plugin_Handled;
 }
 
