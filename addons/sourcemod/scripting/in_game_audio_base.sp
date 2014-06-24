@@ -767,54 +767,54 @@ public IGAMenu:ChangeVolumeMenu(client)
     SetMenuTitle(menu, "Set IGA volume (!vol)");
 
     if(volume == 1)
-    {AddMenuItem(menu , "1"  , "*█         (min)");}
+    {AddMenuItem(menu , "1"  , "*█_________(min)");}
     else
-    {AddMenuItem(menu , "1"  , " █         (min)");}
+    {AddMenuItem(menu , "1"  , "_█_________(min)");}
 
     if(volume == 2)
-    {AddMenuItem(menu , "2"  , "*██"             );}
+    {AddMenuItem(menu , "2"  , "*██________");}
     else
-    {AddMenuItem(menu , "2"  , " ██"             );}
+    {AddMenuItem(menu , "2"  , "_██________");}
 
     if(volume == 3)
-    {AddMenuItem(menu , "3"  , "*███"            );}
+    {AddMenuItem(menu , "3"  , "*███_______");}
     else
-    {AddMenuItem(menu , "3"  , " ███"            );}
+    {AddMenuItem(menu , "3"  , "_███_______");}
 
     if(volume == 4)
-    {AddMenuItem(menu , "4"  , "*████"           );}
+    {AddMenuItem(menu , "4"  , "*████______");}
     else
-    {AddMenuItem(menu , "4"  , " ████"           );}
+    {AddMenuItem(menu , "4"  , "_████______");}
 
     if(volume == 5)
-    {AddMenuItem(menu , "5"  , "*█████"          );}
+    {AddMenuItem(menu , "5"  , "*█████_____");}
     else
-    {AddMenuItem(menu , "5"  , " █████"          );}
+    {AddMenuItem(menu , "5"  , "_█████_____");}
 
     if(volume == 6)
-    {AddMenuItem(menu , "6"  , "*██████"         );}
+    {AddMenuItem(menu , "6"  , "*██████____");}
     else
-    {AddMenuItem(menu , "6"  , " ██████"         );}
+    {AddMenuItem(menu , "6"  , "_██████____");}
 
     if(volume == 7)
-    {AddMenuItem(menu , "7"  , "*███████"        );}
+    {AddMenuItem(menu , "7"  , "*███████___");}
     else
-    {AddMenuItem(menu , "7"  , " ███████"        );}
+    {AddMenuItem(menu , "7"  , "_███████___");}
 
     if(volume == 8)
-    {AddMenuItem(menu , "8"  , "*████████"       );}
+    {AddMenuItem(menu , "8"  , "*████████__");}
     else
-    {AddMenuItem(menu , "8"  , " ████████"       );}
+    {AddMenuItem(menu , "8"  , "_████████__");}
 
     if(volume == 9)
-    {AddMenuItem(menu , "9"  , "*█████████"      );}
+    {AddMenuItem(menu , "9"  , "*█████████_");}
     else
-    {AddMenuItem(menu , "9"  , " █████████"      );}
+    {AddMenuItem(menu , "9"  , "_█████████_");}
 
     if(volume == 10)
     {AddMenuItem(menu , "10" , "*██████████(max)");}
     else
-    {AddMenuItem(menu , "10" , " ██████████(max)");}
+    {AddMenuItem(menu , "10" , "_██████████(max)");}
 
 
     SetMenuExitButton(menu, false);
