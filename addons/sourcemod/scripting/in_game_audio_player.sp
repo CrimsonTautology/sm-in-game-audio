@@ -234,3 +234,17 @@ public TutorialMenuHandler(Handle:menu, MenuAction:action, param1, param2)
     }
 }
 
+public SearchSongMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                new String:path[32];
+                GetMenuItem(menu, param2, path, sizeof(path));
+                new client = param1;
+                QuerySong(client, path, false, false);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
+}

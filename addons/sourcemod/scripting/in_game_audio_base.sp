@@ -597,7 +597,7 @@ public _SearchSong(Handle:plugin, args) {
     new String:search[len+1];
     GetNativeString(2, search, len+1);
 
-    SearchSong(GetNativeCell(1), search);
+    SearchSong(GetNativeCell(1), search, MenuHandler:GetNativeCell(3));
 }
 SearchSong(client, String:search[], MenuHandler:handler)
 {
@@ -630,7 +630,7 @@ SearchSong(client, String:search[], MenuHandler:handler)
 public ReceiveSearchSong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:pack)
 {
     ResetPack(pack);
-    new player - ReadPackCell(pack);
+    new player = ReadPackCell(pack);
     new MenuHandler:handler = ReadPackCell(pack); 
     CloseHandle(pack);
 
