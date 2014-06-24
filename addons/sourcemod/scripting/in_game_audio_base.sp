@@ -599,7 +599,7 @@ public _SearchSong(Handle:plugin, args) {
 
     SearchSong(GetNativeCell(1), search);
 }
-SearchSong(client, String:search[])
+SearchSong(client, String:search[], MenuHandler:handler)
 {
     if (!IsIGAEnabled())
     {
@@ -616,16 +616,22 @@ SearchSong(client, String:search[])
         return;
     }
 
+    new Handle:pack = CreateDataPack();
+    WritePackCell(pack, handler);
+    WritePackCell(pack, player);
+
     Steam_SetHTTPRequestGetOrPostParameter(request, "search", search);
-    Steam_SendHTTPRequest(request, ReceiveSearchSong, player);
+    Steam_SendHTTPRequest(request, ReceiveSearchSong, pack);
 
     StartCooldown(client);
 }
 
 
-public ReceiveSearchSong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public ReceiveSearchSong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:pack)
 {
-    new client = GetClientOfUserId(userid);
+    new player - ReadPackCell(pack);
+    new MenuHandler:handler = ReadPackCell(pack); 
+    new client = GetClientOfUserId(player);
     if(!successful || code != HTTPStatusCode_OK)
     {
         LogError("[IGA] Error at RecivedSearchSong (HTTP Code %d; success %d)", code, successful);
@@ -640,15 +646,6 @@ public ReceiveSearchSong(HTTPRequestHandle:request, bool:successful, HTTPStatusC
     new Handle:json = json_load(data);
     new bool:found = json_object_get_bool(json, "found");
 
-          /*
-          found: true,
-          songs: songs.map{ |s| {
-            description: s.to_s,
-            full_path: s.full_path,
-            id: s.id
-          }},
-          command: "search_song"
-          */
     if(found && client > 0)
     {
         new String:full_path[64], String:description[64];
@@ -656,7 +653,7 @@ public ReceiveSearchSong(HTTPRequestHandle:request, bool:successful, HTTPStatusC
         new Handle:song;
         new i = 0;
 
-        new Handle:menu = CreateMenu(SearchSongMenuHandler, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
+        new Handle:menu = CreateMenu(handler, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
 
         //for each song in songs build selection menu
         while((song = json_array_get(songs, i)) != INVALID_HANDLE)
@@ -981,17 +978,3 @@ public IGAMenu:TroubleShootingMenu(client)
     PrintToChat(client, "\x04%t", "motd_not_enabled");
 }
 
-public SearchSongMenuHandler(Handle:menu, MenuAction:action, param1, param2)
-{
-    switch (action)
-    {
-        case MenuAction_Select:
-            {
-                new String:path[32];
-                GetMenuItem(menu, param2, path, sizeof(path));
-                new client = param1;
-                QuerySong(client, path, false, false);
-            }
-        case MenuAction_End: CloseHandle(menu);
-    }
-}

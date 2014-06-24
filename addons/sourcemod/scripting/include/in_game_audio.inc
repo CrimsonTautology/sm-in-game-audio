@@ -139,7 +139,7 @@ native UserTheme(client);
  * @param client    The client index
  * @param path      The path to search for
  */
-native SearchSong(client, const String:path[]);
+native SearchSong(client, const String:path[], MenuHandler:handler);
 
 /**
  * Start a user's api calling cool down
