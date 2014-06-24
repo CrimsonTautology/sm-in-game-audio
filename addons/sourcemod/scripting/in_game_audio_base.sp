@@ -590,6 +590,94 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
     CloseHandle(json);
 }
 
+public _SearchSong(Handle:plugin, args) {
+    new len;
+    GetNativeStringLength(2, len);
+    new String:search[len+1];
+    GetNativeString(2, search, len+1);
+
+    SearchSong(GetNativeCell(1), search, GetNativeCell(3), GetNativeCell(4));
+}
+SearchSong(client, String:search[])
+{
+    if (!IsIGAEnabled())
+    {
+        PrintToConsole(0, "%t", "not_enabled");
+        return;
+    }
+
+    new HTTPRequestHandle:request = CreateIGARequest(SEARCH_SONG_ROUTE);
+    new player = client > 0 ? GetClientUserId(client) : 0;
+
+    if(request == INVALID_HTTP_HANDLE)
+    {
+        ReplyToCommand(client, "\x04%t", "url_invalid");
+        return;
+    }
+
+    Steam_SetHTTPRequestGetOrPostParameter(request, "search", search);
+    Steam_SendHTTPRequest(request, ReceiveSearchSong, player);
+
+    StartCooldown(client);
+}
+
+
+public ReceiveSearchSong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+{
+    new client = GetClientOfUserId(userid);
+    if(!successful || code != HTTPStatusCode_OK)
+    {
+        LogError("[IGA] Error at RecivedSearchSong (HTTP Code %d; success %d)", code, successful);
+        Steam_ReleaseHTTPRequest(request);
+        return;
+    }
+
+    decl String:data[4096];
+    Steam_GetHTTPResponseBodyData(request, data, sizeof(data));
+    Steam_ReleaseHTTPRequest(request);
+
+    new Handle:json = json_load(data);
+    new bool:found = json_object_get_bool(json, "found");
+
+          /*
+          found: true,
+          songs: songs.map{ |s| {
+            description: s.to_s,
+            full_path: s.full_path,
+            id: s.id
+          }},
+          command: "search_song"
+          */
+    if(found && client > 0)
+    {
+        new String:full_path[64], String:description[64];
+        new Handle:songs = json_object_get(json, "songs");
+        new Handle:song;
+        new i = 0;
+
+        new Handle:menu = CreateMenu(SearchSongMenuHandler, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
+
+        //for each song in songs build selection menu
+        while((song = json_array_get(songs, i)) != INVALID_HANDLE)
+        {
+            json_object_get_string(song, "full_path", full_path, sizeof(full_path));
+            json_object_get_string(song, "description", description, sizeof(description));
+
+            AddMenuItem(menu, full_path, description);
+            i++;
+            CloseHandle(song);
+        }
+        CloseHandle(songs);
+
+        SetMenuTitle(menu, "Song Search");
+        DisplayMenu(menu, client, MENU_TIME_FOREVER);
+    }else{
+        PrintToChat(client, "%t", "not_found");
+    }
+
+    CloseHandle(json);
+}
+
 public _PlaySongAll(Handle:plugin, args)
 {
     new len;
@@ -890,4 +978,19 @@ public IGAMenu:TroubleShootingMenu(client)
 
     //Checking cl_disablehtmlmotd != 0 requires a callback, this is simpler
     PrintToChat(client, "\x04%t", "motd_not_enabled");
+}
+
+public SearchSongMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                new String:path[32];
+                GetMenuItem(menu, param2, path, sizeof(path));
+                new client = param1;
+                QuerySong(client, path);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
 }

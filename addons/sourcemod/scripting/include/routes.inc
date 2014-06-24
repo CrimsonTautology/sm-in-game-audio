@@ -8,6 +8,7 @@
 #define USER_THEME_ROUTE "/v1/api/user_theme"
 #define AUTHORIZE_USER_ROUTE "/v1/api/authorize_user"
 #define GENERATE_LOGIN_TOKEN_ROUTE "/v1/api/generate_login_token"
+#define SEARCH_SONG_ROUTE "/v1/api/search_song"
 #define SONGS_ROUTE "/songs"
 #define NEW_SONGS_ROUTE "/songs/new"
 #define DIRECTORIES_ROUTE "/directories"
