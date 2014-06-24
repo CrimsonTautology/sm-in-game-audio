@@ -596,7 +596,7 @@ public _SearchSong(Handle:plugin, args) {
     new String:search[len+1];
     GetNativeString(2, search, len+1);
 
-    SearchSong(GetNativeCell(1), search, GetNativeCell(3), GetNativeCell(4));
+    SearchSong(GetNativeCell(1), search);
 }
 SearchSong(client, String:search[])
 {
@@ -989,7 +989,7 @@ public SearchSongMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 new String:path[32];
                 GetMenuItem(menu, param2, path, sizeof(path));
                 new client = param1;
-                QuerySong(client, path);
+                QuerySong(client, path, false, false);
             }
         case MenuAction_End: CloseHandle(menu);
     }
