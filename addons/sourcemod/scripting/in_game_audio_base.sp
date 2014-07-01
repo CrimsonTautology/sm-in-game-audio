@@ -511,7 +511,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         new Handle:song;
         new i = 0;
 
-        new Handle:menu = CreateMenu(PMenuHandler, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
+        new Handle:menu = CreateMenu(SongChooserMenuHandler, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
 
         //for each song in songs build selection menu
         while((song = json_array_get(songs, i)) != INVALID_HANDLE)
@@ -929,7 +929,7 @@ public IGAMenu:TroubleShootingMenu(client)
     PrintToChat(client, "\x04%t", "motd_not_enabled");
 }
 
-public PMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+public SongChooserMenuHandler(Handle:menu, MenuAction:action, param1, param2)
 {
     switch (action)
     {
@@ -942,8 +942,8 @@ public PMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 decl String:bit[3][64];
                 ExplodeString(data, ";", bit, sizeof(bit), sizeof(bit[]));
 
-                new bool:pall = StringToInt(bit[0]);
-                new bool:force = StringToInt(bit[1]);
+                new bool:pall = bool:StringToInt(bit[0]);
+                new bool:force = bool:StringToInt(bit[1]);
                 new song_id = StringToInt(bit[2]);
                 
                 QuerySong(client, "", pall, force, song_id);
