@@ -504,7 +504,8 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
     }else if(multiple){
         //A matching song was not found but we found a list of songs that could be what the user wants
-        new String:tmp[64], String:song_id[32], String:description[64];
+        new String:tmp[64], String:description[64];
+        new song_id;
         new bool:pall = json_object_get_bool(json, "pall");
         new bool:force = json_object_get_bool(json, "force");
         new Handle:songs = json_object_get(json, "songs");
@@ -516,11 +517,11 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         //for each song in songs build selection menu
         while((song = json_array_get(songs, i)) != INVALID_HANDLE)
         {
-            json_object_get_string(song, "song_id", song_id, sizeof(song_id));
+            song_id = json_object_get_int(song, "song_id");
             json_object_get_string(song, "description", description, sizeof(description));
 
             //You can only pass one parameter to the menu so encode everything together
-            Format(tmp, sizeof(tmp), "%d;%d;%s", pall, force, song_id);
+            Format(tmp, sizeof(tmp), "%d;%d;%d", pall, force, song_id);
             AddMenuItem(menu, tmp, description);
 
             i++;
