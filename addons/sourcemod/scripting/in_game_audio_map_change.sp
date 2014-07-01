@@ -17,7 +17,7 @@
 #include <sourcemod>
 #include <in_game_audio>
 
-#define PLUGIN_VERSION "1.6"
+#define PLUGIN_VERSION "1.6.1"
 
 public Plugin:myinfo =
 {
