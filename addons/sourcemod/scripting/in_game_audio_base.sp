@@ -520,7 +520,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
             json_object_get_string(song, "description", description, sizeof(description));
 
             //You can only pass one parameter to the menu so encode everything together
-            Format(tmp, "%d;%d;%s", pall, force, song_id);
+            Format(tmp, sizeof(tmp), "%d;%d;%s", pall, force, song_id);
             AddMenuItem(menu, tmp, description);
 
             i++;
@@ -942,8 +942,8 @@ public PMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 decl String:bit[3][64];
                 ExplodeString(data, ";", bit, sizeof(bit), sizeof(bit[]));
 
-                new pall = StringToInt(bit[0]);
-                new force = StringToInt(bit[1]);
+                new bool:pall = StringToInt(bit[0]);
+                new bool:force = StringToInt(bit[1]);
                 new song_id = StringToInt(bit[2]);
                 
                 QuerySong(client, "", pall, force, song_id);
