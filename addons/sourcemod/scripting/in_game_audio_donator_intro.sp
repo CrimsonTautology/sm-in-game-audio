@@ -18,7 +18,7 @@
 #undef REQUIRE_PLUGIN
 #include <donator>
 
-#define PLUGIN_VERSION "1.5"
+#define PLUGIN_VERSION "1.6"
 
 
 new bool:g_CanIntroPlay[MAXPLAYERS+1];
