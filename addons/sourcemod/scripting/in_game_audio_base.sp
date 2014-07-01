@@ -446,9 +446,11 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
     new Handle:json = json_load(data);
     new bool:found = json_object_get_bool(json, "found");
+    new bool:multiple = json_object_get_bool(json, "multiple");
 
     if(found)
     {
+        //Found a matching song
         new duration = json_object_get_int(json, "duration");
         new bool:pall = json_object_get_bool(json, "pall");
         new bool:force = json_object_get_bool(json, "force");
@@ -499,6 +501,36 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
             PlaySong(client, song_id, access_token);
         }
+
+    }else if(multiple){
+        //A matching song was not found but we found a list of songs that could be what the user wants
+        new String:tmp[64], String:song_id[32], String:description[64];
+        new bool:pall = json_object_get_bool(json, "pall");
+        new bool:force = json_object_get_bool(json, "force");
+        new Handle:songs = json_object_get(json, "songs");
+        new Handle:song;
+        new i = 0;
+
+        new Handle:menu = CreateMenu(PMenuHandler, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
+
+        //for each song in songs build selection menu
+        while((song = json_array_get(songs, i)) != INVALID_HANDLE)
+        {
+            json_object_get_string(song, "song_id", song_id, sizeof(song_id));
+            json_object_get_string(song, "description", description, sizeof(description));
+
+            //You can only pass one parameter to the menu so encode everything together
+            Format(tmp, "%d;%d;%s", pall, force, song_id);
+            AddMenuItem(menu, tmp, description);
+
+            i++;
+            CloseHandle(song);
+        }
+        CloseHandle(songs);
+
+        SetMenuTitle(menu, "Song Search");
+        DisplayMenu(menu, client, MENU_TIME_FOREVER);
+
     }else{
         PrintToChat(client, "%t", "not_found");
     }
@@ -895,4 +927,27 @@ public IGAMenu:TroubleShootingMenu(client)
 
     //Checking cl_disablehtmlmotd != 0 requires a callback, this is simpler
     PrintToChat(client, "\x04%t", "motd_not_enabled");
+}
+
+public PMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                new String:data[32];
+                GetMenuItem(menu, param2, data, sizeof(data));
+                new client = param1;
+
+                decl String:bit[3][64];
+                ExplodeString(data, ";", bit, sizeof(bit), sizeof(bit[]));
+
+                new pall = StringToInt(bit[0]);
+                new force = StringToInt(bit[1]);
+                new song_id = StringToInt(bit[2]);
+                
+                QuerySong(client, "", pall, force, song_id);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
 }
