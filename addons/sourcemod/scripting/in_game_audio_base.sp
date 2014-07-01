@@ -391,9 +391,9 @@ public _QuerySong(Handle:plugin, args) {
     new String:path[len+1];
     GetNativeString(2, path, len+1);
 
-    QuerySong(GetNativeCell(1), path, GetNativeCell(3), GetNativeCell(4));
+    QuerySong(GetNativeCell(1), path, GetNativeCell(3), GetNativeCell(4), GetNativeCell(5));
 }
-QuerySong(client, String:path[], bool:pall, bool:force)
+QuerySong(client, String:path[], bool:pall, bool:force, song_id)
 {
     if (!IsIGAEnabled())
     {
@@ -410,9 +410,14 @@ QuerySong(client, String:path[], bool:pall, bool:force)
         return;
     }
 
+    Steam_SetHTTPRequestGetOrPostParameter(request, "path", path);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "pall", pall);
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
-    Steam_SetHTTPRequestGetOrPostParameter(request, "path", path);
+
+    if(song_id >= 0)
+    {
+        Steam_SetHTTPRequestGetOrPostParameterInt(request, "song_id", song_id);
+    }
 
     //Send caller's steamid64
     decl String:uid[MAX_COMMUNITYID_LENGTH];

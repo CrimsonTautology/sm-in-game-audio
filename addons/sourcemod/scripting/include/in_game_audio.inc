@@ -115,8 +115,9 @@ native CreateIGAPopup(client, const String:route[]="", const String:args[]="", b
  * @param path      The path to search for
  * @param pall      If found, play to everyone
  * @param force     If found, force playing
+ * @param song_id   If provided (non-negative) it will ignore path and play this song specificly
  */
-native QuerySong(client, const String:path[], bool:pall = false, bool:force=false);
+native QuerySong(client, const String:path[], bool:pall = false, bool:force=false, song_id=-1);
 
 /**
  * Play a map transfer song
