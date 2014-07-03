@@ -21,6 +21,7 @@ Allows users to listen to music while in game.  Uses a hidden MOTD page to play 
 * [SteamTools](https://forums.alliedmods.net/showthread.php?t=129763)
 * [A Web Site Backend](https://github.com/CrimsonTautology/in_game_audio)
 * [Donator Interface](https://forums.alliedmods.net/showthread.php?t=145542)(Optional)
+* Players must have HTML Message Of The Days enabled for this to work.  This can be enabled via advanced settings of by typing `cl_disablehtmlmotd 0` into console.
 
 #CVARs
 
@@ -42,7 +43,7 @@ Handles all calls to the web server and provides a framework to play music for p
 # IGA Player
 Handles the commands that let players play songs to themselves and to each other.
 
-* `sm_p [category]/[name]` - Plays a song for the user. If given no arguments it will play a random song.  If given a category or a category and subdirectory (separated by '/') it will play a random song in that category or subdirectory.  If given the full path to a song it will play that specific song.  Fails if a matching category or song is not found.
+* `sm_p [category]/[name]` - Plays a song for the user. If given no arguments it will play a random song.  If given a category or a category and subdirectory (separated by '/') it will play a random song in that category or subdirectory.  If given the full path to a song it will play that specific song.  If a matching category or song is not found it will treat the argument as a search key and return a list of songs that match.
 * `sm_stop` - Stops the currently playing song for the user.
 * `sm_pall [category]/[name]` - The same as `sm_p` but plays for all users on the server (that have `sm_yespall` enabled).  Only donators can use this command if the `sm_donators_only` is set to 1.
 * `sm_plist` - Pops up the MOTD browser showing a web page that lists all available songs and categories that can be played.
