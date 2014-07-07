@@ -104,3 +104,4 @@ forward OnPostDonatorCheck(iClient);
  * @noreturn
  */
 forward OnDonatorsChanged();
+

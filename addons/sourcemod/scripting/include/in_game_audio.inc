@@ -165,3 +165,4 @@ native IGA_RegisterMenuItem(const String:name[], IGA_MenuCallback:func);
  * @param item			Menu Item ID
  */
 native IGA_UnregisterMenuItem(item);
+
