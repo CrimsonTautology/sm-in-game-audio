@@ -1280,4 +1280,3 @@ public __ext_smjansson_SetNTVOptional()
 	MarkNativeAsOptional("json_dump_file");
 }
 #endif
-

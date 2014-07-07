@@ -303,4 +303,3 @@ public Extension:__ext_SteamTools =
 	required = 0,
 #endif
 }
-
