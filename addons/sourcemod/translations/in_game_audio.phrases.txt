@@ -62,7 +62,7 @@
     "volume_usage"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] {warning}usage {warningd}\"!vol [0-10]\"{warning}.  Currently {warning}{1}{warningd}."
+            "en"    "[IGA] {warning}usage {warningd}\"!vol [0-10]\"{warning}.  Currently {warningd}{1}{warning}."
     }
 
     "volume_set"
@@ -98,7 +98,7 @@
     
     "motd_not_enabled"
     {
-        "en"    "[IGA] {warning}Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type {info}'cl_disablehtmlmotd 0'{warning} into console."
+        "en"    "[IGA] {warning}Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type {warningd}'cl_disablehtmlmotd 0'{warning} into console."
     }
 
     "how_to_upload"
