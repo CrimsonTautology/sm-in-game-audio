@@ -17,6 +17,7 @@
 #include <clientprefs>
 #include <steamtools>
 #include <smjansson>
+#include <morecolors>
 
 #define PLUGIN_VERSION "1.6.1"
 
@@ -117,6 +118,12 @@ public OnAllPluginsLoaded()
     IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
     IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
     IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
+
+    CAddColor("primary", 0x428bca);
+    CAddColor("info", 0x5bc0de);
+    CAddColor("success", 0x5cb85c);
+    CAddColor("warning", 0xf0ad4e);
+    CAddColor("danger", 0xd9534f);
 }
 
 public OnClientConnected(client)
@@ -334,12 +341,12 @@ SetPallEnabled(client, bool:val)
     {
         SetClientCookie(client, g_Cookie_PallEnabled, "1");
         g_IsPallEnabled[client] = true;
-        ReplyToCommand(client, "\x04%t", "enabled_pall");
+        CReplyToCommand(client, "%t", "enabled_pall");
 
     }else{
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
         g_IsPallEnabled[client] = false;
-        ReplyToCommand(client, "\x04%t", "disabled_pall");
+        CReplyToCommand(client, "%t", "disabled_pall");
 
     }
 }
@@ -352,9 +359,9 @@ SetClientVolume(client, volume)
         IntToString(volume, tmp, sizeof(tmp));
         SetClientCookie(client, g_Cookie_Volume, tmp);
         g_Volume[client] = volume;
-        ReplyToCommand(client, "\x04%t", "volume_set", volume);
+        CReplyToCommand(client, "%t", "volume_set", volume);
     }else{
-        ReplyToCommand(client, "\x04%t", "volume_usage", g_Volume[client]);
+        CReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
     }
 
 }
@@ -406,7 +413,7 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
 
     if(request == INVALID_HTTP_HANDLE)
     {
-        ReplyToCommand(client, "\x04%t", "url_invalid");
+        CReplyToCommand(client, "%t", "url_invalid");
         return;
     }
 
@@ -468,10 +475,10 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 g_PNextFree[client]=0;
                 g_PallNextFree = duration + GetTime();
 
-                PrintToChatAll("%t", "started_playing_to_all", description);
-                PrintToChatAll("%t", "duration", duration_formated);
-                PrintToChatAll("%t", "to_stop_all");
-                PrintToChatAll("\x04%t", "iga_settings");
+                CPrintToChatAll("%t", "started_playing_to_all", description);
+                CPrintToChatAll("%t", "duration", duration_formated);
+                CPrintToChatAll("%t", "to_stop_all");
+                CPrintToChatAll("%t", "iga_settings");
 
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
@@ -482,9 +489,9 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
                 new seconds = (g_PallNextFree - GetTime());
 
                 if (minutes > 1)
-                    PrintToChat(client, "\x04%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, minutes, "minutes");
+                    CPrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, minutes, "minutes");
                 else
-                    PrintToChat(client, "\x04%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, seconds, "seconds");
+                    CPrintToChat(client, "%t", "pall_currently_playing", g_CurrentPallPath, g_CurrentPallDescription, seconds, "seconds");
             }
         }else if(client > 0){
             decl String:name[64];
@@ -492,10 +499,10 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
 
             g_PNextFree[client] = duration + GetTime();
 
-            PrintToChatAll("%t", "started_playing_to_self", name, description, full_path);
-            PrintToChat(client, "%t", "duration", duration_formated);
-            PrintToChat(client, "%t", "to_stop");
-            PrintToChat(client, "\x04%t", "iga_settings");
+            CPrintToChatAll("%t", "started_playing_to_self", name, description, full_path);
+            CPrintToChat(client, "%t", "duration", duration_formated);
+            CPrintToChat(client, "%t", "to_stop");
+            CPrintToChat(client, "%t", "iga_settings");
 
             strcopy(g_CurrentPlastSongId, 64, song_id);
 
@@ -533,7 +540,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
         DisplayMenu(menu, client, MENU_TIME_FOREVER);
 
     }else{
-        PrintToChat(client, "%t", "not_found");
+        CPrintToChat(client, "%t", "not_found");
     }
 
     CloseHandle(json);
@@ -621,7 +628,7 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
         {
             g_PallNextFree = 0;
             PlaySongAll(song_id, access_token, force);
-            PrintToChatAll("\x04%t", "iga_settings");
+            CPrintToChatAll("%t", "iga_settings");
         }
     }
 
@@ -658,7 +665,7 @@ PlaySongAll(String:song[], String:access_token[], bool:force)
 
         }else{
             //Mention that pall is not enabled
-            PrintToChat(client, "\x04%t", "pall_not_enabled");
+            CPrintToChat(client, "%t", "pall_not_enabled");
         }
     }
 }
@@ -918,16 +925,16 @@ public IGAMenu:TroubleShootingMenu(client)
     //List some steps that can fix the problem
     if (!ClientHasPallEnabled(client))
     {
-        PrintToChat(client, "\x04%t", "pall_not_enabled");
+        CPrintToChat(client, "%t", "pall_not_enabled");
     }
 
     if (g_Volume[client] < 1)
     {
-        PrintToChat(client, "\x04%t", "volume_muted");
+        CPrintToChat(client, "%t", "volume_muted");
     }
 
     //Checking cl_disablehtmlmotd != 0 requires a callback, this is simpler
-    PrintToChat(client, "\x04%t", "motd_not_enabled");
+    CPrintToChat(client, "%t", "motd_not_enabled");
 }
 
 public SongChooserMenuHandler(Handle:menu, MenuAction:action, param1, param2)
@@ -946,7 +953,7 @@ public SongChooserMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 new bool:pall = bool:StringToInt(bit[0]);
                 new bool:force = bool:StringToInt(bit[1]);
                 new song_id = StringToInt(bit[2]);
-                
+
                 QuerySong(client, "", pall, force, song_id);
             }
         case MenuAction_End: CloseHandle(menu);

@@ -3,13 +3,13 @@
     "started_playing_to_all"
     {
         "#format"   "{1:s}"
-            "en"    "[IGA] Started playing \"{1}\" to all."
+            "en"    "[IGA] Started playing {info}\"{1}\"{default} to all."
     }
 
     "started_playing_to_self"
     {
         "#format"   "{1:s},{2:s},{3:s}"
-            "en"    "[IGA] {1} is currently playing \"{2}\", type !p {3} to play for yourself."
+            "en"    "[IGA] {1} is currently playing {info}\"{2}\"{default}, type {info}!p {3}{default} to play for yourself."
     }
 
     "duration"
@@ -20,85 +20,85 @@
 
     "to_stop_all"
     {
-        "en"    "Type !stop to cancel or !nopall to mute."
+        "en"    "Type {info}!stop{default} to stop the current song or {info}!nopall{default} to stop this plugin all-together."
     }
 
     "to_stop"
     {
-        "en"    "Type !stop to cancel."
+        "en"    "Type {info}!stop{default} to stop the current song."
     }
 
     "iga_settings"
     {
-        "en"    "Type !iga to adjust your audio settings or if you can't hear anything."
+        "en"    "Type {info}!iga{default} to adjust your audio settings or if you can't hear anything."
     }
 
     "pall_currently_playing"
     {
         "#format"   "{1:s},{2:s},{3:i},{4:s}"
-            "en"    "[IGA] pall currently playing {1} \"{2}\". Please wait {3} more {4}."
+            "en"    "[IGA] {warning}pall currently playing {1} \"{2}\". Please wait {3} more {4}."
     }
 
     "not_found"
     {
-        "en"    "[IGA] Could not find specified sound or directory."
+        "en"    "[IGA] {warning}Could not find specified sound or directory."
     }
 
     "url_invalid"
     {
-        "en"    "[IGA] sm_iga_url invalid; cannot create HTTP request"
+        "en"    "[IGA] {danger}sm_iga_url invalid; cannot create HTTP request"
     }
 
     "not_enabled"
     {
-        "en"    "[IGA] In Game Audio is not enabled."
+        "en"    "[IGA] {danger}In Game Audio is not enabled."
     }
 
     "donators_only"
     {
-        "en"    "[IGA] Only donators can use this command."
+        "en"    "[IGA] {danger}Only donators can use this command."
     }
 
     "volume_usage"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] usage \"!vol [0-10]\".  Currently {1}."
+            "en"    "[IGA] usage {info}\"!vol [0-10]\"{default}.  Currently {info}{1}{default}."
     }
 
     "volume_set"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] Set volume to {1}.  Will take affect on the next song."
+            "en"    "[IGA] {success}Set volume to {1}.  Will take affect on the next song."
     }
 
     "disabled_pall"
     {
-        "en"    "[IGA] Disabled pall.  Type !yespall to renable it."
+        "en"    "[IGA] {success}Disabled pall.  Type {info}!yespall{success} to renable it."
     }
     
     "enabled_pall"
     {
-        "en"    "[IGA] Enabled pall.  Type !nopall to disable it."
+        "en"    "[IGA] {success}Enabled pall.  Type {info}!nopall{success} to disable it."
     }
 
     "pall_not_enabled"
     {
-        "en"    "[IGA] Cannot listen to song.  Type !yespall to listen to songs from other players"
+        "en"    "[IGA] {warning}Cannot listen to song.  Type {info}!yespall{warning} to listen to songs from other players"
     }
 
     "user_in_cooldown"
     {
-        "en"    "[IGA] User in cooldown."
+        "en"    "[IGA] {danger}User in cooldown."
     }
 
     "volume_muted"
     {
-        "en"    "[IGA] Volume muted, cannot listen to song.  Type !vol to adjust your volume"
+        "en"    "[IGA] {warning}Volume muted, cannot listen to song.  Type {info}!vol{warning} to adjust your volume"
     }
     
     "motd_not_enabled"
     {
-        "en"    "[IGA] Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type 'cl_disablehtmlmotd 0' into console."
+        "en"    "[IGA] {warning}Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type {info}'cl_disablehtmlmotd 0'{warning} into console."
     }
 
 
