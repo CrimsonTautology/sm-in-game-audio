@@ -101,6 +101,12 @@
         "en"    "[IGA] {warning}Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type {info}'cl_disablehtmlmotd 0'{warning} into console."
     }
 
+    "how_to_upload"
+    {
+        "#format"   "{1:s}"
+            "en"   "[IGA] {info} Visit {infod}{1}{info} to upload your own music."
+    }
+
 
 }
 

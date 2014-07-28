@@ -115,9 +115,10 @@ public OnPluginStart()
 public OnAllPluginsLoaded()
 {
     IGA_RegisterMenuItem("Change Volume", ChangeVolumeMenu);
-    IGA_RegisterMenuItem("Enable/Disable IGA", PallEnabledMenu);
+    IGA_RegisterMenuItem("Disable/Enable Music", PallEnabledMenu);
     IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
     IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
+    IGA_RegisterMenuItem("How Do I Upload Music?", HowToUploadMenu);
 
     CAddColor("primary", 0x428bca);
     CAddColor("primaryd", 0x245681);
@@ -940,6 +941,12 @@ public IGAMenu:TroubleShootingMenu(client)
 
     //Checking cl_disablehtmlmotd != 0 requires a callback, this is simpler
     CPrintToChat(client, "%t", "motd_not_enabled");
+}
+public IGAMenu:HowToUploadMenu(client)
+{
+    decl String:base_url[256];
+    GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
+    CPrintToChat(client, "%t", "how_to_upload", base_url);
 }
 
 public SongChooserMenuHandler(Handle:menu, MenuAction:action, param1, param2)
