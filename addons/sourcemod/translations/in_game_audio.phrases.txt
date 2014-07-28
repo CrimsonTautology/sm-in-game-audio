@@ -3,40 +3,40 @@
     "started_playing_to_all"
     {
         "#format"   "{1:s}"
-            "en"    "[IGA] Started playing {info}\"{1}\"{default} to all."
+            "en"    "[IGA] {info}Started playing {infod}\"{1}\"{info} to all."
     }
 
     "started_playing_to_self"
     {
         "#format"   "{1:s},{2:s},{3:s}"
-            "en"    "[IGA] {1} is currently playing {info}\"{2}\"{default}, type {info}!p {3}{default} to play for yourself."
+            "en"    "[IGA] {info}{1} is currently playing {infod}\"{2}\"{info}, type {infod}!p {3}{info} to play for yourself."
     }
 
     "duration"
     {
         "#format"   "{1:s}"
-            "en"    "Duration {1}."
+            "en"    "{info}Duration {1}."
     }
 
     "to_stop_all"
     {
-        "en"    "Type {info}!stop{default} to stop the current song or {info}!nopall{default} to stop this plugin all-together."
+        "en"    "{info}Type {infod}!stop{info} to stop the current song or {infod}!nopall{info} to stop this plugin all-together."
     }
 
     "to_stop"
     {
-        "en"    "Type {info}!stop{default} to stop the current song."
+        "en"    "{info}Type {infod}!stop{info} to stop the current song."
     }
 
     "iga_settings"
     {
-        "en"    "Type {info}!iga{default} to adjust your audio settings or if you can't hear anything."
+        "en"    "{info}Type {infod}!iga{info} to adjust your audio settings or if you can't hear anything."
     }
 
     "pall_currently_playing"
     {
         "#format"   "{1:s},{2:s},{3:i},{4:s}"
-            "en"    "[IGA] {warning}pall currently playing {1} \"{2}\". Please wait {3} more {4}."
+            "en"    "[IGA] {danger}pall currently playing {dangerd}{1} \"{2}\"{danger}. Please wait {3} more {4}."
     }
 
     "not_found"
@@ -62,28 +62,28 @@
     "volume_usage"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] usage {info}\"!vol [0-10]\"{default}.  Currently {info}{1}{default}."
+            "en"    "[IGA] {warning}usage {warningd}\"!vol [0-10]\"{warning}.  Currently {warning}{1}{warningd}."
     }
 
     "volume_set"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] {success}Set volume to {1}.  Will take affect on the next song."
+            "en"    "[IGA] {success}Set volume to {successd}{1}{success}.  Will take affect on the next song."
     }
 
     "disabled_pall"
     {
-        "en"    "[IGA] {success}Disabled pall.  Type {info}!yespall{success} to renable it."
+        "en"    "[IGA] {success}Disabled pall.  Type {successd}!yespall{success} to renable it."
     }
     
     "enabled_pall"
     {
-        "en"    "[IGA] {success}Enabled pall.  Type {info}!nopall{success} to disable it."
+        "en"    "[IGA] {success}Enabled pall.  Type {successd}!nopall{success} to disable it."
     }
 
     "pall_not_enabled"
     {
-        "en"    "[IGA] {warning}Cannot listen to song.  Type {info}!yespall{warning} to listen to songs from other players"
+        "en"    "[IGA] {warning}Cannot listen to song.  Type {warningd}!yespall{warning} to listen to songs from other players"
     }
 
     "user_in_cooldown"
@@ -93,7 +93,7 @@
 
     "volume_muted"
     {
-        "en"    "[IGA] {warning}Volume muted, cannot listen to song.  Type {info}!vol{warning} to adjust your volume"
+        "en"    "[IGA] {warning}Volume muted, cannot listen to song.  Type {warningd}!vol{warning} to adjust your volume"
     }
     
     "motd_not_enabled"
