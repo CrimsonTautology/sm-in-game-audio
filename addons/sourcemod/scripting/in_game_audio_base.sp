@@ -19,7 +19,7 @@
 #include <smjansson>
 #include <morecolors>
 
-#define PLUGIN_VERSION "1.6.1"
+#define PLUGIN_VERSION "1.6.2"
 
 public Plugin:myinfo =
 {
