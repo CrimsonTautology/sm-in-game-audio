@@ -119,17 +119,6 @@ public OnAllPluginsLoaded()
     IGA_RegisterMenuItem("Stop Current Song (!stop)", StopSongMenu);
     IGA_RegisterMenuItem("I don't hear anything!!!", TroubleShootingMenu);
     IGA_RegisterMenuItem("How Do I Upload Music?", HowToUploadMenu);
-
-    CAddColor("primary", 0x428bca);
-    CAddColor("primaryd", 0x245681);
-    CAddColor("info", 0x5bc0de);
-    CAddColor("infod", 0x238FAF);
-    CAddColor("success", 0x5cb85c);
-    CAddColor("successd", 0x347934);
-    CAddColor("warning", 0xf0ad4e);
-    CAddColor("warningd", 0xC77B10);
-    CAddColor("danger", 0xd9534f);
-    CAddColor("dangerd", 0x9F2622);
 }
 
 public OnClientConnected(client)

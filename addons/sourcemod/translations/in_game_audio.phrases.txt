@@ -3,110 +3,108 @@
     "started_playing_to_all"
     {
         "#format"   "{1:s}"
-            "en"    "[IGA] {info}Started playing {infod}\"{1}\"{info} to all."
+            "en"    "[IGA] Started playing {teamcolor}\"{1}\"{default} to all."
     }
 
     "started_playing_to_self"
     {
         "#format"   "{1:s},{2:s},{3:s}"
-            "en"    "[IGA] {info}{1} is currently playing {infod}\"{2}\"{info}, type {infod}!p {3}{info} to play for yourself."
+            "en"    "[IGA] {1} is currently playing {teamcolor}\"{2}\"{default}, type {teamcolor}!p {3}{default} to play for yourself."
     }
 
     "duration"
     {
         "#format"   "{1:s}"
-            "en"    "{info}Duration {1}."
+            "en"    "Duration {1}."
     }
 
     "to_stop_all"
     {
-        "en"    "{info}Type {infod}!stop{info} to stop the current song or {infod}!nopall{info} to stop this plugin all-together."
+        "en"    "Type {teamcolor}!stop{default} to stop the current song or {teamcolor}!nopall{default} to stop this plugin all-together."
     }
 
     "to_stop"
     {
-        "en"    "{info}Type {infod}!stop{info} to stop the current song."
+        "en"    "Type {teamcolor}!stop{default} to stop the current song."
     }
 
     "iga_settings"
     {
-        "en"    "{info}Type {infod}!iga{info} to adjust your audio settings or if you can't hear anything."
+        "en"    "Type {teamcolor}!iga{default} to adjust your audio settings or if you can't hear anything."
     }
 
     "pall_currently_playing"
     {
         "#format"   "{1:s},{2:s},{3:i},{4:s}"
-            "en"    "[IGA] {danger}pall currently playing {dangerd}{1} \"{2}\"{danger}. Please wait {3} more {4}."
+            "en"    "[IGA] {fullred}pall currently playing {teamcolor}{1} \"{2}\"{fullred}. Please wait {3} more {4}."
     }
 
     "not_found"
     {
-        "en"    "[IGA] {warning}Could not find specified sound or directory."
+        "en"    "[IGA] {fullred}Could not find specified sound or directory."
     }
 
     "url_invalid"
     {
-        "en"    "[IGA] {danger}sm_iga_url invalid; cannot create HTTP request"
+        "en"    "[IGA] {fullred}sm_iga_url invalid; cannot create HTTP request"
     }
 
     "not_enabled"
     {
-        "en"    "[IGA] {danger}In Game Audio is not enabled."
+        "en"    "[IGA] {fullred}In Game Audio is not enabled."
     }
 
     "donators_only"
     {
-        "en"    "[IGA] {danger}Only donators can use this command."
+        "en"    "[IGA] {fullred}Only donators can use this command."
     }
 
     "volume_usage"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] {warning}usage {warningd}\"!vol [0-10]\"{warning}.  Currently {warningd}{1}{warning}."
+            "en"    "[IGA] {fullred}usage {teamcolor}\"!vol [0-10]\"{fullred}.  Currently {teamcolor}{1}{fullred}."
     }
 
     "volume_set"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] {success}Set volume to {successd}{1}{success}.  Will take affect on the next song."
+            "en"    "[IGA] {green}Set volume to {teamcolor}{1}{green}.  Will take affect on the next song."
     }
 
     "disabled_pall"
     {
-        "en"    "[IGA] {success}Disabled pall.  Type {successd}!yespall{success} to renable it."
+        "en"    "[IGA] {green}Disabled pall.  Type {teamcolor}!yespall{green} to renable it."
     }
     
     "enabled_pall"
     {
-        "en"    "[IGA] {success}Enabled pall.  Type {successd}!nopall{success} to disable it."
+        "en"    "[IGA] {green}Enabled pall.  Type {teamcolor}!nopall{green} to disable it."
     }
 
     "pall_not_enabled"
     {
-        "en"    "[IGA] {warning}Cannot listen to song.  Type {warningd}!yespall{warning} to listen to songs from other players"
+        "en"    "[IGA] {fullred}Cannot listen to song.  Type {teamcolor}!yespall{fullred} to listen to songs from other players"
     }
 
     "user_in_cooldown"
     {
-        "en"    "[IGA] {danger}User in cooldown."
+        "en"    "[IGA] {fullred}User in cooldown."
     }
 
     "volume_muted"
     {
-        "en"    "[IGA] {warning}Volume muted, cannot listen to song.  Type {warningd}!vol{warning} to adjust your volume"
+        "en"    "[IGA] {fullred}Volume muted, cannot listen to song.  Type {teamcolor}!vol{fullred} to adjust your volume"
     }
     
     "motd_not_enabled"
     {
-        "en"    "[IGA] {warning}Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type {warningd}'cl_disablehtmlmotd 0'{warning} into console."
+        "en"    "[IGA] {fullred}Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type {teamcolor}'cl_disablehtmlmotd 0'{fullred} into console."
     }
 
     "how_to_upload"
     {
         "#format"   "{1:s}"
-            "en"   "[IGA] {info} Visit {infod}{1}{info} to upload your own music."
+            "en"   "[IGA] Visit {teamcolor}{1}{default} to upload your own music."
     }
-
-
 }
 
