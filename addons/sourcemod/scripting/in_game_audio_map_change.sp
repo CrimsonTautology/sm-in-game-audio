@@ -18,10 +18,11 @@
 #include <in_game_audio>
 
 #define PLUGIN_VERSION "1.6.1"
+#define PLUGIN_NAME "In Game Audio Map Change" 
 
 public Plugin:myinfo =
 {
-    name = "In Game Audio Map Change",
+    name = PLUGIN_NAME,
     author = "CrimsonTautology",
     description = "Play a song during map change",
     version = PLUGIN_VERSION,
@@ -31,6 +32,9 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
     LoadTranslations("in_game_audio.phrases");
+
+    CreateConVar("sm_iga_map_change_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
+
     HookEvent("teamplay_game_over", Event_MapChange);
 }
 

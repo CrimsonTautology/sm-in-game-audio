@@ -19,10 +19,11 @@
 #include <donator>
 
 #define PLUGIN_VERSION "1.6.1"
+#define PLUGIN_NAME "In Game Audio Player"
 
 public Plugin:myinfo =
 {
-    name = "In Game Audio Player",
+    name = PLUGIN_NAME,
     author = "CrimsonTautology",
     description = "User commands to play and stop songs",
     version = PLUGIN_VERSION,
@@ -37,6 +38,7 @@ public OnPluginStart()
 {
     LoadTranslations("in_game_audio.phrases");
 
+    CreateConVar("sm_iga_player_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
     g_Cvar_IGADonatorsOnly = CreateConVar("sm_iga_donators_only", "0", "Whether only dontaors can use pall");
 
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");

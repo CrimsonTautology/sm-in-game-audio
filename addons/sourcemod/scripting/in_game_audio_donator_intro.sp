@@ -19,6 +19,7 @@
 #include <donator>
 
 #define PLUGIN_VERSION "1.6.1"
+#define PLUGIN_NAME "In Game Audio Donator Intro"
 
 
 new bool:g_CanIntroPlay[MAXPLAYERS+1];
@@ -26,7 +27,7 @@ new bool:g_DonatorLibraryExists = false;
 
 public Plugin:myinfo =
 {
-    name = "In Game Audio Donator Intro",
+    name = PLUGIN_NAME,
     author = "CrimsonTautology",
     description = "Play donator's theme song when they join the server",
     version = PLUGIN_VERSION,
@@ -36,6 +37,9 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
     LoadTranslations("in_game_audio.phrases");
+
+    CreateConVar("sm_iga_donator_intro_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
+
     AddCommandListener(Event_JoinClass, "joinclass");
     g_DonatorLibraryExists = LibraryExists("donator.core");
 }
