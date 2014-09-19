@@ -3,108 +3,108 @@
     "started_playing_to_all"
     {
         "#format"   "{1:s}"
-            "en"    "[IGA] Started playing \"{1}\" to all."
+            "en"    "[IGA] {darkgray}Started playing {green}\"{1}\"{darkgray} to all."
     }
 
     "started_playing_to_self"
     {
         "#format"   "{1:s},{2:s},{3:s}"
-            "en"    "[IGA] {1} is currently playing \"{2}\", type !p {3} to play for yourself."
+            "en"    "[IGA] {darkgray}{1} is currently playing \"{2}\", type {green}!p {3}{darkgray} to play for yourself."
     }
 
     "duration"
     {
         "#format"   "{1:s}"
-            "en"    "Duration {1}."
+            "en"    "{darkgray}Duration {1}."
     }
 
     "to_stop_all"
     {
-        "en"    "Type !stop to cancel or !nopall to mute."
+        "en"    "{darkgray}Type {green}!stop{darkgray} to cancel or {green}!nopall{darkgray} to disable."
     }
 
     "to_stop"
     {
-        "en"    "Type !stop to cancel."
+        "en"    "{darkgray}Type {green}!stop{darkgray} to cancel."
     }
 
     "iga_settings"
     {
-        "en"    "Type !iga to adjust your audio settings or if you can't hear anything."
+        "en"    "{darkgray}Type {green}!iga{darkgray} to adjust your audio settings or if you can't hear anything."
     }
 
     "pall_currently_playing"
     {
         "#format"   "{1:s},{2:s},{3:i},{4:s}"
-            "en"    "[IGA] pall currently playing {1} \"{2}\". Please wait {3} more {4}."
+            "en"    "[IGA] {fullred}pall currently playing {1} \"{2}\". Please wait {3} more {4}."
     }
 
     "not_found"
     {
-        "en"    "[IGA] Could not find specified sound or directory."
+        "en"    "[IGA] {fullred}Could not find specified sound or directory."
     }
 
     "url_invalid"
     {
-        "en"    "[IGA] sm_iga_url invalid; cannot create HTTP request"
+        "en"    "[IGA] {fullred}sm_iga_url invalid; cannot create HTTP request"
     }
 
     "not_enabled"
     {
-        "en"    "[IGA] In Game Audio is not enabled."
+        "en"    "[IGA] {fullred}In Game Audio is not enabled."
     }
 
     "donators_only"
     {
-        "en"    "[IGA] Only donators can use this command."
+        "en"    "[IGA] {fullred}Only donators can use this command."
     }
 
     "volume_usage"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] usage \"!vol [0-10]\".  Currently {1}."
+            "en"    "[IGA] {darkgray}usage {green}\"!vol [0-10]\"{darkgray}.  Currently {green}{1}{darkgray}."
     }
 
     "volume_set"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] Set volume to {1}.  Will take affect on the next song."
+            "en"    "[IGA] {darkgray}Set volume to {green}{1}{darkgray}.  Will take affect on the next song."
     }
 
     "disabled_pall"
     {
-        "en"    "[IGA] Disabled pall.  Type !yespall to renable it."
+        "en"    "[IGA] {darkgray}Disabled pall.  Type {green}!yespall{darkgray} to renable it."
     }
 
     "enabled_pall"
     {
-        "en"    "[IGA] Enabled pall.  Type !nopall to disable it."
+        "en"    "[IGA] {darkgray}Enabled pall.  Type {green}!nopall{darkgray} to disable it."
     }
 
     "pall_not_enabled"
     {
-        "en"    "[IGA] Cannot listen to song.  Type !yespall to listen to songs from other players"
+        "en"    "[IGA] {fullred}Cannot listen to song.  Type {green}!yespall{fullred} to listen to songs from other players"
     }
 
     "user_in_cooldown"
     {
-        "en"    "[IGA] User in cooldown."
+        "en"    "[IGA] {fullred}User in cooldown."
     }
 
     "volume_muted"
     {
-        "en"    "[IGA] Volume muted, cannot listen to song.  Type !vol to adjust your volume"
+        "en"    "[IGA] {fullred}Volume muted, cannot listen to song.  Type {green}!vol{fullred} to adjust your volume"
     }
 
     "motd_not_enabled"
     {
-        "en"    "[IGA] Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type 'cl_disablehtmlmotd 0' into console."
+        "en"    "[IGA] {fullred}Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type 'cl_disablehtmlmotd 0' into console."
     }
 
     "how_to_upload"
     {
         "#format"   "{1:s}"
-            "en"   "[IGA] Visit {green}{1}{default} to upload your own music."
+            "en"   "[IGA] {darkgray}Visit {green}{1}{darkgray} to upload your own music."
     }
 
 }
