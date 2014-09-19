@@ -941,7 +941,7 @@ public IGAMenu:HowToUploadMenu(client)
 {
     decl String:base_url[256];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
-    CPrintToChat(client, "%t", "how_to_upload", base_url);
+    PrintToChatAll("%t", "how_to_upload", base_url);
 }
 
 public SongChooserMenuHandler(Handle:menu, MenuAction:action, param1, param2)
