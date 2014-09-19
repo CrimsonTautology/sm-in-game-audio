@@ -107,6 +107,9 @@ public OnPluginStart()
     RegConsoleCmd("sm_nopall", Command_Nopall, "Turn off pall for yourself");
     RegConsoleCmd("sm_yespall", Command_Yespall, "Turn on pall for yourself");
     RegConsoleCmd("sm_iga", Command_IGA, "Bring up the IGA settings and control menu");
+    RegConsoleCmd("sm_radio", Command_IGA, "Bring up the IGA settings and control menu");
+    RegConsoleCmd("sm_music", Command_IGA, "Bring up the IGA settings and control menu");
+    RegConsoleCmd("sm_jukebox", Command_IGA, "Bring up the IGA settings and control menu");
 
     g_Cookie_Volume = RegClientCookie("iga_volume_1.4", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled_1.4", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
