@@ -15,6 +15,7 @@
 
 #include <sourcemod>
 #include <in_game_audio>
+#include <morecolors>
 #undef REQUIRE_PLUGIN
 #include <donator>
 

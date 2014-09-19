@@ -17,6 +17,7 @@
 #include <clientprefs>
 #include <steamtools>
 #include <smjansson>
+#include <morecolors>
 
 #define PLUGIN_VERSION "1.7.0"
 #define PLUGIN_NAME "In Game Audio Base"
