@@ -75,7 +75,7 @@
     {
         "en"    "[IGA] Disabled pall.  Type !yespall to renable it."
     }
-    
+
     "enabled_pall"
     {
         "en"    "[IGA] Enabled pall.  Type !nopall to disable it."
@@ -95,12 +95,17 @@
     {
         "en"    "[IGA] Volume muted, cannot listen to song.  Type !vol to adjust your volume"
     }
-    
+
     "motd_not_enabled"
     {
         "en"    "[IGA] Ensure that HTML MOTDs are enabled, otherwise you won't hear anthing. Enable via advanced settings or type 'cl_disablehtmlmotd 0' into console."
     }
 
+    "how_to_upload"
+    {
+        "#format"   "{1:s}"
+            "en"   "[IGA] Visit {green}{1}{default} to upload your own music."
+    }
 
 }
 

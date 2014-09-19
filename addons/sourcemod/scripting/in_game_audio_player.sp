@@ -53,8 +53,8 @@ public OnPluginStart()
 
 public OnAllPluginsLoaded()
 {
-    IGA_RegisterMenuItem("View Play List (!plist)", SongListMenu);
-    IGA_RegisterMenuItem("How to play songs", TutorialMenu);
+    IGA_RegisterMenuItem("View Song List (!plist)", SongListMenu);
+    IGA_RegisterMenuItem("How To Play Songs", TutorialMenu);
 }
 
 
@@ -219,6 +219,7 @@ public IGAMenu:TutorialMenu(client)
     SetMenuTitle(menu, "How to play music");
 
     AddMenuItem(menu, "0", "!p         Play a random song");
+    AddMenuItem(menu, "0", "!p search  Display a list of songs that contain \"search\"");
     AddMenuItem(menu, "0", "!p c       Play a random song in category c");
     AddMenuItem(menu, "0", "!p c/name  Play a specific song name in category c");
     AddMenuItem(menu, "0", "!pall      Same as !p except it plays to everyone on the server");
