@@ -46,8 +46,8 @@ public OnMapVoteStarted()
 
 public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
-    decl String:next_map[64]
-    GetNextMap(next_map, sizeof(next_map))
+    decl String:next_map[64];
+    GetNextMap(next_map, sizeof(next_map));
     MapTheme(true, next_map);
 
     return Plugin_Continue;
