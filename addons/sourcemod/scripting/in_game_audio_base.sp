@@ -18,7 +18,7 @@
 #include <steamtools>
 #include <smjansson>
 
-#define PLUGIN_VERSION "1.6.1"
+#define PLUGIN_VERSION "1.7.0"
 #define PLUGIN_NAME "In Game Audio Base"
 
 public Plugin:myinfo =
