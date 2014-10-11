@@ -9,7 +9,7 @@
     "started_playing_to_self"
     {
         "#format"   "{1:s},{2:s},{3:s}"
-            "en"    "[IGA] {darkgray}{1} is currently playing \"{2}\", type {green}!p {3}{darkgray} to play for yourself."
+            "en"    "[IGA] {darkgray}{1} is listening to \"{2}\". Type {green}!p {3}{darkgray} to hear it."
     }
 
     "duration"
