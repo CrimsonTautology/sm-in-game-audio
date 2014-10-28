@@ -11,9 +11,11 @@ Attribution: https://bitbucket.org/motdplayer/sm-adplugin/src
 #undef REQUIRE_EXTENSIONS
 #endif
 
-#include <curl>
+#include <cURL>
 #include <socket>
 #include <steamtools>
+
+#define STRING(%1) %1, sizeof(%1)
 
 new bool:g_bExtensions = false;
 new bool:g_bCURL = false;
