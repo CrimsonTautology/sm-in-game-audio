@@ -14,7 +14,7 @@
 #endif
 #define _in_game_audio_included_
 
-#include <steamtools>
+#include <EasyHTTP>
 #include <routes>
 
 #define MAX_SONG_LENGTH 64

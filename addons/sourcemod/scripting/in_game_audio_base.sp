@@ -15,7 +15,7 @@
 #include <sourcemod>
 #include <routes>
 #include <clientprefs>
-#include <steamtools>
+#include <EasyHTTP>
 #include <smjansson>
 #include <morecolors>
 
