@@ -5,7 +5,7 @@ Allows users to listen to music while in game.  Uses a hidden MOTD page to play 
 
 ##Installation
 * Install the [smjansson](https://forums.alliedmods.net/showthread.php?t=184604) extension (Included in repository).
-* Install the [steamtools](https://forums.alliedmods.net/showthread.php?t=129763) extension (Included in repository).
+* Install the [SteamWorks](https://forums.alliedmods.net/showthread.php?t=229556) extension (Included in repository).
 * Compile plugins with spcomp (e.g.)
 > spcomp in_game_audio_base.sp
 * Compiled .smx files into your `"<modname>/addons/sourcemod/plugins"` directory.
@@ -18,7 +18,7 @@ Allows users to listen to music while in game.  Uses a hidden MOTD page to play 
 
 ##Requirements
 * [SMJansson](https://forums.alliedmods.net/showthread.php?t=184604)
-* [SteamTools](https://forums.alliedmods.net/showthread.php?t=129763)
+* [SteamWorks](https://forums.alliedmods.net/showthread.php?t=229556)
 * [A Web Site Backend](https://github.com/CrimsonTautology/in_game_audio)
 * [Donator Interface](https://forums.alliedmods.net/showthread.php?t=145542)(Optional)
 * Players must have HTML Message Of The Days enabled for this to work.  This can be enabled via advanced settings of by typing `cl_disablehtmlmotd 0` into console.
