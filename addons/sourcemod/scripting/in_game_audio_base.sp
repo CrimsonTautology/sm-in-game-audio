@@ -438,10 +438,10 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
 }
 
 
-public ReceiveQuerySong(Handle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public ReceiveQuerySong(Handle:request, bool:successful, EHTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
-    if(!successful || code != HTTPStatusCode_OK)
+    if(!successful || code != k_EHTTPStatusCode200OK)
     {
         LogError("[IGA] Error at RecivedQuerySong (HTTP Code %d; success %d)", code, successful);
         Steam_ReleaseHTTPRequest(request);
@@ -602,9 +602,9 @@ MapTheme(bool:force=true, String:map[] ="")
     SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
-public ReceiveTheme(Handle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public ReceiveTheme(Handle:request, bool:successful, EHTTPStatusCode:code, any:userid)
 {
-    if(!successful || code != HTTPStatusCode_OK)
+    if(!successful || code != k_EHTTPStatusCode200OK)
     {
         LogError("[IGA] Error at RecivedTheme (HTTP Code %d; success %d)", code, successful);
         Steam_ReleaseHTTPRequest(request);
