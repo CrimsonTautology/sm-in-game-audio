@@ -14,7 +14,6 @@
 #endif
 #define _in_game_audio_included_
 
-#include <steamtools>
 #include <routes>
 
 #define MAX_SONG_LENGTH 64
@@ -93,7 +92,7 @@ native StopSongAll();
  *
  * @param route         The main route to use
  */
-native HTTPRequestHandle:CreateIGARequest(const String:route[]);
+native Handle:CreateIGARequest(const String:route[]);
 
 /**
  * Popup an IGA webpage via a MOTD panel to the player
