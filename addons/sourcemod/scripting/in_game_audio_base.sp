@@ -218,18 +218,18 @@ public Action:Command_IGA(client, args)
     return Plugin_Handled;
 }
 
-Steam_SetHTTPRequestGetOrPostParameterInt(&Handle:request, const String:param[], value)
+SteamWorks_SetHTTPRequestGetOrPostParameterInt(&Handle:request, const String:param[], value)
 {
     new String:tmp[64];
     IntToString(value, tmp, sizeof(tmp));
-    Steam_SetHTTPRequestGetOrPostParameter(request, param, tmp);
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, param, tmp);
 }
 
 SetAccessCode(&Handle:request)
 {
     decl String:api_key[128];
     GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
-    Steam_SetHTTPRequestGetOrPostParameter(request, "access_token", api_key);
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "access_token", api_key);
 }
 
 public _CreateIGARequest(Handle:plugin, args)
@@ -418,19 +418,19 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
         return;
     }
 
-    Steam_SetHTTPRequestGetOrPostParameter(request, "path", path);
-    Steam_SetHTTPRequestGetOrPostParameterInt(request, "pall", pall);
-    Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "path", path);
+    SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "pall", pall);
+    SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
 
     if(song_id >= 0)
     {
-        Steam_SetHTTPRequestGetOrPostParameterInt(request, "song_id", song_id);
+        SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "song_id", song_id);
     }
 
     //Send caller's steamid64
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
-    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
     SteamWorks_SendHTTPRequest(request, ReceiveQuerySong, player);
 
@@ -567,7 +567,7 @@ UserTheme(client)
     //Find the user's theme
     decl String:uid[MAX_COMMUNITYID_LENGTH];
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
-    Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
     SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
 }
@@ -597,8 +597,8 @@ MapTheme(bool:force=true, String:map[] ="")
         return;
     }
 
-    Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
-    Steam_SetHTTPRequestGetOrPostParameter(request, "map", map);
+    SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "map", map);
     SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
