@@ -15,7 +15,7 @@
 #include <sourcemod>
 #include <routes>
 #include <clientprefs>
-#include <steamtools>
+#include <steamworks>
 #include <smjansson>
 #include <morecolors>
 
@@ -218,14 +218,14 @@ public Action:Command_IGA(client, args)
     return Plugin_Handled;
 }
 
-Steam_SetHTTPRequestGetOrPostParameterInt(&HTTPRequestHandle:request, const String:param[], value)
+Steam_SetHTTPRequestGetOrPostParameterInt(&Handle:request, const String:param[], value)
 {
     new String:tmp[64];
     IntToString(value, tmp, sizeof(tmp));
     Steam_SetHTTPRequestGetOrPostParameter(request, param, tmp);
 }
 
-SetAccessCode(&HTTPRequestHandle:request)
+SetAccessCode(&Handle:request)
 {
     decl String:api_key[128];
     GetConVarString(g_Cvar_IGAApiKey, api_key, sizeof(api_key));
@@ -241,7 +241,7 @@ public _CreateIGARequest(Handle:plugin, args)
 
     return _:CreateIGARequest(route);
 }
-HTTPRequestHandle:CreateIGARequest(const String:route[])
+Handle:CreateIGARequest(const String:route[])
 {
     decl String:base_url[256], String:url[512];
     GetConVarString(g_Cvar_IGAUrl, base_url, sizeof(base_url));
@@ -263,7 +263,7 @@ HTTPRequestHandle:CreateIGARequest(const String:route[])
     Format(url, sizeof(url),
             "%s%s", base_url, route);
 
-    new HTTPRequestHandle:request = Steam_CreateHTTPRequest(HTTPMethod_POST, url);
+    new Handle:request = SteamWorks_CreateHTTPRequest(HTTPMethod_POST, url);
     SetAccessCode(request);
 
     return request;
@@ -409,7 +409,7 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
         return;
     }
 
-    new HTTPRequestHandle:request = CreateIGARequest(QUERY_SONG_ROUTE);
+    new Handle:request = CreateIGARequest(QUERY_SONG_ROUTE);
     new player = client > 0 ? GetClientUserId(client) : 0;
 
     if(request == INVALID_HTTP_HANDLE)
@@ -432,13 +432,13 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
     Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
-    Steam_SendHTTPRequest(request, ReceiveQuerySong, player);
+    SteamWorks_SendHTTPRequest(request, ReceiveQuerySong, player);
 
     StartCooldown(client);
 }
 
 
-public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public ReceiveQuerySong(Handle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
     if(!successful || code != HTTPStatusCode_OK)
@@ -449,7 +449,7 @@ public ReceiveQuerySong(HTTPRequestHandle:request, bool:successful, HTTPStatusCo
     }
 
     decl String:data[4096];
-    Steam_GetHTTPResponseBodyData(request, data, sizeof(data));
+    SteamWorks_GetHTTPResponseBodyData(request, data, sizeof(data));
     Steam_ReleaseHTTPRequest(request);
 
     new Handle:json = json_load(data);
@@ -556,7 +556,7 @@ UserTheme(client)
         return;
     }
 
-    new HTTPRequestHandle:request = CreateIGARequest(USER_THEME_ROUTE);
+    new Handle:request = CreateIGARequest(USER_THEME_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)
     {
@@ -569,7 +569,7 @@ UserTheme(client)
     Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
     Steam_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
-    Steam_SendHTTPRequest(request, ReceiveTheme, 0);
+    SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
 public _MapTheme(Handle:plugin, args)
@@ -589,7 +589,7 @@ MapTheme(bool:force=true, String:map[] ="")
         return;
     }
 
-    new HTTPRequestHandle:request = CreateIGARequest(MAP_THEME_ROUTE);
+    new Handle:request = CreateIGARequest(MAP_THEME_ROUTE);
 
     if(request == INVALID_HTTP_HANDLE)
     {
@@ -599,10 +599,10 @@ MapTheme(bool:force=true, String:map[] ="")
 
     Steam_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
     Steam_SetHTTPRequestGetOrPostParameter(request, "map", map);
-    Steam_SendHTTPRequest(request, ReceiveTheme, 0);
+    SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
 }
 
-public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:code, any:userid)
+public ReceiveTheme(Handle:request, bool:successful, HTTPStatusCode:code, any:userid)
 {
     if(!successful || code != HTTPStatusCode_OK)
     {
@@ -612,7 +612,7 @@ public ReceiveTheme(HTTPRequestHandle:request, bool:successful, HTTPStatusCode:c
     }
 
     decl String:data[4096];
-    Steam_GetHTTPResponseBodyData(request, data, sizeof(data));
+    SteamWorks_GetHTTPResponseBodyData(request, data, sizeof(data));
     Steam_ReleaseHTTPRequest(request);
 
     new Handle:json = json_load(data);
