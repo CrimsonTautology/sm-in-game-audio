@@ -251,7 +251,7 @@ Handle:CreateIGARequest(const String:route[])
     if(trim_length < 0)
     {
         //IGA Url not set
-        return INVALID_HTTP_HANDLE;
+        return INVALID_HANDLE;
     }
 
     //check for forward slash after base_url;
@@ -412,7 +412,7 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
     new Handle:request = CreateIGARequest(QUERY_SONG_ROUTE);
     new player = client > 0 ? GetClientUserId(client) : 0;
 
-    if(request == INVALID_HTTP_HANDLE)
+    if(request == INVALID_HANDLE)
     {
         CReplyToCommand(client, "%t", "url_invalid");
         return;
@@ -558,7 +558,7 @@ UserTheme(client)
 
     new Handle:request = CreateIGARequest(USER_THEME_ROUTE);
 
-    if(request == INVALID_HTTP_HANDLE)
+    if(request == INVALID_HANDLE)
     {
         PrintToConsole(0, "%t", "url_invalid");
         return;
@@ -591,7 +591,7 @@ MapTheme(bool:force=true, String:map[] ="")
 
     new Handle:request = CreateIGARequest(MAP_THEME_ROUTE);
 
-    if(request == INVALID_HTTP_HANDLE)
+    if(request == INVALID_HANDLE)
     {
         PrintToConsole(0, "%t", "url_invalid");
         return;
