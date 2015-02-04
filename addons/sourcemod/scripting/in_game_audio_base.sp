@@ -263,7 +263,7 @@ Handle:CreateIGARequest(const String:route[])
     Format(url, sizeof(url),
             "%s%s", base_url, route);
 
-    new Handle:request = SteamWorks_CreateHTTPRequest(HTTPMethod_POST, url);
+    new Handle:request = SteamWorks_CreateHTTPRequest(k_EHTTPMethodPOST, url);
     SetAccessCode(request);
 
     return request;
