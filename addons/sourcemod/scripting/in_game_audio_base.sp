@@ -444,13 +444,13 @@ public ReceiveQuerySong(Handle:request, bool:successful, EHTTPStatusCode:code, a
     if(!successful || code != k_EHTTPStatusCode200OK)
     {
         LogError("[IGA] Error at RecivedQuerySong (HTTP Code %d; success %d)", code, successful);
-        Steam_ReleaseHTTPRequest(request);
+        CloseHandle(request);
         return;
     }
 
     decl String:data[4096];
     SteamWorks_GetHTTPResponseBodyData(request, data, sizeof(data));
-    Steam_ReleaseHTTPRequest(request);
+    CloseHandle(request);
 
     new Handle:json = json_load(data);
     new bool:found = json_object_get_bool(json, "found");
@@ -607,13 +607,13 @@ public ReceiveTheme(Handle:request, bool:successful, EHTTPStatusCode:code, any:u
     if(!successful || code != k_EHTTPStatusCode200OK)
     {
         LogError("[IGA] Error at RecivedTheme (HTTP Code %d; success %d)", code, successful);
-        Steam_ReleaseHTTPRequest(request);
+        CloseHandle(request);
         return;
     }
 
     decl String:data[4096];
     SteamWorks_GetHTTPResponseBodyData(request, data, sizeof(data));
-    Steam_ReleaseHTTPRequest(request);
+    CloseHandle(request);
 
     new Handle:json = json_load(data);
     new bool:found = json_object_get_bool(json, "found");
