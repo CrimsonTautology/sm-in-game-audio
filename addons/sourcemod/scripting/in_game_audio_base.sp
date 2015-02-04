@@ -432,13 +432,15 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
     SteamWorks_GetClientSteamID(client, uid, sizeof(uid));
     SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
-    SteamWorks_SendHTTPRequest(request, ReceiveQuerySong, player);
+    SteamWorks_SetHTTPCallbacks(request, ReceiveQuerySong);
+    SteamWorks_SetHTTPRequestContextValue(request, player);
+    SteamWorks_SendHTTPRequest(request);
 
     StartCooldown(client);
 }
 
 
-public ReceiveQuerySong(Handle:request, bool:successful, EHTTPStatusCode:code, any:userid)
+public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
     if(!successful || code != k_EHTTPStatusCode200OK)
@@ -569,7 +571,9 @@ UserTheme(client)
     SteamWorks_GetClientSteamID(client, uid, sizeof(uid));
     SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
-    SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
+    SteamWorks_SetHTTPCallbacks(request, ReceiveTheme);
+    SteamWorks_SetHTTPRequestContextValue(request, 0);
+    SteamWorks_SendHTTPRequest(request);
 }
 
 public _MapTheme(Handle:plugin, args)
@@ -599,10 +603,13 @@ MapTheme(bool:force=true, String:map[] ="")
 
     SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "force", force);
     SteamWorks_SetHTTPRequestGetOrPostParameter(request, "map", map);
-    SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
+
+    SteamWorks_SetHTTPCallbacks(request, ReceiveTheme);
+    SteamWorks_SetHTTPRequestContextValue(request, 0);
+    SteamWorks_SendHTTPRequest(request);
 }
 
-public ReceiveTheme(Handle:request, bool:successful, EHTTPStatusCode:code, any:userid)
+public ReceiveTheme(Handle:request, bool:failure, bool:successful, EHTTPStatusCode:code, any:userid)
 {
     if(!successful || code != k_EHTTPStatusCode200OK)
     {
