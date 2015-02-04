@@ -429,7 +429,7 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
 
     //Send caller's steamid64
     decl String:uid[MAX_COMMUNITYID_LENGTH];
-    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+    SteamWorks_GetClientSteamID(client, uid, sizeof(uid));
     SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
     SteamWorks_SendHTTPRequest(request, ReceiveQuerySong, player);
@@ -566,7 +566,7 @@ UserTheme(client)
 
     //Find the user's theme
     decl String:uid[MAX_COMMUNITYID_LENGTH];
-    Steam_GetCSteamIDForClient(client, uid, sizeof(uid));
+    SteamWorks_GetClientSteamID(client, uid, sizeof(uid));
     SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
     SteamWorks_SendHTTPRequest(request, ReceiveTheme, 0);
