@@ -450,13 +450,17 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
         return;
     }
 
-    decl String:data[4096];
-    SteamWorks_GetHTTPResponseBodyData(request, data, sizeof(data));
+
+    new size = 0;
+    SteamWorks_GetHTTPResponseBodySize(request, size);
+    new String:data[size];
+    SteamWorks_GetHTTPResponseBodyData(request, data, size);
     CloseHandle(request);
 
     new Handle:json = json_load(data);
     new bool:found = json_object_get_bool(json, "found");
     new bool:multiple = json_object_get_bool(json, "multiple");
+
 
     if(found)
     {
@@ -618,8 +622,10 @@ public ReceiveTheme(Handle:request, bool:failure, bool:successful, EHTTPStatusCo
         return;
     }
 
-    decl String:data[4096];
-    SteamWorks_GetHTTPResponseBodyData(request, data, sizeof(data));
+    new size = 0;
+    SteamWorks_GetHTTPResponseBodySize(request, size);
+    new String:data[size];
+    SteamWorks_GetHTTPResponseBodyData(request, data, size);
     CloseHandle(request);
 
     new Handle:json = json_load(data);
