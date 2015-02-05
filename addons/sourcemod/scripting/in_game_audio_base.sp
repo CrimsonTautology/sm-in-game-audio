@@ -53,7 +53,7 @@ new String:g_CurrentPlastSongId[64];
 
 new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
-new g_Volume[MAXPLAYERS+1] = {5, ...};
+new g_Volume[MAXPLAYERS+1] = {8, ...};
 
 functag IGA_MenuCallback IGAMenu:public(client);
 native IGA_RegisterMenuItem(const String:name[], IGA_MenuCallback:func);
@@ -135,7 +135,7 @@ public OnClientConnected(client)
     }
     g_IsInCooldown[client] = false;
     g_PNextFree[client] = 0;
-    g_Volume[client] = 5;
+    g_Volume[client] = 8;
     g_IsPallEnabled[client] = true;
 
     //Disable pall by default for quickplayers
