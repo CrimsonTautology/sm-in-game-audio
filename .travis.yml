@@ -1,19 +1,20 @@
 language: c
 
 env:
-    - SMVERSION=1.5
     - SMVERSION=1.6
     - SMVERSION=1.7
+    - SMVERSION=1.8
 
 matrix:
     fast_finish: true
     allow_failures:
-        - env: SMVERSION=1.7
+        - env: SMVERSION=1.8
     
 before_install:
     - sudo apt-get update
     - sudo apt-get install gcc-multilib
     - sudo apt-get install lynx
+    - sudo apt-get install lib32stdc++6
 
 before_script:
     - SMPATTERN="http:.*sourcemod-.*-linux.*"
