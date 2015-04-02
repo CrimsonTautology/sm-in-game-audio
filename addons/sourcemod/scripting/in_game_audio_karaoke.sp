@@ -62,6 +62,11 @@ public Action:Command_Karaoke(client, args)
         return Plugin_Handled;
     }
 
+    if(IsInPall())
+    {
+        CReplyToCommand(client, "%t", "pall_currently_in_use");
+        return Plugin_Handled;
+    }
 
     new total, Float:delay=10.0, song_id=726;
     total = ParseLRCFile("example.lrc", g_KaraokeLyrics, g_KaraokeTimestamps);//TODO

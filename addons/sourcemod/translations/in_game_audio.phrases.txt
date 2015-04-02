@@ -39,6 +39,11 @@
             "en"    "[IGA] {fullred}pall currently playing {1} \"{2}\". Please wait {3} more {4}."
     }
 
+    "pall_currently_in_use"
+    {
+        "en"    "[IGA] {fullred}Can not use that command while pall is currently in use."
+    }
+
     "not_found"
     {
         "en"    "[IGA] {fullred}Could not find specified sound or directory."
