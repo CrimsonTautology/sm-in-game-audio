@@ -19,7 +19,7 @@
 #include <smjansson>
 #include <morecolors>
 
-#define PLUGIN_VERSION "1.8.0"
+#define PLUGIN_VERSION "1.8.1"
 #define PLUGIN_NAME "In Game Audio Base"
 
 public Plugin:myinfo =
@@ -49,7 +49,7 @@ new bool:g_IsPallEnabled[MAXPLAYERS+1] = {false, ...};
 
 new String:g_CurrentPallDescription[64];
 new String:g_CurrentPallPath[64];
-new String:g_CurrentPlastSongId[64];
+new g_CurrentPlastSongId = 0;
 
 new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
@@ -111,6 +111,8 @@ public OnPluginStart()
     RegConsoleCmd("sm_radio", Command_IGA, "Bring up the IGA settings and control menu");
     RegConsoleCmd("sm_music", Command_IGA, "Bring up the IGA settings and control menu");
     RegConsoleCmd("sm_jukebox", Command_IGA, "Bring up the IGA settings and control menu");
+    RegConsoleCmd("sm_plast", Command_Plast, "Replay the last song for yourself");
+    RegConsoleCmd("sm_ptoo", Command_Plast, "Replay the last song for yourself");
 
     g_Cookie_Volume = RegClientCookie("iga_volume_1.4", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled_1.4", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
@@ -213,6 +215,27 @@ public Action:Command_IGA(client, args)
     if(client && IsClientAuthorized(client))
     {
         ShowIGAMenu(client);
+    }
+
+    return Plugin_Handled;
+}
+
+public Action:Command_Plast(client, args)
+{
+    if(IsClientInCooldown(client))
+    {
+        CReplyToCommand(client, "%t", "user_in_cooldown");
+        return Plugin_Handled;
+    }
+
+    if(!IsIGAEnabled())
+    {
+        CReplyToCommand(client, "%t", "not_enabled");
+        return Plugin_Handled;
+    }
+
+    if(client && IsClientAuthorized(client)){
+        QuerySong(client, "", false, false, g_CurrentPlastSongId);
     }
 
     return Plugin_Handled;
@@ -563,6 +586,8 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
                 strcopy(g_CurrentPallPath, 64, full_path);
                 strcopy(g_CurrentPallDescription, 64, description);
 
+                g_CurrentPlastSongId = StringToInt(song_id);
+
                 PlaySongAll(song_id, access_token, force);
             }else{
                 new minutes = (g_PallNextFree - GetTime()) / 60;
@@ -584,7 +609,7 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
             CPrintToChat(client, "%t", "to_stop");
             CPrintToChat(client, "%t", "iga_settings");
 
-            strcopy(g_CurrentPlastSongId, 64, song_id);
+            g_CurrentPlastSongId = StringToInt(song_id);
 
             PlaySong(client, song_id, access_token);
         }
