@@ -198,7 +198,7 @@ StartKaraoke(selected, Float:delay)
     }
 
     EmitSoundToAll(SOUND_ATTENTION);
-    PrintCenterTextAll("Karaoke started; \"%s\"", g_KaraokeName[selected]);
+    PrintCenterTextAll("%s\nKaraoke Will Begin in 15 Seconds\nAdjust your volume now if needed!", g_KaraokeName[selected]);
 
     CreateTimer(delay - 5.0, Timer_CountDown, 5);
     CreateTimer(delay - 4.0, Timer_CountDown, 4);
@@ -241,7 +241,7 @@ public KaraokeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 GetMenuItem(menu, param2, info, sizeof(info));
                 new selected = StringToInt(info);
 
-                StartKaraoke(selected, 10.0);
+                StartKaraoke(selected, 15.0);
             }
         case MenuAction_End: CloseHandle(menu);
     }
