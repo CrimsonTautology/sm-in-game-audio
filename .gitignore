@@ -2,6 +2,7 @@
 *.smx
 *.exe
 *.o
+karaoke.sp
 
 #vim files
 *.sw*
