@@ -303,6 +303,7 @@ CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:pop
     Format(url, sizeof(url),
             "%s%s/%s", base_url, route, args);
 
+/*
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
     KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
@@ -311,6 +312,87 @@ CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:pop
 
     ShowVGUIPanel(client, "info", panel, popup);
     CloseHandle(panel);
+*/
+
+    new Handle:panel = CreateKeyValues("data");
+    KvSetString(panel, "title", "In Game Audio");
+    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
+    KvSetString(panel, "msg", url);
+    KvSetNum(panel, "cmd", 0);
+    ShowVGUIPanelEx(client, "info", panel, popup, USERMSG_BLOCKHOOKS|USERMSG_RELIABLE);
+    CloseHandle(panel);
+}
+
+ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:show=true, usermessageFlags=0)
+{
+    new Handle:msg = StartMessageOne("VGUIMenu", client, usermessageFlags);
+    
+    if (GetFeatureStatus(FeatureType_Native, "GetUserMessageType") == FeatureStatus_Available && GetUserMessageType() == UM_Protobuf)
+    {
+        PbSetString(msg, "name", name);
+        PbSetBool(msg, "show", true);
+
+        if (panel != INVALID_HANDLE && KvGotoFirstSubKey(panel, false))
+        {
+            new Handle:subkey;
+
+            do
+            {
+                decl String:key[128], String:value[128];
+                KvGetSectionName(panel, key, sizeof(key));
+                KvGetString(panel, NULL_STRING, value, sizeof(value), "");
+                
+                subkey = PbAddMessage(msg, "subkeys");
+                PbSetString(subkey, "name", key);
+                PbSetString(subkey, "str", value);
+
+            } while (KvGotoNextKey(panel, false));
+        }
+    }
+    else //BitBuffer
+    {
+        BfWriteString(msg, name);
+        BfWriteByte(msg, show);
+        
+        if (panel == INVALID_HANDLE)
+        {
+            BfWriteByte(msg, 0);
+        }
+        else
+        {   
+            if (!KvGotoFirstSubKey(panel, false))
+            {
+                BfWriteByte(msg, 0);
+            }
+            else
+            {
+                new keyCount = 0;
+                do
+                {
+                    ++keyCount;
+                } while (KvGotoNextKey(panel, false));
+                
+                BfWriteByte(msg, keyCount);
+                
+                if (keyCount > 0)
+                {
+                    KvGoBack(panel);
+                    KvGotoFirstSubKey(panel, false);
+                    do
+                    {
+                        decl String:key[128], String:value[128];
+                        KvGetSectionName(panel, key, sizeof(key));
+                        KvGetString(panel, NULL_STRING, value, sizeof(value), "");
+                        
+                        BfWriteString(msg, key);
+                        BfWriteString(msg, value);
+                    } while (KvGotoNextKey(panel, false));
+                }
+            }
+        }
+    }
+    
+    EndMessage();
 }
 
 public _StartCoolDown(Handle:plugin, args) { StartCooldown(GetNativeCell(1)); }
