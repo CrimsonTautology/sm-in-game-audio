@@ -15,7 +15,15 @@ crap
 [00:42.13]I hate this love song I hate this love song
 [00:46.31][taeyang] i sarang noraega sirheo dasin an bureuri neoreul tteoolliji anke ijeulsu itge
 [00:54.42][seungri] i sarang noraega sirheo useumyeo bureuri geudaega oeropji anke jigeum neoegero 
-[01:02.90]nan ooh ooh ooh ooh ooh ooh hoo 
+[01:02.90 This line is invalid (missing ])
+[01:10.655]This line is invalid (invalid milisecond)
+[01:109.65]This line is invalid (invalid second)
+[019:10.65]This line is invalid (invalid minute)
+[01:46.85]This line is invalid (invalid milisecond)
+[01:86.45]This line is invalid (invalid second)
+[01:07:45]This line is invalid (double :)
+[01.08.45]This line is invalid (double .)
+[01:09]This line is missing miliseconds but is still valid
 
 [01:10.65]nan ooh ooh ooh ooh ooh ooh hoo
 [01:18.50][GD] nan duryeowo i sesangeun uimi eobseo 
