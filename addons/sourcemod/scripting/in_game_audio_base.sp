@@ -303,22 +303,13 @@ CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:pop
     Format(url, sizeof(url),
             "%s%s/%s", base_url, route, args);
 
-/*
     new Handle:panel = CreateKeyValues("data");
     KvSetString(panel, "title", "In Game Audio");
     KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
     KvSetString(panel, "msg", url);
     if(popup && fullscreen) {KvSetNum(panel, "customsvr", 1);} //Sets motd to be fullscreen
-
-    ShowVGUIPanel(client, "info", panel, popup);
-    CloseHandle(panel);
-*/
-
-    new Handle:panel = CreateKeyValues("data");
-    KvSetString(panel, "title", "In Game Audio");
-    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
-    KvSetString(panel, "msg", url);
     KvSetNum(panel, "cmd", 0);
+
     ShowVGUIPanelEx(client, "info", panel, popup, USERMSG_BLOCKHOOKS|USERMSG_RELIABLE);
     CloseHandle(panel);
 }
