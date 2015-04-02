@@ -24,7 +24,7 @@
 #define MAX_LRC_LINE_LENGTH  256
 #define MAX_KARAOKE_LYRICS   1024
 
-#define SOUND_ATTENTION "vo/announcer_attention.wav"
+#define SOUND_ATTENTION "vo/announcer_attention.mp3"
 
 public Plugin:myinfo =
 {
@@ -57,11 +57,11 @@ public OnMapStart()
     ReadKaraokeSongs();
 
     PrecacheSound(SOUND_ATTENTION);
-    PrecacheSound("vo/announcer_begins_1sec.wav");
-    PrecacheSound("vo/announcer_begins_2sec.wav");
-    PrecacheSound("vo/announcer_begins_3sec.wav");
-    PrecacheSound("vo/announcer_begins_4sec.wav");
-    PrecacheSound("vo/announcer_begins_5sec.wav");
+    PrecacheSound("vo/announcer_begins_1sec.mp3");
+    PrecacheSound("vo/announcer_begins_2sec.mp3");
+    PrecacheSound("vo/announcer_begins_3sec.mp3");
+    PrecacheSound("vo/announcer_begins_4sec.mp3");
+    PrecacheSound("vo/announcer_begins_5sec.mp3");
 }
 
 public Action:Command_Karaoke(client, args)
@@ -96,7 +96,7 @@ public Action:Timer_StartSong(Handle:timer, any:song_id)
 public Action:Timer_CountDown(Handle:timer, any:second)
 {
     decl String:sound[PLATFORM_MAX_PATH];
-    FormatEx(sound, sizeof(sound), "vo/announcer_begins_%dsec.wav", second);
+    FormatEx(sound, sizeof(sound), "vo/announcer_begins_%dsec.mp3", second);
     EmitSoundToAll(sound);
 }
 
@@ -135,7 +135,9 @@ KvGetKaraokeSong(Handle:kv, &index)
 {
     KvGetString(kv, "name", g_KaraokeName[index], PLATFORM_MAX_PATH);
     KvGetString(kv, "lrc_file", g_KaraokeLRCPath[index], PLATFORM_MAX_PATH);
-    KvGetNum(kv, "song_id", g_KaraokeSongId[index]);
+    g_KaraokeSongId[index] = KvGetNum(kv, "song_id", 0);
+
+    PrintToConsole(0, "---%s %s %d", g_KaraokeName[index], g_KaraokeLRCPath[index], g_KaraokeSongId[index]);//TODO
 
     index++;
 }
@@ -198,11 +200,13 @@ StartKaraoke(selected, Float:delay)
     EmitSoundToAll(SOUND_ATTENTION);
     PrintCenterTextAll("Karaoke started; \"%s\"", g_KaraokeName[selected]);
 
-    CreateTimer(delay - (delay - 5.0), Timer_CountDown, 5);
-    CreateTimer(delay - (delay - 4.0), Timer_CountDown, 4);
-    CreateTimer(delay - (delay - 3.0), Timer_CountDown, 3);
-    CreateTimer(delay - (delay - 2.0), Timer_CountDown, 2);
-    CreateTimer(delay - (delay - 1.0), Timer_CountDown, 1);
+    CreateTimer(delay - 5.0, Timer_CountDown, 5);
+    CreateTimer(delay - 4.0, Timer_CountDown, 4);
+    CreateTimer(delay - 3.0, Timer_CountDown, 3);
+    CreateTimer(delay - 2.0, Timer_CountDown, 2);
+    CreateTimer(delay - 1.0, Timer_CountDown, 1);
+
+    PrintToConsole(0, "%s %s %d", g_KaraokeName[selected], g_KaraokeLRCPath[selected], g_KaraokeSongId[selected]);//TODO
 
     CreateTimer(delay, Timer_StartSong, g_KaraokeSongId[selected]);
 }
