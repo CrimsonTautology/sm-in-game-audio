@@ -14,7 +14,7 @@ PLUGINS      = 'addons/sourcemod/plugins/'
 EXTENSIONS   = 'addons/sourcemod/extensions/'
 TRANSLATIONS = 'addons/sourcemod/translations/'
 CONFIGS      = 'addons/sourcemod/configs/'
-CFG          = 'cfg/sourcemod/'
+DATAS        = 'addons/sourcemod/data/karaoke/'
  
 task :default => [:compile, :install, :reload]
  
@@ -42,11 +42,11 @@ task :install do
   #Install extensions if they don't exist
   install_filetype '*.so', EXTENSIONS, false
 
-  #Install default configfiles if they don't exist
-  install_filetype '*.cfg', CFG, false
-
   #Install data configfiles
   install_filetype '*.cfg', CONFIGS
+
+  #Install lrc files
+  install_filetype '*.lrc', DATAS
 end
  
 desc "Clean up compiled files"
