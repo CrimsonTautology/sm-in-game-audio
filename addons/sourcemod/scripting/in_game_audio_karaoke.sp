@@ -78,6 +78,8 @@ public Action:Command_Karaoke(client, args)
         return Plugin_Handled;
     }
 
+    KaraokeMenu(client);
+
     return Plugin_Handled;
 }
 
@@ -182,6 +184,8 @@ ParseLRCFile(const String:file_name[], String:lyrics[][], Float:timestamps[])
 
 StartKaraoke(selected, Float:delay)
 {
+    if(IsInPall()) return;
+
     new total, i;
     total = ParseLRCFile(g_KaraokeLRCPath[selected], g_KaraokeLyrics, g_KaraokeTimestamps);//TODO
 
