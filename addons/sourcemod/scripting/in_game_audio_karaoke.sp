@@ -13,6 +13,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <sdktools>
 #include <in_game_audio>
 #include <morecolors>
 
@@ -22,6 +23,8 @@
 #define MAX_KARAOKE_SONGS    64
 #define MAX_LRC_LINE_LENGTH  256
 #define MAX_KARAOKE_LYRICS   1024
+
+#define SOUND_ATTENTION "vo/announcer_attention.wav"
 
 public Plugin:myinfo =
 {
@@ -52,6 +55,13 @@ public OnPluginStart()
 public OnMapStart()
 {
     ReadKaraokeSongs();
+
+    PrecacheSound(SOUND_ATTENTION);
+    PrecacheSound("vo/announcer_begins_1sec.wav");
+    PrecacheSound("vo/announcer_begins_2sec.wav");
+    PrecacheSound("vo/announcer_begins_3sec.wav");
+    PrecacheSound("vo/announcer_begins_4sec.wav");
+    PrecacheSound("vo/announcer_begins_5sec.wav");
 }
 
 public Action:Command_Karaoke(client, args)
@@ -68,30 +78,24 @@ public Action:Command_Karaoke(client, args)
         return Plugin_Handled;
     }
 
-    new total, Float:delay=10.0, song_id=726;
-    total = ParseLRCFile("example.lrc", g_KaraokeLyrics, g_KaraokeTimestamps);//TODO
-
-    //Build timers to display lyrics for each parsed lyric
-    new i = 0;
-    for(i=0; i < total; i++)
-    {
-        CreateTimer(g_KaraokeTimestamps[i] + delay, Timer_DisplayLyric, i, TIMER_FLAG_NO_MAPCHANGE);
-    }
-
-    CreateTimer(delay, Timer_StartSong, song_id);
-
     return Plugin_Handled;
 }
 
 public Action:Timer_DisplayLyric(Handle:timer, any:index)
 {
-    PrintToConsole(0, "%s", g_KaraokeLyrics[index]); //TODO
-    //PrintCenterTextAll("%s", g_KaraokeLyrics[index]);
+    PrintCenterTextAll("%s", g_KaraokeLyrics[index]);
 }
 
 public Action:Timer_StartSong(Handle:timer, any:song_id)
 {
     QuerySong(0, "", true, true, song_id);
+}
+
+public Action:Timer_CountDown(Handle:timer, any:second)
+{
+    decl String:sound[PLATFORM_MAX_PATH];
+    FormatEx(sound, sizeof(sound), "vo/announcer_begins_%dsec.wav", second);
+    EmitSoundToAll(sound);
 }
 
 ReadKaraokeSongs()
@@ -176,3 +180,61 @@ ParseLRCFile(const String:file_name[], String:lyrics[][], Float:timestamps[])
     return total_lyrics;
 }
 
+StartKaraoke(selected, Float:delay)
+{
+    new total, i;
+    total = ParseLRCFile(g_KaraokeLRCPath[selected], g_KaraokeLyrics, g_KaraokeTimestamps);//TODO
+
+    //Build timers to display lyrics for each parsed lyric
+    for(i=0; i < total; i++)
+    {
+        CreateTimer(g_KaraokeTimestamps[i] + delay, Timer_DisplayLyric, i, TIMER_FLAG_NO_MAPCHANGE);
+    }
+
+    EmitSoundToAll(SOUND_ATTENTION);
+    PrintCenterTextAll("Karaoke started; \"%s\"", g_KaraokeName[selected]);
+
+    CreateTimer(delay - (delay - 5.0), Timer_CountDown, 5);
+    CreateTimer(delay - (delay - 4.0), Timer_CountDown, 4);
+    CreateTimer(delay - (delay - 3.0), Timer_CountDown, 3);
+    CreateTimer(delay - (delay - 2.0), Timer_CountDown, 2);
+    CreateTimer(delay - (delay - 1.0), Timer_CountDown, 1);
+
+    CreateTimer(delay, Timer_StartSong, g_KaraokeSongId[selected]);
+}
+
+KaraokeMenu(client)
+{
+    new Handle:menu = CreateMenu(KaraokeMenuHandler);
+
+    SetMenuTitle(menu, "Choose Karaoke Song");
+
+    decl String:buf[16];
+    for(new i=0; i < g_KaraokeSongCount && i < MAX_KARAOKE_SONGS; i++)
+    {
+        IntToString(i, buf, sizeof(buf));
+        AddMenuItem(menu,
+                buf,
+                g_KaraokeName[i],
+                ITEMDRAW_DEFAULT);
+    }
+
+    DisplayMenu(menu, client, 20);
+}
+
+public KaraokeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
+{
+    switch (action)
+    {
+        case MenuAction_Select:
+            {
+                new client = param1;
+                new String:info[32];
+                GetMenuItem(menu, param2, info, sizeof(info));
+                new selected = StringToInt(info);
+
+                StartKaraoke(selected, 10.0);
+            }
+        case MenuAction_End: CloseHandle(menu);
+    }
+}
