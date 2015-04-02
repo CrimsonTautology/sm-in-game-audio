@@ -524,9 +524,14 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
     }
 
     //Send caller's steamid64
-    decl String:uid[MAX_COMMUNITYID_LENGTH];
-    GetClientAuthId(client, AuthIdType:AuthId_SteamID64, uid, sizeof(uid));
-    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+    if(client > 0)
+    {
+        decl String:uid[MAX_COMMUNITYID_LENGTH];
+        GetClientAuthId(client, AuthIdType:AuthId_SteamID64, uid, sizeof(uid));
+        SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
+    }else{
+        SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", "76561197960804942");
+    }
 
     SteamWorks_SetHTTPCallbacks(request, ReceiveQuerySong);
     SteamWorks_SetHTTPRequestContextValue(request, player);
@@ -1072,7 +1077,7 @@ public SongChooserMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 new bool:pall = bool:StringToInt(bit[0]);
                 new bool:force = bool:StringToInt(bit[1]);
                 new song_id = StringToInt(bit[2]);
-                
+
                 QuerySong(client, "", pall, force, song_id);
             }
         case MenuAction_End: CloseHandle(menu);
