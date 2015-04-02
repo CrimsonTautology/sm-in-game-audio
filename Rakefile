@@ -37,7 +37,7 @@ task :install do
   install_filetype '*.smx', PLUGINS
 
   #Install translations
-  install_filetype '*.phrases.txt', TRANSLATIONS
+  install_filetype '*.phrases.txt', TRANSLATIONS, false
 
   #Install extensions if they don't exist
   install_filetype '*.so', EXTENSIONS, false
