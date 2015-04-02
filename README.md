@@ -38,6 +38,7 @@ Handles all calls to the web server and provides a framework to play music for p
 * `sm_nopall` - Disables playing music that is played for all users (e.g. `sm_pall`, donator intros).  The user can still play to themselves with commands such as `sm_p`
 * `sm_yespall` - Enables playing music that is played for all users.
 * `sm_iga` - Bring up the IGA settings and control menu.
+* `sm_ptoo` - Replay the last song for yourself.
 
 
 # IGA Player

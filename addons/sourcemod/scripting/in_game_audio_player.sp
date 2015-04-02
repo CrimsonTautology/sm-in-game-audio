@@ -226,6 +226,7 @@ public IGAMenu:TutorialMenu(client)
     AddMenuItem(menu, "0", "!pall      Same as !p except it plays to everyone on the server");
     AddMenuItem(menu, "0", "!plist     Use to find a song or category");
     AddMenuItem(menu, "0", "!stop      Stop currently playing song");
+    AddMenuItem(menu, "0", "!ptoo      Replay the most recenlty played song for yourself");
 
     DisplayMenu(menu, client, 20);
 }
