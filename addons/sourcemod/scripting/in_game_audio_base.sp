@@ -314,9 +314,9 @@ CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:pop
     CloseHandle(panel);
 }
 
-ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:show=true, usermessageFlags=0)
+ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:show=true, user_message_flags=0)
 {
-    new Handle:msg = StartMessageOne("VGUIMenu", client, usermessageFlags);
+    new Handle:msg = StartMessageOne("VGUIMenu", client, user_message_flags);
     
     if (GetFeatureStatus(FeatureType_Native, "GetUserMessageType") == FeatureStatus_Available && GetUserMessageType() == UM_Protobuf)
     {
@@ -357,15 +357,15 @@ ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:s
             }
             else
             {
-                new keyCount = 0;
+                new keys = 0;
                 do
                 {
-                    ++keyCount;
+                    ++keys;
                 } while (KvGotoNextKey(panel, false));
                 
-                BfWriteByte(msg, keyCount);
+                BfWriteByte(msg, keys);
                 
-                if (keyCount > 0)
+                if (keys > 0)
                 {
                     KvGoBack(panel);
                     KvGotoFirstSubKey(panel, false);
@@ -512,7 +512,7 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
     StartCooldown(client);
 }
 
-
+//TODO Trim this method down
 public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStatusCode:code, any:userid)
 {
     new client = GetClientOfUserId(userid);
