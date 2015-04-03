@@ -88,6 +88,16 @@ native StopSong(client);
 native StopSongAll();
 
 /**
+ * Register with IGA that a pall has occured
+ *
+ * @param duration      How long this song should block other palls
+ * @param path          The path of the current pall
+ * @param description   The description of the current pall
+ */
+native RegisterPall(duration, const String:path[], const String:description[]);
+
+
+/**
  * Create an HTTP request with the iga website
  *
  * @param route         The main route to use

@@ -77,6 +77,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     CreateNative("PlaySongAll", _PlaySongAll);
     CreateNative("StopSong", _StopSong);
     CreateNative("StopSongAll", _StopSongAll);
+    CreateNative("RegisterPall", _RegisterPall);
     CreateNative("QuerySong", _QuerySong);
     CreateNative("MapTheme", _MapTheme);
     CreateNative("UserTheme", _UserTheme);
@@ -575,15 +576,13 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
             if(!IsInPall())
             {
                 g_PNextFree[client]=0;
-                g_PallNextFree = duration + GetTime();
 
                 CPrintToChatAll("%t", "started_playing_to_all", description);
                 CPrintToChatAll("%t", "duration", duration_formated);
                 CPrintToChatAll("%t", "to_stop_all");
                 CPrintToChatAll("%t", "iga_settings");
 
-                strcopy(g_CurrentPallPath, 64, full_path);
-                strcopy(g_CurrentPallDescription, 64, description);
+                RegisterPall(duration, full_path, description);
 
                 g_CurrentPlastSongId = StringToInt(song_id);
 
@@ -735,6 +734,11 @@ public ReceiveTheme(Handle:request, bool:failure, bool:successful, EHTTPStatusCo
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
         json_object_get_string(json, "access_token", access_token, sizeof(access_token));
 
+        if(force && !IsInPall())
+        {
+            RegisterPall(60, "!ptoo", "User or Map Theme");
+        }
+
         if(force || !IsInPall())
         {
             g_PallNextFree = 0;
@@ -828,6 +832,27 @@ StopSongAll()
         }
     }
 }
+
+public _RegisterPall(Handle:plugin, args)
+{
+    new len;
+    GetNativeStringLength(2, len);
+    new String:path[len+1];
+    GetNativeString(2, path, len+1);
+
+    GetNativeStringLength(3, len);
+    new String:description[len+1];
+    GetNativeString(3, description, len+1);
+
+    RegisterPall( GetNativeCell(1), path, description);
+}
+RegisterPall(duration, String:path[], String:description[])
+{
+    g_PallNextFree = duration + GetTime();
+    strcopy(g_CurrentPallPath, 64, path);
+    strcopy(g_CurrentPallDescription, 64, description);
+}
+
 
 //Menu Logic
 
