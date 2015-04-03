@@ -814,7 +814,16 @@ public _StopSong(Handle:plugin, args) { StopSong(GetNativeCell(1)); }
 StopSong(client)
 {
     g_PNextFree[client] = 0;
-    CreateIGAPopup(client, STOP_ROUTE, "", false);
+
+    new Handle:panel = CreateKeyValues("data");
+    KvSetString(panel, "title", "Stop In Game Audio");
+    KvSetNum(panel, "type", MOTDPANEL_TYPE_URL);
+    //KvSetString(panel, "msg", "javascript:windowClosed()");
+    KvSetString(panel, "msg", "about:blank");
+    KvSetNum(panel, "cmd", 0);
+
+    ShowVGUIPanelEx(client, "info", panel, false, USERMSG_BLOCKHOOKS|USERMSG_RELIABLE);
+    CloseHandle(panel);
 }
 
 public _StopSongAll(Handle:plugin, args) { StopSongAll(); }
