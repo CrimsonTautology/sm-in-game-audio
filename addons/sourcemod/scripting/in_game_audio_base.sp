@@ -523,15 +523,9 @@ QuerySong(client, String:path[], bool:pall, bool:force, song_id)
         SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "song_id", song_id);
     }
 
-    //Send caller's steamid64
-    if(client > 0)
-    {
-        decl String:uid[MAX_COMMUNITYID_LENGTH];
-        GetClientAuthId(client, AuthIdType:AuthId_SteamID64, uid, sizeof(uid));
-        SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
-    }else{
-        SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", "76561197960804942");
-    }
+    decl String:uid[MAX_COMMUNITYID_LENGTH];
+    GetClientAuthId(client, AuthIdType:AuthId_SteamID64, uid, sizeof(uid));
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", uid);
 
     SteamWorks_SetHTTPCallbacks(request, ReceiveQuerySong);
     SteamWorks_SetHTTPRequestContextValue(request, player);
