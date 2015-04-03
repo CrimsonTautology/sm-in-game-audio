@@ -14,6 +14,8 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <steamworks>
+#include <smjansson>
 #include <in_game_audio>
 #include <morecolors>
 
@@ -88,9 +90,9 @@ public Action:Timer_DisplayLyric(Handle:timer, any:index)
     PrintCenterTextAll("%s", g_KaraokeLyrics[index]);
 }
 
-public Action:Timer_StartSong(Handle:timer, any:song_id)
+public Action:Timer_StartKaraokeQuery(Handle:timer, any:selected)
 {
-    QuerySong(0, "", true, true, song_id);
+    QueryKaraoke(selected, g_KaraokeSongId[selected]);
 }
 
 public Action:Timer_CountDown(Handle:timer, any:second)
@@ -99,6 +101,14 @@ public Action:Timer_CountDown(Handle:timer, any:second)
     FormatEx(sound, sizeof(sound), "vo/announcer_begins_%dsec.mp3", second);
     EmitSoundToAll(sound);
 }
+
+SteamWorks_SetHTTPRequestGetOrPostParameterInt(&Handle:request, const String:param[], value)
+{
+    new String:tmp[64];
+    IntToString(value, tmp, sizeof(tmp));
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, param, tmp);
+}
+
 
 ReadKaraokeSongs()
 {
@@ -184,19 +194,8 @@ ParseLRCFile(const String:file_name[], String:lyrics[][], Float:timestamps[])
     return total_lyrics;
 }
 
-StartKaraoke(selected, Float:delay)
+StartKaraokeCountDown(selected, Float:delay)
 {
-    if(IsInPall()) return;
-
-    new total, i;
-    total = ParseLRCFile(g_KaraokeLRCPath[selected], g_KaraokeLyrics, g_KaraokeTimestamps);//TODO
-
-    //Build timers to display lyrics for each parsed lyric
-    for(i=0; i < total; i++)
-    {
-        CreateTimer(g_KaraokeTimestamps[i] + delay, Timer_DisplayLyric, i, TIMER_FLAG_NO_MAPCHANGE);
-    }
-
     EmitSoundToAll(SOUND_ATTENTION);
     PrintCenterTextAll("%s\nKaraoke Will Begin in 15 Seconds\nAdjust your volume now if needed!", g_KaraokeName[selected]);
 
@@ -206,9 +205,84 @@ StartKaraoke(selected, Float:delay)
     CreateTimer(delay - 2.0, Timer_CountDown, 2);
     CreateTimer(delay - 1.0, Timer_CountDown, 1);
 
-    PrintToConsole(0, "%s %s %d", g_KaraokeName[selected], g_KaraokeLRCPath[selected], g_KaraokeSongId[selected]);//TODO
+    CreateTimer(delay, Timer_StartKaraokeQuery, selected);
+}
 
-    CreateTimer(delay, Timer_StartSong, g_KaraokeSongId[selected]);
+StartKaraokeLyricsDisplay(selected)
+{
+    new total, i;
+    total = ParseLRCFile(g_KaraokeLRCPath[selected], g_KaraokeLyrics, g_KaraokeTimestamps);//TODO
+
+    //Build timers to display lyrics for each parsed lyric
+    for(i=0; i < total; i++)
+    {
+        CreateTimer(g_KaraokeTimestamps[i], Timer_DisplayLyric, i, TIMER_FLAG_NO_MAPCHANGE);
+    }
+
+}
+
+QueryKaraoke(selected, song_id)
+{
+    if(IsInPall()) return;
+
+    new Handle:request = CreateIGARequest(QUERY_SONG_ROUTE);
+
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "path", "");
+    SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "pall", 1);
+    SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "force", 1);
+
+    SteamWorks_SetHTTPRequestGetOrPostParameterInt(request, "song_id", song_id);
+    SteamWorks_SetHTTPRequestGetOrPostParameter(request, "uid", "76561197960804942");
+
+    SteamWorks_SetHTTPCallbacks(request, ReceiveQueryKaraoke);
+    SteamWorks_SetHTTPRequestContextValue(request, selected);
+    SteamWorks_SendHTTPRequest(request);
+}
+
+public ReceiveQueryKaraoke(Handle:request, bool:failure, bool:successful, EHTTPStatusCode:code, any:selected)
+{
+    if(!successful || code != k_EHTTPStatusCode200OK)
+    {
+        LogError("[IGA] Error at RecivedQueryKaraoke (HTTP Code %d; success %d)", code, successful);
+        CloseHandle(request);
+        return;
+    }
+
+
+    new size = 0;
+    SteamWorks_GetHTTPResponseBodySize(request, size);
+    new String:data[size];
+    SteamWorks_GetHTTPResponseBodyData(request, data, size);
+    CloseHandle(request);
+
+    new Handle:json = json_load(data);
+    new bool:found = json_object_get_bool(json, "found");
+
+    if(found)
+    {
+        //Found a matching song
+        new duration = json_object_get_int(json, "duration");
+        new bool:pall = json_object_get_bool(json, "pall");
+        new bool:force = json_object_get_bool(json, "force");
+        new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64], String:access_token[128];
+        json_object_get_string(json, "song_id", song_id, sizeof(song_id));
+        json_object_get_string(json, "full_path", full_path, sizeof(full_path));
+        json_object_get_string(json, "description", description, sizeof(description));
+        json_object_get_string(json, "duration_formated", duration_formated, sizeof(duration_formated));
+        json_object_get_string(json, "access_token", access_token, sizeof(access_token));
+
+        CPrintToChatAll("%t", "started_playing_to_all", description);
+        CPrintToChatAll("%t", "duration", duration_formated);
+
+        RegisterPall(duration, full_path, description);
+
+        StartKaraokeLyricsDisplay(selected);
+        PlaySongAll(song_id, access_token, force);
+    }else{
+        CPrintToChatAll("%t", "not_found");
+    }
+
+    CloseHandle(json);
 }
 
 KaraokeMenu(client)
@@ -241,7 +315,7 @@ public KaraokeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
                 GetMenuItem(menu, param2, info, sizeof(info));
                 new selected = StringToInt(info);
 
-                StartKaraoke(selected, 15.0);
+                StartKaraokeCountDown(selected, 15.0);
             }
         case MenuAction_End: CloseHandle(menu);
     }
