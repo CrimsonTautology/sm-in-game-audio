@@ -147,8 +147,6 @@ KvGetKaraokeSong(Handle:kv, &index)
     KvGetString(kv, "lrc_file", g_KaraokeLRCPath[index], PLATFORM_MAX_PATH);
     g_KaraokeSongId[index] = KvGetNum(kv, "song_id", 0);
 
-    PrintToConsole(0, "---%s %s %d", g_KaraokeName[index], g_KaraokeLRCPath[index], g_KaraokeSongId[index]);//TODO
-
     index++;
 }
 
@@ -211,7 +209,7 @@ StartKaraokeCountDown(selected, Float:delay)
 StartKaraokeLyricsDisplay(selected)
 {
     new total, i;
-    total = ParseLRCFile(g_KaraokeLRCPath[selected], g_KaraokeLyrics, g_KaraokeTimestamps);//TODO
+    total = ParseLRCFile(g_KaraokeLRCPath[selected], g_KaraokeLyrics, g_KaraokeTimestamps);
 
     //Build timers to display lyrics for each parsed lyric
     for(i=0; i < total; i++)

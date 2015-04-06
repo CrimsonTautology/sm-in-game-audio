@@ -57,5 +57,10 @@ Will play a random "map theme" during the map change transition.  If map voting 
 #IGA Donator Intro
 Will play a donator's "theme song" when they join the server.  Theme songs are generally short, ~10 seconds in length and can be set through the web page.  This will not override a pall if they join while one is playing.
 
+#IGA Karaoke
+Allows admins to start a karaoke player using IGA.  A Karaoke song will need a song_id from the iga website with a corresponding lyric .lrc file. Set which songs are available to be karaoked in `addons/sourcemod/configs/iga.karaoke.cfg` and store your .lrc files in `addons/sourcemod/data/karaoke/`.  Bring up the karaoke menu with the `sm_karaoke` command.
+
+* `sm_karaoke` - Admin command. Brings up a list of songs that can be used with karaoke.
+
 #Extending
 This plugin provides a bunch of natives that you can extend and interact with the web service with. Look at the in_game_audio.inc file for documentation.
