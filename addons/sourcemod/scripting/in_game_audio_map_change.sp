@@ -31,11 +31,19 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+    decl String:mod_name[PLATFORM_MAX_PATH];
+    GetGameFolderName(mod_name, sizeof(mod_name));
+
     LoadTranslations("in_game_audio.phrases");
 
     CreateConVar("sm_iga_map_change_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
-    HookEvent("teamplay_game_over", Event_MapChange);
+    if(StrEqual(mod_name, "tf"))
+    {
+        HookEventEx("teamplay_game_over", Event_MapChange);
+    }else{
+        HookEventEx("game_end", Event_MapChange);
+    }
 }
 
 public OnMapVoteStarted()
@@ -52,5 +60,3 @@ public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadc
 
     return Plugin_Continue;
 }
-
-
