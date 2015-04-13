@@ -157,6 +157,17 @@ native StartCoolDown(client);
  */
 native bool:IsClientInCooldown(client);
 
+stock bool:CanAnyoneHearIGA()
+{
+    for (new client=1; client <= MaxClients; client++)
+    {
+        //Ignore players who can't hear this
+        if(IsClientInGame(client) && !IsFakeClient(client) && ClientHasPallEnabled(client))
+            return true;
+    }
+    return false;
+}
+
 functag IGA_MenuCallback IGAMenu:public(client);
 
 /**
