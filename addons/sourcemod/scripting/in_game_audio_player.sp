@@ -37,7 +37,7 @@ public OnPluginStart()
     LoadTranslations("in_game_audio.phrases");
 
     CreateConVar("sm_iga_player_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
-    g_Cvar_VIPsOnly = CreateConVar("sm_iga_vip_only", "0", "Whether only VIPs can use pall");
+    g_Cvar_VIPsOnly = CreateConVar("sm_iga_vips_only", "0", "Whether only VIPs can use pall");
 
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");
     RegConsoleCmd("sm_pall", Command_Pall, "Play a song for everyone");

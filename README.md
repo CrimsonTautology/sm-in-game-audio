@@ -20,7 +20,6 @@ Allows users to listen to music while in game.  Uses a hidden MOTD page to play 
 * [SMJansson](https://forums.alliedmods.net/showthread.php?t=184604)
 * [SteamWorks](https://forums.alliedmods.net/showthread.php?t=229556)
 * [A Web Site Backend](https://github.com/CrimsonTautology/in_game_audio)
-* [Donator Interface](https://forums.alliedmods.net/showthread.php?t=145542)(Optional)
 * Players must have HTML Message Of The Days enabled for this to work.  This can be enabled via advanced settings of by typing `cl_disablehtmlmotd 0` into console.
 
 #CVARs
@@ -28,14 +27,14 @@ Allows users to listen to music while in game.  Uses a hidden MOTD page to play 
 * `sm_iga_url` - the root url for the website you will be interacting with.
 * `sm_iga_api_key` - the api key required to interact with the web api.
 * `sm_iga_enabled` - sets whether the plugin is enabled or not.
-* `sm_iga_donators_only` - sets whether only donators can use certain commands (e.g. `sm_pall`).
+* `sm_iga_vips_only` - sets whether only VIPs (players with adminflag 'O') can use certain commands (e.g. `sm_pall`).
 * `sm_iga_request_cooldown_time` - the cool down period a user must wait through before they can use another command that makes an HTTP call.
 
 # IGA Base
 Handles all calls to the web server and provides a framework to play music for players.  Also controls the user's preferences such as whether they have pall enabled and the volume
 
 * `sm_vol [0-10]` - Set's the user's volume; 10 the loudest and 0 is mute.  Brings up a menu if called without an argument.
-* `sm_nopall` - Disables playing music that is played for all users (e.g. `sm_pall`, donator intros).  The user can still play to themselves with commands such as `sm_p`
+* `sm_nopall` - Disables playing music that is played for all users (e.g. `sm_pall`, VIP intros).  The user can still play to themselves with commands such as `sm_p`
 * `sm_yespall` - Enables playing music that is played for all users.
 * `sm_iga` - Bring up the IGA settings and control menu.
 * `sm_ptoo` - Replay the last song for yourself.
@@ -46,7 +45,7 @@ Handles the commands that let players play songs to themselves and to each other
 
 * `sm_p [category]/[name]` - Plays a song for the user. If given no arguments it will play a random song.  If given a category or a category and subdirectory (separated by '/') it will play a random song in that category or subdirectory.  If given the full path to a song it will play that specific song.  If a matching category or song is not found it will treat the argument as a search key and return a list of songs that match.
 * `sm_stop` - Stops the currently playing song for the user.
-* `sm_pall [category]/[name]` - The same as `sm_p` but plays for all users on the server (that have `sm_yespall` enabled).  Only donators can use this command if the `sm_donators_only` is set to 1.
+* `sm_pall [category]/[name]` - The same as `sm_p` but plays for all users on the server (that have `sm_yespall` enabled).  Only VIPs can use this command if the `sm_iga_vips_only` is set to 1.
 * `sm_plist` - Pops up the MOTD browser showing a web page that lists all available songs and categories that can be played.
 * `sm_fpall [category]/[name]` - Admin command. Overrides the current pall and plays a song to all users
 * `sm_fstop` - Admin command. Stops the currently playing song for all users.
@@ -54,8 +53,8 @@ Handles the commands that let players play songs to themselves and to each other
 #IGA Map Change
 Will play a random "map theme" during the map change transition.  If map voting is enabled on the server it will start when the map vote is called. This will override a pall if it is playing.
 
-#IGA Donator Intro
-Will play a donator's "theme song" when they join the server.  Theme songs are generally short, ~10 seconds in length and can be set through the web page.  This will not override a pall if they join while one is playing.
+#IGA VIP Intro
+Will play a VIP's "theme song" when they join the server.  Theme songs are generally short, ~10 seconds in length and can be set through the web page.  This will not override a pall if they join while one is playing.
 
 #IGA Karaoke
 Allows admins to start a karaoke player using IGA.  A Karaoke song will need a song_id from the iga website with a corresponding lyric .lrc file. Set which songs are available to be karaoked in `addons/sourcemod/configs/iga.karaoke.cfg` and store your .lrc files in `addons/sourcemod/data/karaoke/`.  Bring up the karaoke menu with the `sm_karaoke` command.
