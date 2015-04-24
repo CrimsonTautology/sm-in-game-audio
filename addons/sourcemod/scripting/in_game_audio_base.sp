@@ -512,17 +512,10 @@ SetClientVolume(client, volume)
         IntToString(volume, tmp, sizeof(tmp));
         SetClientCookie(client, g_Cookie_Volume, tmp);
         g_Volume[client] = volume;
-        CReplyToCommand(client, "%t", "volume_set", volume);
+        CReplyToCommand(client, "%t", "volume_set", volume); //TODO remove mention that volume will not change for current song
 
-        if(IsInP(client))
-        {
-            //TODO change this so we only have to call play
-            decl String:args[256];
-            Format(args, sizeof(args),
-                    "%s#%f", g_CachedURLArgs[client], (g_Volume[client] / 10.0));
-
-            CreateIGAPopup(client, SONGS_ROUTE, args, false);
-        }
+        //Change volume for currently playing song
+        ReplaySong(client, tmp);
     }else{
         CReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
     }
@@ -867,10 +860,7 @@ public _PlaySong(Handle:plugin, args)
 PlaySong(client, String:song_id[], String:access_token[])
 {
     //Don't play song if client has a muted volume
-    if(g_Volume[client] < 1)
-    {
-        return;
-    }
+    if(g_Volume[client] < 1) return;
 
     if(ClientHasHtmlMotdDisabled(client))
     {
@@ -882,6 +872,21 @@ PlaySong(client, String:song_id[], String:access_token[])
     Format(args, sizeof(args),
             "%s/play?access_token=%s&volume=%f", song_id, access_token, (g_Volume[client] / 10.0));
     strcopy(g_CachedURLArgs[client], 256, args); //Cache args in case we need to pass a hash arg
+
+    CreateIGAPopup(client, SONGS_ROUTE, args, false);
+}
+
+//Replay the song the client is currently listening to but with a different url hash argument
+ReplaySong(client, String:hash[])
+{
+    //Don't re-play song if client won't hear anything
+    if(g_Volume[client] < 1) return;
+    if(!IsInP(client)) return;
+    if(ClientHasHtmlMotdDisabled(client)) return;
+
+    decl String:args[256];
+    Format(args, sizeof(args),
+            "%s#%s", g_CachedURLArgs[client], hash);
 
     CreateIGAPopup(client, SONGS_ROUTE, args, false);
 }
