@@ -500,7 +500,7 @@ SetPallEnabled(client, bool:val)
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
         g_IsPallEnabled[client] = false;
         CReplyToCommand(client, "%t", "disabled_pall");
-
+        StopSong(client);
     }
 }
 
