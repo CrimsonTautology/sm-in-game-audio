@@ -274,13 +274,13 @@ public Action:Command_DumpIGA(caller, args)
 
     }
 
-    PrintToConsole(caller, "coold ypall dmotd vol inp user");
+    PrintToConsole(caller, "IsInCooldown !yespall cl_disablehtmlmotd !vol IsInP user");
     for (new client=1; client <= MaxClients; client++)
     {
         if(!IsClientInGame(client) || IsFakeClient(client))
             continue;
 
-        PrintToConsole(caller, "%5d %5d %5d %3d %3d %L",
+        PrintToConsole(caller, "%12d %8d %18d %4d %5d %L",
                 g_IsInCooldown[client],
                 g_IsPallEnabled[client],
                 g_IsHtmlMotdDisabled[client],
