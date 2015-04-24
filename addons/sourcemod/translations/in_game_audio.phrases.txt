@@ -91,6 +91,11 @@
         "en"    "[IGA] {fullred}Cannot listen to song.  Type {green}!yespall{fullred} to listen to songs from other players"
     }
 
+    "html_motd_not_enabled"
+    {
+        "en"    "[IGA] {fullred}Cannot listen to song.  Set {green}cl_disablehtmlmotd 0{fullred} in console to listen to songs from other players"
+    }
+
     "user_in_cooldown"
     {
         "en"    "[IGA] {fullred}User in cooldown."
