@@ -46,6 +46,7 @@ new g_MenuId;
 
 new bool:g_IsInCooldown[MAXPLAYERS+1] = {false, ...};
 new bool:g_IsPallEnabled[MAXPLAYERS+1] = {false, ...};
+new g_IsHtmlMotdEnabled[MAXPLAYERS+1] = {-1, ...}; //Trinary logic: -1 = unknown, 0 = false, 1 = true
 
 new String:g_CurrentPallDescription[64];
 new String:g_CurrentPallPath[64];
@@ -70,6 +71,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     RegPluginLibrary("in_game_audio"); 
 
     CreateNative("ClientHasPallEnabled", _ClientHasPallEnabled);
+    CreateNative("ClientHasHtmlMotdEnabled", _ClientHasHtmlMotdEnabled);
     CreateNative("SetPallEnabled", _SetPallEnabled);
     CreateNative("IsInP", _IsInP);
     CreateNative("IsInPall", _IsInPall);
@@ -140,6 +142,7 @@ public OnClientConnected(client)
     g_PNextFree[client] = 0;
     g_Volume[client] = 8;
     g_IsPallEnabled[client] = true;
+    g_IsHtmlMotdEnabled[client] = -1;
 
     //Disable pall by default for quickplayers
     new String:connect_method[5];
@@ -167,6 +170,24 @@ public OnClientCookiesCached(client)
     }
 }
 
+public OnClientPutInServer(client)
+{
+    if(IsFakeClient(client)) return;
+
+    QueryClientConVar(client, "cl_disablehtmlmotd", OnMOTDQueried);
+}
+
+public OnMOTDQueried(QueryCookie:cookie, client, ConVarQueryResult:result, const String:cvarName[], const String:cvarValue[])
+{
+    if(!IsClientConnected(client)) return;
+
+    if(result == ConVarQuery_Okay) {
+        g_IsHtmlMotdEnabled[client] = (bool:StringToInt(cvarValue)) ? 0 : 1;
+    } else {
+        g_IsHtmlMotdEnabled[client] = -1;
+    }
+
+}
 
 public OnMapStart()
 {
@@ -430,6 +451,11 @@ public _ClientHasPallEnabled(Handle:plugin, args) { return _:ClientHasPallEnable
 bool:ClientHasPallEnabled(client)
 {
     return g_IsPallEnabled[client];
+}
+public _ClientHasHtmlMotdEnabled(Handle:plugin, args) { return _:ClientHasHtmlMotdEnabled(GetNativeCell(1)); }
+bool:ClientHasHtmlMotdEnabled(client)
+{
+    return g_IsHtmlMotdEnabled[client] == 1;
 }
 
 public _SetPallEnabled(Handle:plugin, args) { SetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
