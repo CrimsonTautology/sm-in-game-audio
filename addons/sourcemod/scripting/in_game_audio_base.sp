@@ -116,7 +116,7 @@ public OnPluginStart()
     RegConsoleCmd("sm_jukebox", Command_IGA, "Bring up the IGA settings and control menu");
     RegConsoleCmd("sm_plast", Command_Plast, "Replay the last song for yourself");
     RegConsoleCmd("sm_ptoo", Command_Plast, "Replay the last song for yourself");
-    RegAdminCmd("sm_dumpiga", Command_DumpIGA, ADMFLAG_VOTE, "[ADMIN] List the IGA settings for all clients on the server");
+    RegConsoleCmd("sm_dumpiga", Command_DumpIGA, "[DEBUG] List the IGA settings for all clients on the server");
 
     g_Cookie_Volume = RegClientCookie("iga_volume_1.4", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled_1.4", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
