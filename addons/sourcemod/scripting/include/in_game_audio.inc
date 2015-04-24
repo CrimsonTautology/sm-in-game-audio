@@ -34,12 +34,12 @@ native bool:IsIGAEnabled();
 native bool:ClientHasPallEnabled(client);
 
 /**
- * Check if the player has HTML MOTDs enabled: cl_disablehtmlmotd 0 
+ * Check if the player has HTML MOTDs disabled: cl_disablehtmlmotd 1 
  *
  * @param client    The client index
- * @return          True if client has HTML MOTDs enabled, false if disabled or unknown at this time.
+ * @return          True if client has HTML MOTDs disabled, false if enabled or unknown at this time.
  */
-native bool:ClientHasHtmlMotdEnabled(client);
+native bool:ClientHasHtmlMotdDisabled(client);
 
 /**
  * Set whether the user can listen to music or not.

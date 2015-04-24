@@ -46,7 +46,7 @@ new g_MenuId;
 
 new bool:g_IsInCooldown[MAXPLAYERS+1] = {false, ...};
 new bool:g_IsPallEnabled[MAXPLAYERS+1] = {false, ...};
-new g_IsHtmlMotdEnabled[MAXPLAYERS+1] = {-1, ...}; //Trinary logic: -1 = unknown, 0 = false, 1 = true
+new g_IsHtmlMotdDisabled[MAXPLAYERS+1] = {-1, ...}; //Trinary logic: -1 = Unknown, 0 = Enabled, 1 = Disabled
 
 new String:g_CurrentPallDescription[64];
 new String:g_CurrentPallPath[64];
@@ -71,7 +71,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     RegPluginLibrary("in_game_audio"); 
 
     CreateNative("ClientHasPallEnabled", _ClientHasPallEnabled);
-    CreateNative("ClientHasHtmlMotdEnabled", _ClientHasHtmlMotdEnabled);
+    CreateNative("ClientHasHtmlMotdDisabled", _ClientHasHtmlMotdDisabled);
     CreateNative("SetPallEnabled", _SetPallEnabled);
     CreateNative("IsInP", _IsInP);
     CreateNative("IsInPall", _IsInPall);
@@ -142,7 +142,7 @@ public OnClientConnected(client)
     g_PNextFree[client] = 0;
     g_Volume[client] = 8;
     g_IsPallEnabled[client] = true;
-    g_IsHtmlMotdEnabled[client] = -1;
+    g_IsHtmlMotdDisabled[client] = -1;
 
     //Disable pall by default for quickplayers
     new String:connect_method[5];
@@ -182,9 +182,9 @@ public OnMOTDQueried(QueryCookie:cookie, client, ConVarQueryResult:result, const
     if(!IsClientConnected(client)) return;
 
     if(result == ConVarQuery_Okay) {
-        g_IsHtmlMotdEnabled[client] = (bool:StringToInt(cvarValue)) ? 0 : 1;
+        g_IsHtmlMotdDisabled[client] = (bool:StringToInt(cvarValue)) ? 1 : 0;
     } else {
-        g_IsHtmlMotdEnabled[client] = -1;
+        g_IsHtmlMotdDisabled[client] = -1;
     }
 
 }
@@ -452,10 +452,10 @@ bool:ClientHasPallEnabled(client)
 {
     return g_IsPallEnabled[client];
 }
-public _ClientHasHtmlMotdEnabled(Handle:plugin, args) { return _:ClientHasHtmlMotdEnabled(GetNativeCell(1)); }
-bool:ClientHasHtmlMotdEnabled(client)
+public _ClientHasHtmlMotdDisabled(Handle:plugin, args) { return _:ClientHasHtmlMotdDisabled(GetNativeCell(1)); }
+bool:ClientHasHtmlMotdDisabled(client)
 {
-    return g_IsHtmlMotdEnabled[client] == 1;
+    return g_IsHtmlMotdDisabled[client] == 1;
 }
 
 public _SetPallEnabled(Handle:plugin, args) { SetPallEnabled(GetNativeCell(1), GetNativeCell(2)); }
