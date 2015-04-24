@@ -1104,8 +1104,10 @@ public IGAMenu:TroubleShootingMenu(client)
         CPrintToChat(client, "%t", "volume_muted");
     }
 
-    //Checking cl_disablehtmlmotd != 0 requires a callback, this is simpler
-    CPrintToChat(client, "%t", "motd_not_enabled");
+    if (g_IsHtmlMotdDisabled[client] != 0)
+    {
+        CPrintToChat(client, "%t", "motd_not_enabled");
+    }
 }
 
 public IGAMenu:HowToUploadMenu(client)
