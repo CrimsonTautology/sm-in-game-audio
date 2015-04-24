@@ -51,6 +51,7 @@ new g_IsHtmlMotdDisabled[MAXPLAYERS+1] = {-1, ...}; //Trinary logic: -1 = Unknow
 new String:g_CurrentPallDescription[64];
 new String:g_CurrentPallPath[64];
 new g_CurrentPlastSongId = 0;
+new String:g_CachedURLArgs[MAXPLAYERS+1][256];
 
 new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
@@ -499,7 +500,7 @@ SetPallEnabled(client, bool:val)
         SetClientCookie(client, g_Cookie_PallEnabled, "0");
         g_IsPallEnabled[client] = false;
         CReplyToCommand(client, "%t", "disabled_pall");
-
+        StopSong(client);
     }
 }
 
@@ -511,7 +512,10 @@ SetClientVolume(client, volume)
         IntToString(volume, tmp, sizeof(tmp));
         SetClientCookie(client, g_Cookie_Volume, tmp);
         g_Volume[client] = volume;
-        CReplyToCommand(client, "%t", "volume_set", volume);
+        CReplyToCommand(client, "%t", "volume_set", volume); //TODO remove mention that volume will not change for current song
+
+        //Change volume for currently playing song
+        ReplaySong(client, tmp);
     }else{
         CReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
     }
@@ -856,10 +860,7 @@ public _PlaySong(Handle:plugin, args)
 PlaySong(client, String:song_id[], String:access_token[])
 {
     //Don't play song if client has a muted volume
-    if(g_Volume[client] < 1)
-    {
-        return;
-    }
+    if(g_Volume[client] < 1) return;
 
     if(ClientHasHtmlMotdDisabled(client))
     {
@@ -870,6 +871,22 @@ PlaySong(client, String:song_id[], String:access_token[])
     decl String:args[256];
     Format(args, sizeof(args),
             "%s/play?access_token=%s&volume=%f", song_id, access_token, (g_Volume[client] / 10.0));
+    strcopy(g_CachedURLArgs[client], 256, args); //Cache args in case we need to pass a hash arg
+
+    CreateIGAPopup(client, SONGS_ROUTE, args, false);
+}
+
+//Replay the song the client is currently listening to but with a different url hash argument
+ReplaySong(client, String:hash[])
+{
+    //Don't re-play song if client won't hear anything
+    if(g_Volume[client] < 1) return;
+    if(!IsInP(client)) return;
+    if(ClientHasHtmlMotdDisabled(client)) return;
+
+    decl String:args[256];
+    Format(args, sizeof(args),
+            "%s#%s", g_CachedURLArgs[client], hash);
 
     CreateIGAPopup(client, SONGS_ROUTE, args, false);
 }
