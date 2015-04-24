@@ -1,5 +1,5 @@
 # In Game Audio
-[![Build Status](https://travis-ci.org/CrimsonTautology/sm_map_votes.png?branch=master)](https://travis-ci.org/CrimsonTautology/sm_map_votes)
+[![Build Status](https://travis-ci.org/CrimsonTautology/sm_map_votes.png?branch=master)](https://travis-ci.org/CrimsonTautology/sm_in_game_audio)
 
 Allows users to listen to music while in game.  Uses a hidden MOTD page to play the music [using an external web service](http://iga.crimsontautology.com).  Should work for any Source game that can run [Sourcemod](http://www.sourcemod.net).
 
