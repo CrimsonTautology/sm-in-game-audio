@@ -27,7 +27,7 @@ before_script:
 
 script: 
     - ./spcomp in_game_audio_base.sp
-    - ./spcomp in_game_audio_donator_intro.sp
+    - ./spcomp in_game_audio_vip_intro.sp
     - ./spcomp in_game_audio_map_change.sp
     - ./spcomp in_game_audio_player.sp
 
