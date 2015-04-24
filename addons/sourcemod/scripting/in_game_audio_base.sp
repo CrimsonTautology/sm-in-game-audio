@@ -51,6 +51,7 @@ new g_IsHtmlMotdDisabled[MAXPLAYERS+1] = {-1, ...}; //Trinary logic: -1 = Unknow
 new String:g_CurrentPallDescription[64];
 new String:g_CurrentPallPath[64];
 new g_CurrentPlastSongId = 0;
+new String:g_CachedURLArgs[MAXPLAYERS+1][256];
 
 new g_PNextFree[MAXPLAYERS+1] = {0, ...};
 new g_PallNextFree = 0;
@@ -512,6 +513,16 @@ SetClientVolume(client, volume)
         SetClientCookie(client, g_Cookie_Volume, tmp);
         g_Volume[client] = volume;
         CReplyToCommand(client, "%t", "volume_set", volume);
+
+        if(IsInP(client))
+        {
+            //TODO change this so we only have to call play
+            decl String:args[256];
+            Format(args, sizeof(args),
+                    "%s#%f", g_CachedURLArgs[client], (g_Volume[client] / 10.0));
+
+            CreateIGAPopup(client, SONGS_ROUTE, args, false);
+        }
     }else{
         CReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
     }
@@ -870,6 +881,7 @@ PlaySong(client, String:song_id[], String:access_token[])
     decl String:args[256];
     Format(args, sizeof(args),
             "%s/play?access_token=%s&volume=%f", song_id, access_token, (g_Volume[client] / 10.0));
+    strcopy(g_CachedURLArgs[client], 256, args); //Cache args in case we need to pass a hash arg
 
     CreateIGAPopup(client, SONGS_ROUTE, args, false);
 }
