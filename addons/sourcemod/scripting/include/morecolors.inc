@@ -497,6 +497,17 @@ stock CGetTeamColor(client) {
 
 stock Handle:InitColorTrie() {
 	new Handle:hTrie = CreateTrie();
+
+    //Bail for invalid mods
+    decl String:mod_name[PLATFORM_MAX_PATH];
+    GetGameFolderName(mod_name, sizeof(mod_name));
+    if(StrEqual(mod_name, "left4dead2") ||
+       StrEqual(mod_name, "csgo"))
+    {
+        return hTrie;
+    }
+
+
 	SetTrieValue(hTrie, "aliceblue", 0xF0F8FF);
 	SetTrieValue(hTrie, "allies", 0x4D7942); // same as Allies team in DoD:S
 	SetTrieValue(hTrie, "ancient", 0xEB4B4B); // same as Ancient item rarity in Dota 2
