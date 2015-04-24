@@ -116,6 +116,7 @@ public OnPluginStart()
     RegConsoleCmd("sm_jukebox", Command_IGA, "Bring up the IGA settings and control menu");
     RegConsoleCmd("sm_plast", Command_Plast, "Replay the last song for yourself");
     RegConsoleCmd("sm_ptoo", Command_Plast, "Replay the last song for yourself");
+    RegAdminCmd("sm_dumpiga", Command_DumpIGA, ADMFLAG_VOTE, "[ADMIN] List the IGA settings for all clients on the server");
 
     g_Cookie_Volume = RegClientCookie("iga_volume_1.4", "Volume to play at [0-10]; 0 muted, 10 loudest", CookieAccess_Private);
     g_Cookie_PallEnabled = RegClientCookie("iga_pall_enabled_1.4", "Whether you want pall enabled or not. If yes, you will hear music when other players call !pall", CookieAccess_Private);
@@ -263,6 +264,33 @@ public Action:Command_Plast(client, args)
     return Plugin_Handled;
 }
 
+//Test command to dump info.  Also useful to help debug a user's issues
+public Action:Command_DumpIGA(caller, args)
+{
+    if(IsInPall())
+    {
+        PrintToConsole(caller, "pall -> '%s' %s %d", g_CurrentPallDescription, g_CurrentPallPath, g_CurrentPlastSongId);
+        PrintToConsole(caller, "");
+
+    }
+
+    PrintToConsole(caller, "coold ypall dmotd vol inp user");
+    for (new client=1; client <= MaxClients; client++)
+    {
+        if(!IsClientInGame(client) || IsFakeClient(client))
+            continue;
+
+        PrintToConsole(caller, "%5d %5d %5d %3d %3d %L",
+                g_IsInCooldown[client],
+                g_IsPallEnabled[client],
+                g_IsHtmlMotdDisabled[client],
+                g_Volume[client],
+                IsInP(client),
+                client);
+    }
+    return Plugin_Handled;
+}
+
 SteamWorks_SetHTTPRequestGetOrPostParameterInt(&Handle:request, const String:param[], value)
 {
     new String:tmp[64];
@@ -362,7 +390,7 @@ CreateIGAPopup(client, const String:route[]="", const String:args[]="", bool:pop
 ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:show=true, user_message_flags=0)
 {
     new Handle:msg = StartMessageOne("VGUIMenu", client, user_message_flags);
-    
+
     if (GetFeatureStatus(FeatureType_Native, "GetUserMessageType") == FeatureStatus_Available && GetUserMessageType() == UM_Protobuf)
     {
         PbSetString(msg, "name", name);
@@ -377,7 +405,7 @@ ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:s
                 decl String:key[128], String:value[128];
                 KvGetSectionName(panel, key, sizeof(key));
                 KvGetString(panel, NULL_STRING, value, sizeof(value), "");
-                
+
                 subkey = PbAddMessage(msg, "subkeys");
                 PbSetString(subkey, "name", key);
                 PbSetString(subkey, "str", value);
@@ -389,7 +417,7 @@ ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:s
     {
         BfWriteString(msg, name);
         BfWriteByte(msg, show);
-        
+
         if (panel == INVALID_HANDLE)
         {
             BfWriteByte(msg, 0);
@@ -407,9 +435,9 @@ ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:s
                 {
                     ++keys;
                 } while (KvGotoNextKey(panel, false));
-                
+
                 BfWriteByte(msg, keys);
-                
+
                 if (keys > 0)
                 {
                     KvGoBack(panel);
@@ -419,7 +447,7 @@ ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:s
                         decl String:key[128], String:value[128];
                         KvGetSectionName(panel, key, sizeof(key));
                         KvGetString(panel, NULL_STRING, value, sizeof(value), "");
-                        
+
                         BfWriteString(msg, key);
                         BfWriteString(msg, value);
                     } while (KvGotoNextKey(panel, false));
@@ -427,7 +455,7 @@ ShowVGUIPanelEx(client, const String:name[], Handle:panel=INVALID_HANDLE, bool:s
             }
         }
     }
-    
+
     EndMessage();
 }
 
