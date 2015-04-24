@@ -16,8 +16,6 @@
 #include <sourcemod>
 #include <in_game_audio>
 #include <morecolors>
-#undef REQUIRE_PLUGIN
-#include <donator>
 
 #define PLUGIN_VERSION "1.8.3"
 #define PLUGIN_NAME "In Game Audio Player"
@@ -31,16 +29,15 @@ public Plugin:myinfo =
     url = "https://github.com/CrimsonTautology/sm_in_game_audio"
 };
 
-new Handle:g_Cvar_IGADonatorsOnly = INVALID_HANDLE;
-new bool:g_IsDonator[MAXPLAYERS+1];
-new bool:g_DonatorLibraryExists = false;
+new Handle:g_Cvar_VIPsOnly = INVALID_HANDLE;
+new bool:g_IsVIP[MAXPLAYERS+1];
 
 public OnPluginStart()
 {
     LoadTranslations("in_game_audio.phrases");
 
     CreateConVar("sm_iga_player_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
-    g_Cvar_IGADonatorsOnly = CreateConVar("sm_iga_donators_only", "0", "Whether only dontaors can use pall");
+    g_Cvar_VIPsOnly = CreateConVar("sm_iga_vip_only", "0", "Whether only VIPs can use pall");
 
     RegConsoleCmd("sm_p", Command_P, "Play a song for yourself");
     RegConsoleCmd("sm_pall", Command_Pall, "Play a song for everyone");
@@ -48,8 +45,6 @@ public OnPluginStart()
     RegConsoleCmd("sm_stop", Command_Stop, "Stop the current song");
     RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
-
-    g_DonatorLibraryExists = LibraryExists("donator.core");
 }
 
 public OnAllPluginsLoaded()
@@ -58,40 +53,18 @@ public OnAllPluginsLoaded()
     IGA_RegisterMenuItem("How To Play Songs", TutorialMenu);
 }
 
-
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-{
-    MarkNativeAsOptional("IsPlayerDonator");
-    return APLRes_Success;
-}
-
-public OnLibraryRemoved(const String:name[])
-{
-    if (StrEqual(name, "donator.core"))
-    {
-        g_DonatorLibraryExists = false;
-    }
-}
-
-public OnLibraryAdded(const String:name[])
-{
-    if (StrEqual(name, "donator.core"))
-    {
-        g_DonatorLibraryExists = true;
-    }
-}
-
-public OnPostDonatorCheck(client)
-{
-    if (g_DonatorLibraryExists)
-    {
-        g_IsDonator[client] = IsPlayerDonator(client);
-    }
-}
+public OnClientPostAdminCheck(client)   
+{  
+    new flags = GetUserFlagBits(client);  
+    if ((flags & ADMFLAG_CUSTOM1)) // Everyone with the flag "O"
+    {  
+        g_IsVIP[client] = true;
+    }  
+}  
 
 public OnClientDisconnect(client)
 {
-    g_IsDonator[client] = false;
+    g_IsVIP[client] = false;
 }
 
 public Action:Command_P(client, args)
@@ -131,9 +104,9 @@ public Action:Command_Pall(client, args)
         return Plugin_Handled;
     }
 
-    if(!DonatorCheck(client))
+    if(!VIPCheck(client))
     {
-        CReplyToCommand(client, "%t", "donators_only");
+        CReplyToCommand(client, "%t", "vips_only");
         return Plugin_Handled;
     }
 
@@ -186,14 +159,14 @@ public Action:Command_Fpall(client, args)
     return Plugin_Handled;
 }
 
-//True if client can use a donator action. If donations are not enabled this
-//will always be true, otherwise check if client is a donator.
-public bool:DonatorCheck(client)
+//True if client can use a VIP action. If VIPs are not enabled this
+//will always be true, otherwise check if client is a VIP.
+public bool:VIPCheck(client)
 {
-    if(!g_DonatorLibraryExists || !GetConVarBool(g_Cvar_IGADonatorsOnly))
+    if(!GetConVarBool(g_Cvar_VIPsOnly))
         return true;
     else
-        return g_IsDonator[client];
+        return g_IsVIP[client];
 }
 
 public SongList(client, String:search[])

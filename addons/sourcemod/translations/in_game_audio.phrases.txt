@@ -59,9 +59,9 @@
         "en"    "[IGA] {fullred}In Game Audio is not enabled."
     }
 
-    "donators_only"
+    "vips_only"
     {
-        "en"    "[IGA] {fullred}Only donators can use this command."
+        "en"    "[IGA] {fullred}Only VIPs can use this command."
     }
 
     "volume_usage"
