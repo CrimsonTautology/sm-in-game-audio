@@ -797,17 +797,18 @@ PlaySongAll(String:song[], String:access_token[], bool:force)
         if(!IsClientInGame(client) || IsFakeClient(client) || g_Volume[client] < 1)
             continue;
 
-        if ( ClientHasPallEnabled(client) )
+        if(!ClientHasPallEnabled(client))
         {
-            if(force || !IsInP(client))
-            {
-                PlaySong(client, song, access_token);
-            }
-
-        }else{
             //Mention that pall is not enabled
             CPrintToChat(client, "%t", "pall_not_enabled");
+            continue;
         }
+
+        if(force || !IsInP(client))
+        {
+            PlaySong(client, song, access_token);
+        }
+
     }
 }
 
@@ -830,6 +831,12 @@ PlaySong(client, String:song_id[], String:access_token[])
     if(g_Volume[client] < 1)
     {
         return;
+    }
+
+    if(ClientHasHtmlMotdDisabled(client))
+    {
+        //Mention that you should enable html motds
+        CPrintToChat(client, "%t", "html_motd_not_enabled");
     }
 
     decl String:args[256];
