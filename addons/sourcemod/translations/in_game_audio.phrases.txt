@@ -73,7 +73,7 @@
     "volume_set"
     {
         "#format"   "{1:i}"
-            "en"    "[IGA] {darkgray}Set volume to {green}{1}{darkgray}.  Will take affect on the next song."
+            "en"    "[IGA] {darkgray}Set volume to {green}{1}{darkgray}."
     }
 
     "disabled_pall"
