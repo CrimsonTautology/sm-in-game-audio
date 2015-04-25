@@ -514,8 +514,10 @@ SetClientVolume(client, volume)
         g_Volume[client] = volume;
         CReplyToCommand(client, "%t", "volume_set", volume); //TODO remove mention that volume will not change for current song
 
-        //Change volume for currently playing song
-        ReplaySong(client, tmp);
+        //Change volume for client's currently playing song
+        new String:hash[32];
+        Format(hash, sizeof(hash), "v=%f", (volume / 10.0));
+        ReplaySong(client, hash);
     }else{
         CReplyToCommand(client, "%t", "volume_usage", g_Volume[client]);
     }
