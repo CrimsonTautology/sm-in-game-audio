@@ -883,7 +883,6 @@ ReplaySong(client, String:hash[])
 {
     //Don't re-play song if client won't hear anything
     if(g_Volume[client] < 1) return;
-    if(!IsInP(client)) return;
     if(ClientHasHtmlMotdDisabled(client)) return;
 
     decl String:args[256];
