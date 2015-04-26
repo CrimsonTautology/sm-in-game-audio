@@ -914,6 +914,9 @@ StopSongAll()
     g_PallNextFree = 0;
     for (new client=1; client <= MaxClients; client++)
     {
+        if(!IsClientInGame(client) || IsFakeClient(client))
+            continue;
+
         if ( !IsInP(client) ) 
         {
             StopSong(client);
