@@ -17,7 +17,7 @@
 #include <in_game_audio>
 #include <morecolors>
 
-#define PLUGIN_VERSION "1.8.4"
+#define PLUGIN_VERSION "1.8.5"
 #define PLUGIN_NAME "In Game Audio Player"
 
 public Plugin:myinfo =
