@@ -46,12 +46,6 @@ public OnPluginStart()
     }
 }
 
-public OnMapVoteStarted()
-{
-    //Don't let the map vote override a pall
-    MapTheme(false);
-}
-
 public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
 {
     //Prevent HTTP calls when noone is online
