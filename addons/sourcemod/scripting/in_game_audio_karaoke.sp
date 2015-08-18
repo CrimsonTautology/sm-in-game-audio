@@ -116,7 +116,7 @@ ReadKaraokeSongs()
 
     new Handle:kv = CreateKeyValues("Karaoke");
 
-    decl String:path[PLATFORM_MAX_PATH], String:tmp[PLATFORM_MAX_PATH], String:game_folder[PLATFORM_MAX_PATH];
+    decl String:path[PLATFORM_MAX_PATH], String:tmp[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, path, sizeof(path), "configs/iga.karaoke.cfg");//TODO make this path a cvar
 
     if(FileExists(path))
@@ -150,7 +150,7 @@ KvGetKaraokeSong(Handle:kv, &index)
     index++;
 }
 
-ParseLRCFile(const String:file_name[], String:lyrics[][], Float:timestamps[])
+ParseLRCFile(const String:file_name[])
 {
     decl String:path[PLATFORM_MAX_PATH];
     new total_lyrics = 0;
@@ -161,7 +161,7 @@ ParseLRCFile(const String:file_name[], String:lyrics[][], Float:timestamps[])
         new Handle:file = OpenFile(path, "r");
 
         //Line by line reading
-        decl String:line[MAX_LRC_LINE_LENGTH], index, split, Float:timestamp;
+        decl String:line[MAX_LRC_LINE_LENGTH], index, split;
         while (total_lyrics < MAX_KARAOKE_LYRICS && !IsEndOfFile(file) && ReadFileLine(file, line, sizeof(line)))
         {
             //Skip non timestamp lines
@@ -209,7 +209,7 @@ StartKaraokeCountDown(selected, Float:delay)
 StartKaraokeLyricsDisplay(selected)
 {
     new total, i;
-    total = ParseLRCFile(g_KaraokeLRCPath[selected], g_KaraokeLyrics, g_KaraokeTimestamps);
+    total = ParseLRCFile(g_KaraokeLRCPath[selected]);
 
     //Build timers to display lyrics for each parsed lyric
     for(i=0; i < total; i++)
@@ -260,7 +260,6 @@ public ReceiveQueryKaraoke(Handle:request, bool:failure, bool:successful, EHTTPS
     {
         //Found a matching song
         new duration = json_object_get_int(json, "duration");
-        new bool:pall = json_object_get_bool(json, "pall");
         new bool:force = json_object_get_bool(json, "force");
         new String:song_id[64], String:full_path[64], String:description[64], String:duration_formated[64], String:access_token[128];
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
@@ -308,7 +307,6 @@ public KaraokeMenuHandler(Handle:menu, MenuAction:action, param1, param2)
     {
         case MenuAction_Select:
             {
-                new client = param1;
                 new String:info[32];
                 GetMenuItem(menu, param2, info, sizeof(info));
                 new selected = StringToInt(info);
