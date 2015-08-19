@@ -19,7 +19,7 @@
 #include <smjansson>
 #include <morecolors>
 
-#define PLUGIN_VERSION "1.8.6"
+#define PLUGIN_VERSION "1.8.7"
 #define PLUGIN_NAME "In Game Audio Base"
 
 public Plugin:myinfo =
