@@ -101,13 +101,13 @@ enum EHTTPMethod
 	k_EHTTPMethodGET,
 	k_EHTTPMethodHEAD,
 	k_EHTTPMethodPOST,
+	k_EHTTPMethodPUT,
+	k_EHTTPMethodDELETE,
+	k_EHTTPMethodOPTIONS,
 
 	// The remaining HTTP methods are not yet supported, per rfc2616 section 5.1.1 only GET and HEAD are required for 
 	// a compliant general purpose server.  We'll likely add more as we find uses for them.
 
-	// k_EHTTPMethodOPTIONS,
-	k_EHTTPMethodPUT,
-	k_EHTTPMethodDELETE,
 	// k_EHTTPMethodTRACE,
 	// k_EHTTPMethodCONNECT
 };
@@ -145,7 +145,7 @@ enum EHTTPStatusCode
 
 	// Error codes
 	k_EHTTPStatusCode400BadRequest =			400,
-	k_EHTTPStatusCode401Unauthorized =			401,
+	k_EHTTPStatusCode401Unauthorized =			401, // You probably want 403 or something else. 401 implies you're sending a WWW-Authenticate header and the client can sent an Authorization header in response.
 	k_EHTTPStatusCode402PaymentRequired =		402, // This is reserved for future HTTP specs, not really supported by clients
 	k_EHTTPStatusCode403Forbidden =				403,
 	k_EHTTPStatusCode404NotFound =				404,
@@ -162,6 +162,8 @@ enum EHTTPStatusCode
 	k_EHTTPStatusCode415UnsupportedMediaType =	415,
 	k_EHTTPStatusCode416RequestedRangeNotSatisfiable = 416,
 	k_EHTTPStatusCode417ExpectationFailed =		417,
+	k_EHTTPStatusCode4xxUnknown = 				418, // 418 is reserved, so we'll use it to mean unknown
+	k_EHTTPStatusCode429TooManyRequests	=		429,
 
 	// Server error codes
 	k_EHTTPStatusCode500InternalServerError =	500,
@@ -170,6 +172,7 @@ enum EHTTPStatusCode
 	k_EHTTPStatusCode503ServiceUnavailable =	503,
 	k_EHTTPStatusCode504GatewayTimeout =		504,
 	k_EHTTPStatusCode505HTTPVersionNotSupported = 505,
+	k_EHTTPStatusCode5xxUnknown =				599,
 };
 
 native bool:SteamWorks_IsVACEnabled();
@@ -181,6 +184,8 @@ native bool:SteamWorks_IsConnected();
 native bool:SteamWorks_SetRule(const String:sKey[], const String:sValue[]);
 native bool:SteamWorks_ClearRules();
 native bool:SteamWorks_ForceHeartbeat();
+native bool:SteamWorks_GetUserGroupStatus(client, groupid);
+native bool:SteamWorks_GetUserGroupStatusAuthID(authid, groupid);
 
 native EUserHasLicenseForAppResult:SteamWorks_HasLicenseForApp(client, app);
 native SteamWorks_GetClientSteamID(client, String:sSteamID[], length);
@@ -251,6 +256,8 @@ forward SteamWorks_SteamServersDisconnected(EResult:result);
 forward Action:SteamWorks_RestartRequested();
 forward SteamWorks_TokenRequested(String:sToken[], maxlen);
 
+forward SteamWorks_OnClientGroupStatus(authid, groupid, bool:isMember, bool:isOfficer);
+
 public Extension:__ext_SteamWorks = 
 {
 	name = "SteamWorks",
@@ -279,6 +286,8 @@ public __ext_SteamWorks_SetNTVOptional()
 	MarkNativeAsOptional("SteamWorks_SetRule");
 	MarkNativeAsOptional("SteamWorks_ClearRules");
 	MarkNativeAsOptional("SteamWorks_ForceHeartbeat");
+	MarkNativeAsOptional("SteamWorks_GetUserGroupStatus");
+	MarkNativeAsOptional("SteamWorks_GetUserGroupStatusAuthID");
 
 	MarkNativeAsOptional("SteamWorks_HasLicenseForApp");
 	MarkNativeAsOptional("SteamWorks_GetClientSteamID");
