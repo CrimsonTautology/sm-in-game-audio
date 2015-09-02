@@ -128,6 +128,7 @@ def install_filetype glob, subdirectory, overwrite=true
     next if FileTest.exists?(disabled)
 
     if overwrite || !FileTest.exists?(path)
+      FileUtils.mkdir_p(File.dirname(path))
       FileUtils.cp(f, path)
       puts "install #{f}"
     end
