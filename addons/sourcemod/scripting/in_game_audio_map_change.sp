@@ -41,6 +41,9 @@ public OnPluginStart()
     if(StrEqual(mod_name, "tf"))
     {
         HookEventEx("teamplay_game_over", Event_MapChange);
+    }else if(StrEqual(mod_name, "dod"))
+    {
+        HookEventEx("dod_game_over", Event_MapChange);
     }else{
         HookEventEx("game_end", Event_MapChange);
     }
