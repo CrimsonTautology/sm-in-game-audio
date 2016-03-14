@@ -44,9 +44,14 @@ public OnPluginStart()
     }else if(StrEqual(mod_name, "dod"))
     {
         HookEventEx("dod_game_over", Event_MapChange);
+    }else if(StrEqual(mod_name, "dod"))
+    {
+        AddNormalSoundHook(FoFSoundCallback);
+        HookEventEx("game_end", Event_MapChange);
     }else{
         HookEventEx("game_end", Event_MapChange);
     }
+
 }
 
 public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadcast)
@@ -58,5 +63,14 @@ public Action:Event_MapChange(Handle:event, const String:name[], bool:dontBroadc
     GetNextMap(next_map, sizeof(next_map));
     MapTheme(true, next_map);
 
+    return Plugin_Continue;
+}
+
+public Action:FoFSoundCallback(clients[64], &numClients, String:sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
+{
+    //Block victory music at round end
+    if(StrEqual(sample, "common/victory.mp3")) {
+        return Plugin_Stop;
+    }
     return Plugin_Continue;
 }
