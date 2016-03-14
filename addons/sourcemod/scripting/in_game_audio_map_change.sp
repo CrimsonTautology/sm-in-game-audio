@@ -44,9 +44,9 @@ public OnPluginStart()
     }else if(StrEqual(mod_name, "dod"))
     {
         HookEventEx("dod_game_over", Event_MapChange);
-    }else if(StrEqual(mod_name, "dod"))
+    }else if(StrEqual(mod_name, "fof"))
     {
-        AddNormalSoundHook(FoFSoundCallback);
+        //AddNormalSoundHook(FoFSoundCallback);
         HookEventEx("game_end", Event_MapChange);
     }else{
         HookEventEx("game_end", Event_MapChange);
