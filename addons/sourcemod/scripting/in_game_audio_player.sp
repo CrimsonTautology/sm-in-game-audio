@@ -134,6 +134,7 @@ public Action:Command_Pall(client, args)
     if(!UnmutedCheck(client))
     {
         CReplyToCommand(client, "%t", "player_muted");
+        return Plugin_Handled;
     }
 
     if(client && IsClientAuthorized(client)){
