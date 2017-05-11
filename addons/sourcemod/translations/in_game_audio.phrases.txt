@@ -64,6 +64,11 @@
         "en"    "[IGA] {fullred}Only VIPs can use this command."
     }
 
+    "player_muted"
+    {
+        "en"    "[IGA] {fullred}Player is muted and cannot use this command."
+    }
+
     "volume_usage"
     {
         "#format"   "{1:i}"

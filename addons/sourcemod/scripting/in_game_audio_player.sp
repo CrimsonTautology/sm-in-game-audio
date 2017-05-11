@@ -16,8 +16,10 @@
 #include <sourcemod>
 #include <in_game_audio>
 #include <morecolors>
+#undef REQUIRE_PLUGIN
+#include <basecomm>
 
-#define PLUGIN_VERSION "1.8.7"
+#define PLUGIN_VERSION "1.8.8"
 #define PLUGIN_NAME "In Game Audio Player"
 
 public Plugin:myinfo =
@@ -31,6 +33,7 @@ public Plugin:myinfo =
 
 new Handle:g_Cvar_VIPsOnly = INVALID_HANDLE;
 new bool:g_IsVIP[MAXPLAYERS+1];
+new bool:g_BaseCommLibraryExists = false;
 
 public OnPluginStart()
 {
@@ -45,12 +48,30 @@ public OnPluginStart()
     RegConsoleCmd("sm_stop", Command_Stop, "Stop the current song");
     RegAdminCmd("sm_fstop", Command_Fstop, ADMFLAG_VOTE, "[ADMIN] Stop the current pall for everyone");
     RegAdminCmd("sm_fpall", Command_Fpall, ADMFLAG_VOTE, "[ADMIN] Force everyone to listen to a song");
+
+    g_BaseCommLibraryExists = LibraryExists("basecomm");
 }
 
 public OnAllPluginsLoaded()
 {
     IGA_RegisterMenuItem("View Song List (!plist)", SongListMenu);
     IGA_RegisterMenuItem("How To Play Songs", TutorialMenu);
+}
+
+public OnLibraryRemoved(const String:name[])
+{
+    if (StrEqual(name, "basecomm"))
+    {
+        g_BaseCommLibraryExists = false;
+    }
+}
+
+public OnLibraryAdded(const String:name[])
+{
+    if (StrEqual(name, "basecomm"))
+    {
+        g_BaseCommLibraryExists = true;
+    }
 }
 
 public OnClientPostAdminCheck(client)   
@@ -110,6 +131,11 @@ public Action:Command_Pall(client, args)
         return Plugin_Handled;
     }
 
+    if(!UnmutedCheck(client))
+    {
+        CReplyToCommand(client, "%t", "player_muted");
+    }
+
     if(client && IsClientAuthorized(client)){
         decl String:path[MAX_SONG_LENGTH];
         GetCmdArgString(path, sizeof(path));
@@ -167,6 +193,14 @@ public bool:VIPCheck(client)
         return true;
     else
         return g_IsVIP[client];
+}
+//True if client can is unmuted or if basecomm library is unloaded
+public bool:UnmutedCheck(client)
+{
+    if(!g_BaseCommLibraryExists)
+        return true;
+    else
+        return !BaseComm_IsClientMuted(client);
 }
 
 public SongList(client, String:search[])
