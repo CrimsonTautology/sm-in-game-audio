@@ -790,18 +790,19 @@ public ReceiveTheme(Handle:request, bool:failure, bool:successful, EHTTPStatusCo
     if(found)
     {
         new bool:force = json_object_get_bool(json, "force");
-        new String:song_id[64], String:access_token[128];
+        new String:song_id[64], String:full_path[64], String:access_token[128];
+        new duration = json_object_get_int(json, "duration");
         json_object_get_string(json, "song_id", song_id, sizeof(song_id));
         json_object_get_string(json, "access_token", access_token, sizeof(access_token));
+        json_object_get_string(json, "full_path", full_path, sizeof(full_path));
 
         if(force && !IsInPall())
         {
-            RegisterPall(60, "!ptoo", "User or Map Theme");
+            RegisterPall(duration, full_path, description);
         }
 
         if(force || !IsInPall())
         {
-            g_PallNextFree = 0;
             PlaySongAll(song_id, access_token, force);
             CPrintToChatAll("%t", "iga_settings");
         }
