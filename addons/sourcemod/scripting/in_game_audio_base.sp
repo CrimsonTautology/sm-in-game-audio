@@ -22,6 +22,8 @@
 #define PLUGIN_VERSION "1.8.8"
 #define PLUGIN_NAME "In Game Audio Base"
 
+#define DEBUG true
+
 public Plugin:myinfo =
 {
     name = PLUGIN_NAME,
@@ -646,6 +648,7 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
 
                 g_CurrentPlastSongId = StringToInt(song_id);
 
+                WriteLog("%N: !pall(%d): %s", client, song_id, description)
                 PlaySongAll(song_id, access_token, force);
             }else{
                 new minutes = (g_PallNextFree - GetTime()) / 60;
@@ -669,6 +672,7 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
 
             g_CurrentPlastSongId = StringToInt(song_id);
 
+            WriteLog("%N: !p(%d): %s", client, song_id, description)
             PlaySong(client, song_id, access_token);
         }
 
@@ -805,6 +809,7 @@ public ReceiveTheme(Handle:request, bool:failure, bool:successful, EHTTPStatusCo
 
         if(force || !IsInPall())
         {
+            WriteLog("theme(%d): %s", song_id, description)
             PlaySongAll(song_id, access_token, force);
             CPrintToChatAll("%t", "iga_settings");
         }
@@ -1197,4 +1202,17 @@ public SongChooserMenuHandler(Handle:menu, MenuAction:action, param1, param2)
             }
         case MenuAction_End: CloseHandle(menu);
     }
+}
+
+stock WriteLog(const String:format[], any:... )
+{
+#if defined DEBUG
+    if(format[0] != '\0')
+    {
+        decl String:buf[2048];
+        VFormat(buf, sizeof(buf), format, 2 );
+        //LogToFileEx("log_iga.txt", "[%.3f] %s", GetGameTime(), buf);
+        PrintToServer("[IGA] %s", buf);
+    }
+#endif
 }
