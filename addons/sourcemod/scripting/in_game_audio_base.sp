@@ -648,7 +648,7 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
 
                 g_CurrentPlastSongId = StringToInt(song_id);
 
-                WriteLog("%N: !pall(%d): %s", client, song_id, description)
+                WriteLog("%N: !pall(%d): %s", client, song_id, description);
                 PlaySongAll(song_id, access_token, force);
             }else{
                 new minutes = (g_PallNextFree - GetTime()) / 60;
@@ -672,7 +672,7 @@ public ReceiveQuerySong(Handle:request, bool:failure, bool:successful, EHTTPStat
 
             g_CurrentPlastSongId = StringToInt(song_id);
 
-            WriteLog("%N: !p(%d): %s", client, song_id, description)
+            WriteLog("%N: !p(%d): %s", client, song_id, description);
             PlaySong(client, song_id, access_token);
         }
 
@@ -809,7 +809,7 @@ public ReceiveTheme(Handle:request, bool:failure, bool:successful, EHTTPStatusCo
 
         if(force || !IsInPall())
         {
-            WriteLog("theme(%d): %s", song_id, description)
+            WriteLog("theme(%d): %s", song_id, description);
             PlaySongAll(song_id, access_token, force);
             CPrintToChatAll("%t", "iga_settings");
         }
