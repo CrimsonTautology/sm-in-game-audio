@@ -102,6 +102,12 @@ public Action:Command_P(client, args)
         return Plugin_Handled;
     }
 
+    if(!UnmutedCheck(client))
+    {
+        CReplyToCommand(client, "%t", "player_muted");
+        return Plugin_Handled;
+    }
+
     if(client && IsClientAuthorized(client)){
         decl String:path[MAX_SONG_LENGTH];
         GetCmdArgString(path, sizeof(path));
