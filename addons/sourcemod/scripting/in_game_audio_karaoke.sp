@@ -51,7 +51,7 @@ public OnPluginStart()
     LoadTranslations("in_game_audio.phrases");
     RegAdminCmd("sm_karaoke", Command_Karaoke, ADMFLAG_SLAY, "[ADMIN] Start a karaoke.");
 
-    CreateConVar("sm_iga_karaoke_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
+    CreateConVar("sm_iga_karaoke_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
 }
 
 public OnMapStart()

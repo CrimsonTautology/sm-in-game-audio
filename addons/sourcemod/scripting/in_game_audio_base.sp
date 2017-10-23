@@ -102,7 +102,7 @@ public OnPluginStart()
 {
     LoadTranslations("in_game_audio.phrases");
 
-    CreateConVar("sm_iga_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
+    CreateConVar("sm_iga_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
     
     g_Cvar_IGAApiKey = CreateConVar("sm_iga_api_key", "", "API Key for your IGA webpage");
     g_Cvar_IGAUrl = CreateConVar("sm_iga_url", "", "URL to your IGA webpage");
