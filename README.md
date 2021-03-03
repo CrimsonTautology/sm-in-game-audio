@@ -19,7 +19,7 @@ Allows users to listen to music while in game.  Uses a hidden MOTD page to play 
 ##Requirements
 * [SMJansson](https://forums.alliedmods.net/showthread.php?t=184604)
 * [SteamWorks](https://forums.alliedmods.net/showthread.php?t=229556)
-* [A Web Site Backend](https://github.com/CrimsonTautology/in_game_audio)
+* [A Web Site Backend](https://github.com/CrimsonTautology/in-game-audio)
 * Players must have HTML Message Of The Days enabled for this to work.  This can be enabled via advanced settings of by typing `cl_disablehtmlmotd 0` into console.
 
 #CVARs

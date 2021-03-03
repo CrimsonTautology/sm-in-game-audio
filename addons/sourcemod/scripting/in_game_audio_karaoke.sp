@@ -19,7 +19,7 @@
 #include <in_game_audio>
 #include <morecolors>
 
-#define PLUGIN_VERSION "1.8.9"
+#define PLUGIN_VERSION "1.10.0"
 #define PLUGIN_NAME "In Game Audio Karaoke" 
 
 #define MAX_KARAOKE_SONGS    64

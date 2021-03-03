@@ -16,7 +16,7 @@
 #include <sourcemod>
 #include <in_game_audio>
 
-#define PLUGIN_VERSION "1.8.9"
+#define PLUGIN_VERSION "1.10.0"
 #define PLUGIN_NAME "In Game Audio VIP Intro"
 
 

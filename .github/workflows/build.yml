@@ -1,0 +1,25 @@
+name: compile with sourcemod
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 4 * * 5"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sm-version: ['1.10', '1.11']
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: setup sourcemod compiler
+        uses: rumblefrog/setup-sp@master
+        with:
+          version: ${{ matrix.sm-version }}
+
+      - name: compile sourcemod plugins
+        run: make SPCOMP=spcomp SPFLAGS=-E DEBUG=0
